@@ -2,7 +2,6 @@ package org.midheaven.collections;
 
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 class EditableAssociationMapWrapper<K, V> extends ImmutableAssociationMapWrapper<K,V> implements EditableAssociation<K,V> {
 
@@ -20,8 +19,7 @@ class EditableAssociationMapWrapper<K, V> extends ImmutableAssociationMapWrapper
     }
 
     @Override
-    public V computeValue(K key, BiFunction<K, V, V> computation) {
-        return original.compute(key, computation);
+    public void computeValue(K key, BiFunction<K, V, V> computation) {
+        getValue(key).ifPresent(value -> original.put(key, computation.apply(key,value)));
     }
-
 }

@@ -1,6 +1,5 @@
 package org.midheaven.collections;
 
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class FilterPipe<T> extends Pipe<T,T,Void> {
@@ -16,15 +15,18 @@ public class FilterPipe<T> extends Pipe<T,T,Void> {
     }
 
     @Override
-    Void newState(Length finalLength) {
+    Void newState(Enumerator<T> original, Length finalLength) {
         return null;
     }
 
     @Override
-    boolean apply(Void state, T candidate, Consumer<T> consumer) {
-        if (predicate.test(candidate)){
-            consumer.accept(candidate);
-        }
-        return true;
+    PipeMoveResult<T> move(Enumerator<T> original, Void unused) {
+       while(original.moveNext()){
+           var current = original.current();
+           if (predicate.test(current)){
+               return PipeMoveResult.moved(current);
+           }
+       }
+       return PipeMoveResult.notMoved();
     }
 }

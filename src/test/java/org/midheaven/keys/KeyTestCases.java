@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class KeyTestCases {
 
@@ -22,12 +22,14 @@ public class KeyTestCases {
 
     @Test
     public void parsing(){
-        assertThrows(KeyParsingException.class , () -> Key.parse(SomeConcept.class, null));
+        assertNull( Key.parse( null));
+        assertNull( Key.parse( ""));
+        assertNull( Key.parse( "  "));
 
-        var a = Key.parse(SomeConcept.class, "23::SomeConcept");
-        var b = Key.parse(SomeConcept.class, "23::someconcept");
-        var c = Key.parse(SomeOtherConcept.class, "23::SomeOtherConcept");
-        var d = Key.parse(SomeDerivedConcept.class, "23::SomeConcept");
+        var a = Key.parse("23::SomeConcept");
+        var b = Key.parse( "23::someconcept");
+        var c = Key.parse( "23::SomeOtherConcept");
+        var d = Key.parse( "23::SomeConcept");
 
         assertEquals(a,b);
         assertNotEquals(a,c);

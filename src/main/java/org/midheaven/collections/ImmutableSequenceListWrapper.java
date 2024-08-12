@@ -1,8 +1,14 @@
 package org.midheaven.collections;
 
 import org.midheaven.lang.HashCode;
+import org.midheaven.lang.Maybe;
+import org.midheaven.math.Int;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Spliterator;
 
 class ImmutableSequenceListWrapper<T> extends AbstractCollectionWrapper<T> implements Sequence<T> {
 
@@ -37,32 +43,40 @@ class ImmutableSequenceListWrapper<T> extends AbstractCollectionWrapper<T> imple
         return original;
     }
 
-    public int indexOf(Object o) {
-        return original.indexOf(o);
+    public Int indexOf(Object o) {
+        return Int.of(original.indexOf(o));
     }
 
-    public int lastIndexOf(Object o) {
-        return original.lastIndexOf(o);
+    public Int lastIndexOf(Object o) {
+        return Int.of(original.lastIndexOf(o));
     }
 
     @Override
-    public Optional<T> getAt(int index) {
+    public Maybe<T> getAt(int index) {
         try {
-            return Optional.ofNullable(original.get(index));
+            return Maybe.of(original.get(index));
         } catch (IndexOutOfBoundsException e){
-            return Optional.empty();
+            return Maybe.none();
         }
     }
 
-
     @Override
-    public Optional<T> first() {
-        return Optional.ofNullable(original.getFirst());
+    public Maybe<T> getAt(Int index) {
+        try {
+            return Maybe.of(original.get(index.toInt()));
+        } catch (ArithmeticException | IndexOutOfBoundsException e){
+            return Maybe.none();
+        }
     }
 
     @Override
-    public Optional<T> last() {
-        return Optional.ofNullable(original.getLast());
+    public Maybe<T> first() {
+        return Maybe.of(original.getFirst());
+    }
+
+    @Override
+    public Maybe<T> last() {
+        return Maybe.of(original.getLast());
     }
 
     @Override
@@ -78,6 +92,11 @@ class ImmutableSequenceListWrapper<T> extends AbstractCollectionWrapper<T> imple
     @Override
     public Sequence<T> subSequence(int fromIndex, int toIndex) {
         return new ImmutableSequenceListWrapper<>(original.subList(fromIndex, toIndex));
+    }
+
+    @Override
+    public Sequence<T> subSequence(Int fromIndex, Int toIndex) {
+        return subSequence(fromIndex.toInt(), toIndex.toInt());
     }
 
     @Override

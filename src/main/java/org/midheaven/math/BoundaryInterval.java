@@ -2,10 +2,10 @@ package org.midheaven.math;
 
 import org.midheaven.lang.Comparables;
 import org.midheaven.lang.HashCode;
+import org.midheaven.lang.Maybe;
 import org.midheaven.lang.Ordered;
 
 import java.util.Comparator;
-import java.util.Optional;
 
 final class BoundaryInterval<T> extends Interval<T> {
 
@@ -156,8 +156,8 @@ final class ActualBoundary<T> implements Interval.Boundary<T>, Ordered<ActualBou
     }
 
     @Override
-    public Optional<T> value() {
-        return Optional.ofNullable(value);
+    public Maybe<T> value() {
+        return Maybe.of(value);
     }
 
     @Override

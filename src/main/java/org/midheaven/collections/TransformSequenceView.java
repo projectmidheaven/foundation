@@ -1,12 +1,13 @@
 package org.midheaven.collections;
 
 import org.midheaven.lang.HashCode;
+import org.midheaven.lang.Maybe;
+import org.midheaven.math.Int;
+import org.midheaven.math.IntAccumulator;
 
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 
 final class TransformSequenceView<O, T> implements Sequence<T>{
@@ -36,29 +37,29 @@ final class TransformSequenceView<O, T> implements Sequence<T>{
     }
 
     @Override
-    public int indexOf(Object element) {
-        var index = 0;
+    public Int indexOf(Object element) {
+        IntAccumulator index = new IntAccumulator();
         for (var item : original){
             if (Objects.equals(item, element)){
-                return index;
+                return index.get();
             }
-            index++;
+            index.increment();
         }
-        return -1;
+        return Int.MINUS_ONE;
     }
 
     @Override
-    public int lastIndexOf(Object element) {
-        var index = size() - 1;
+    public Int lastIndexOf(Object element) {
+        Int index = this.count().minus(1);
         var iterator = this.reverseIterator();
         while(iterator.hasNext()){
             var item = iterator.next();
             if (Objects.equals(item, element)){
                 return index;
             }
-            index--;
+            index = index.minus(1);
         }
-        return -1;
+        return Int.MINUS_ONE;
     }
 
     @Override
@@ -79,13 +80,8 @@ final class TransformSequenceView<O, T> implements Sequence<T>{
     }
 
     @Override
-    public long count() {
+    public Int count() {
         return original.count();
-    }
-
-    @Override
-    public int size() {
-        return original.size();
     }
 
     @Override
@@ -95,7 +91,7 @@ final class TransformSequenceView<O, T> implements Sequence<T>{
 
     @Override
     public Enumerator<T> enumerator() {
-        return new IteratorEnumeratorAdapter<>(this.iterator(), this.size());
+        return Enumerator.fromIterator(this.iterator(), this.count());
     }
 
     public <R> Sequence<R> map(Function<T, R> transform) {
@@ -103,18 +99,22 @@ final class TransformSequenceView<O, T> implements Sequence<T>{
     }
 
     @Override
-    public Optional<T> getAt(int index) {
+    public Maybe<T> getAt(int index) {
         return original.getAt(index).map(transformation::apply);
     }
 
+    @Override
+    public Maybe<T> getAt(Int index) {
+        return original.getAt(index).map(transformation::apply);
+    }
 
     @Override
-    public Optional<T> first() {
+    public Maybe<T> first() {
         return original.first().map(transformation::apply);
     }
 
     @Override
-    public Optional<T> last() {
+    public Maybe<T> last() {
         return original.last().map(transformation::apply);
     }
 
@@ -124,20 +124,24 @@ final class TransformSequenceView<O, T> implements Sequence<T>{
     }
 
     @Override
+    public Sequence<T> subSequence(Int fromIndex, Int toIndex) {
+        return new TransformSequenceView<>(original.subSequence(fromIndex, toIndex), transformation);
+    }
+
+    @Override
     public Sequence<T> reversed() {
         return new TransformSequenceView<>(original.reversed(),transformation);
     }
 
     @Override
-    public ListIterator<T> reverseIterator() {
-        return new TransformListIterator<>(original.reverseIterator(), transformation);
+    public Iterator<T> reverseIterator() {
+        return new TransformIterator<>(original.reverseIterator(), transformation);
     }
 
     @Override
-    public ListIterator<T> iterator() {
-        return new TransformListIterator<>(original.iterator(), transformation);
+    public Iterator<T> iterator() {
+        return new TransformIterator<>(original.iterator(), transformation);
     }
-
 
 
     @Override
@@ -147,12 +151,12 @@ final class TransformSequenceView<O, T> implements Sequence<T>{
 
 }
 
-class TransformListIterator<O,T> implements ListIterator<T> {
+class TransformIterator<O,T> implements Iterator<T> {
 
-    private final ListIterator<O> original;
+    private final Iterator<O> original;
     private final Function<O, T> transformation;
 
-    TransformListIterator(ListIterator<O> original, Function<O,T> transformation){
+    TransformIterator(Iterator<O> original, Function<O,T> transformation){
         this.original = original;
         this.transformation = transformation;
     }
@@ -168,37 +172,7 @@ class TransformListIterator<O,T> implements ListIterator<T> {
     }
 
     @Override
-    public boolean hasPrevious() {
-        return original.hasPrevious();
-    }
-
-    @Override
-    public T previous() {
-        return transformation.apply(original.previous());
-    }
-
-    @Override
-    public int nextIndex() {
-        return original.nextIndex();
-    }
-
-    @Override
-    public int previousIndex() {
-        return original.previousIndex();
-    }
-
-    @Override
-    public void remove() {
+    public void remove(){
         original.remove();
-    }
-
-    @Override
-    public void set(T t) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void add(T t) {
-        throw new UnsupportedOperationException();
     }
 }

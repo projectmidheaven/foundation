@@ -1,35 +1,52 @@
 package org.midheaven.keys;
 
 import org.midheaven.lang.HashCode;
+import org.midheaven.lang.Maybe;
+import org.midheaven.lang.NotNull;
 import org.midheaven.lang.Strings;
+import org.midheaven.lang.ValueClass;
 
 import java.util.Objects;
-import java.util.Optional;
+import java.util.UUID;
 
+@ValueClass
 public abstract class Key<C extends Concept> {
 
-    public static <K extends Concept> Key<K> of(Class<K> concept, String value){
-        if (value == null) return null;
-        return new DefaultKey<>(conceptNameOf(concept), value);
+    public static <K extends Concept> @NotNull Key<K> of(Class<K> concept, String value){
+        return Strings.filled(value)
+            .<Key<K>>map(it -> new StringKey<>(conceptNameOf(concept), it))
+            .orNull();
     }
 
-    public static <K extends Concept> Key<K> parse(Class<K> concept, String textualRepresentation) {
-        var conceptName = conceptNameOf(concept);
+    public static <K extends Concept> @NotNull Key<K> of(Class<K> concept, Long value){
+        return Maybe.of(value)
+                .<Key<K>>map(it -> new LongKey<>(conceptNameOf(concept), it))
+                .orNull();
+    }
+
+    public static <K extends Concept> @NotNull Key<K> of(Class<K> concept, UUID value){
+        return Maybe.of(value)
+                .<Key<K>>map(it -> new UuidKey<>(conceptNameOf(concept), it))
+                .orNull();
+    }
+
+    public static <K extends Concept> Key<K> parse(String textualRepresentation) {
+        if (Strings.isBlank(textualRepresentation)){
+            return null;
+        }
+
         var parts = Strings.Splitter.split(textualRepresentation).by("::");
         if (parts.isEmpty()){
-            throw new KeyParsingException("Cannot parse '" + textualRepresentation + "' as concept " + conceptName + ". Wrong format.");
+            throw new KeyParsingException("Cannot parse '" + textualRepresentation + "'. Wrong format.");
         }
-        if (!parts.get(1).equalsIgnoreCase(conceptName)){
-            throw new KeyParsingException("Cannot parse '" + textualRepresentation + "' as concept " + conceptName + ". Concepts do not match.");
-        }
-        return new DefaultKey<>(conceptName, parts.get(0));
+        return new StringKey<>(parts.get(1), parts.get(0));
     }
 
-    public static <K extends Concept> Optional<Key<K>> tryParse(Class<K> concept, String textualRepresentation) {
+    public static <K extends Concept> Maybe<Key<K>> tryParse(String textualRepresentation) {
         try {
-            return Optional.ofNullable(parse(concept, textualRepresentation));
-        } catch (KeyParsingException e){
-            return  Optional.empty();
+            return Strings.filled(textualRepresentation).map(Key::parse);
+        } catch(Exception e){
+            return Maybe.none();
         }
     }
 
@@ -44,45 +61,36 @@ public abstract class Key<C extends Concept> {
 
     }
 
+    public <C extends Concept> Key<C> ensureConcept(Class<C> concept){
+        if (!this.conceptName().equals(conceptNameOf(concept))){
+            throw new KeyException("Key is not compatible with concept " + concept.getName());
+        }
+        return (Key<C>) this;
+    }
+
+    protected Key(){}
+
     public abstract String conceptName();
-    public abstract String value();
+    public abstract String stringValue();
+    public abstract long longValue();
+    public abstract UUID uuidValue();
 
     @Override
     public int hashCode(){
-        return HashCode.asymmetric().add(value()).add(conceptName()).hashCode();
+        return HashCode.asymmetric().add(stringValue()).add(conceptName()).hashCode();
     }
 
     @Override
     public boolean equals(Object other){
         return other instanceof Key key
-                && this.value().equals(key.value())
-                && this.conceptName().equals(key.conceptName());
+                && this.stringValue().equals(key.stringValue())
+                && this.conceptName().equalsIgnoreCase(key.conceptName());
     }
 
     @Override
     public String toString(){
-        return value() + "::" + conceptName();
+        return stringValue() + "::" + conceptName();
     }
 }
 
 
-final /*value*/ class DefaultKey<C extends Concept> extends Key<C>{
-
-    private final String conceptName;
-    private final String value;
-
-    public DefaultKey(String conceptName, String value) {
-        this.conceptName = conceptName;
-        this.value = value;
-    }
-
-    @Override
-    public String conceptName() {
-        return conceptName;
-    }
-
-    @Override
-    public String value() {
-        return value;
-    }
-}

@@ -1,6 +1,11 @@
 package org.midheaven.collections;
 
-import java.util.*;
+import org.midheaven.lang.Maybe;
+
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.UnaryOperator;
 
 class ResizableSequenceListWrapper<T>  extends EditableSequenceListWrapper<T> implements ResizableSequence<T> {
@@ -52,8 +57,8 @@ class ResizableSequenceListWrapper<T>  extends EditableSequenceListWrapper<T> im
 	}
 
 	@Override
-	public Optional<T> removeAt(int index) {
-		return Optional.ofNullable(original.remove(index));
+	public Maybe<T> removeAt(int index) {
+		return Maybe.of(original.remove(index));
 	}
 
 	@Override

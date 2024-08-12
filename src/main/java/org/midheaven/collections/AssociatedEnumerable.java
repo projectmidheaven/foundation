@@ -19,7 +19,10 @@ public interface AssociatedEnumerable<K,V> extends Enumerable<Association.Entry<
 
         var map = new HashMap<K,V>();
 
-        while(enumerator.tryNext(it -> map.put(it.key(), it.value())));
+        while(enumerator.moveNext()){
+            var item = enumerator.current();
+            map.put(item.key(), item.value());
+        };
 
         return new ImmutableAssociationMapWrapper<>(map);
     }

@@ -1,19 +1,11 @@
 package org.midheaven.collections;
 
 import org.junit.jupiter.api.Test;
+import org.midheaven.lang.Maybe;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AssociationTestCases {
 
@@ -26,10 +18,10 @@ public class AssociationTestCases {
 				Association.Entry.entry("D", 3)
 		);
 
-		assertEquals(4L, association.count());
-		assertEquals(Optional.of(1), association.getValue("A"));
-		assertEquals(Optional.of(2), association.getValue("B"));
-		assertEquals(Optional.of(3), association.getValue("C"));
+		assertEquals(4L, association.count().toLong());
+		assertEquals(Maybe.of(1), association.getValue("A"));
+		assertEquals(Maybe.of(2), association.getValue("B"));
+		assertEquals(Maybe.of(3), association.getValue("C"));
 		
 	}
 
@@ -42,10 +34,10 @@ public class AssociationTestCases {
 		);
 
 		association.putValue("D", 3);
-		assertEquals(4L, association.count());
-		assertEquals(Optional.of(1), association.getValue("A"));
-		assertEquals(Optional.of(2), association.getValue("B"));
-		assertEquals(Optional.of(3), association.getValue("C"));
+		assertEquals(4L, association.count().toLong());
+		assertEquals(Maybe.of(1), association.getValue("A"));
+		assertEquals(Maybe.of(2), association.getValue("B"));
+		assertEquals(Maybe.of(3), association.getValue("C"));
 
 	}
 
@@ -62,14 +54,16 @@ public class AssociationTestCases {
 
 		var association = Association.builder().resizable().from(original);
 
-		assertEquals(4L, association.count());
-		assertEquals(Optional.of(1), association.getValue("A"));
-		assertEquals(Optional.of(2), association.getValue("B"));
-		assertEquals(Optional.of(3), association.getValue("C"));
+		assertEquals(4L, association.count().toLong());
+		assertEquals(Maybe.of(1), association.getValue("A"));
+		assertEquals(Maybe.of(2), association.getValue("B"));
+		assertEquals(Maybe.of(3), association.getValue("C"));
 
 		var list = new ArrayList<>(4);
 		var enumerator = association.values().enumerator();
-		while(enumerator.tryNext(v -> list.add(v)));
+		while (enumerator.moveNext()){
+			list.add(enumerator.current());
+		}
 
 		assertEquals(4L, list.size());
 
@@ -92,10 +86,10 @@ public class AssociationTestCases {
 		association.putValue("C", 3);
 		association.putValue("D", 3);
 
-		assertEquals(4L, association.count());
-		assertEquals(Optional.of(1), association.getValue("A"));
-		assertEquals(Optional.of(2), association.getValue("B"));
-		assertEquals(Optional.of(3), association.getValue("C"));
+		assertEquals(4L, association.count().toLong());
+		assertEquals(Maybe.of(1), association.getValue("A"));
+		assertEquals(Maybe.of(2), association.getValue("B"));
+		assertEquals(Maybe.of(3), association.getValue("C"));
 
 	}
 }

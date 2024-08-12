@@ -1,6 +1,9 @@
 package org.midheaven.lang;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Objects;
 
 public class Comparables {
 
@@ -42,14 +45,14 @@ public class Comparables {
         return min(comparator, all).orElse(null);
     }
 
-    public static <T extends Comparable<T>> Optional<T> min(Iterable<T> elements){
+    public static <T extends Comparable<T>> Maybe<T> min(Iterable<T> elements){
        return min(Comparator.naturalOrder(), elements);
     }
 
-    public static <T> Optional<T> min(Comparator<T> comparator, Iterable<T> elements){
+    public static <T> Maybe<T> min(Comparator<T> comparator, Iterable<T> elements){
         var iterator = elements.iterator();
         if (!iterator.hasNext()){
-            return Optional.empty();
+            return Maybe.none();
         }
 
         T min = iterator.next();
@@ -59,7 +62,7 @@ public class Comparables {
                 min = candidate;
             }
         }
-        return Optional.ofNullable(min);
+        return Maybe.of(min);
     }
 
 
@@ -77,17 +80,17 @@ public class Comparables {
 
         all.addAll(Arrays.asList(others));
 
-        return max(comparator, all).orElse(null);
+        return max(comparator, all).orNull();
     }
 
-    public static <T extends Comparable<T>> Optional<T> max(Iterable<T> elements){
+    public static <T extends Comparable<T>> Maybe<T> max(Iterable<T> elements){
         return max(Comparator.naturalOrder(), elements);
     }
 
-    public static <T> Optional<T> max(Comparator<T> comparator, Iterable<T> elements){
+    public static <T> Maybe<T> max(Comparator<T> comparator, Iterable<T> elements){
         var iterator = elements.iterator();
         if (!iterator.hasNext()){
-            return Optional.empty();
+            return Maybe.none();
         }
 
         T max = iterator.next();
@@ -97,7 +100,7 @@ public class Comparables {
                 max = candidate;
             }
         }
-        return Optional.ofNullable(max);
+        return Maybe.of(max);
     }
 
     private Comparables(){}

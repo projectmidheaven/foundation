@@ -1,6 +1,7 @@
 package org.midheaven.lang;
 
-import java.util.stream.Stream;
+import org.midheaven.collections.Sequence;
+import org.midheaven.math.Int;
 
 final class ArraySplitter implements Strings.Splitter {
 
@@ -11,8 +12,8 @@ final class ArraySplitter implements Strings.Splitter {
 	}
 
 	@Override
-	public int size() {
-		return parts.length;
+	public Int count() {
+		return Int.of(parts.length);
 	}
 
 	@Override
@@ -21,9 +22,10 @@ final class ArraySplitter implements Strings.Splitter {
 	}
 
 	@Override
-	public Stream<String> stream() {
-		return Stream.of(parts);
+	public Sequence<String> sequence() {
+		return Sequence.builder().of(parts);
 	}
+
 
 	@Override
 	public boolean isEmpty() {

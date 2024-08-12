@@ -1,7 +1,5 @@
 package org.midheaven.math;
 
-import java.util.Comparator;
-
 public class EndIntervalBuilder<T> {
 
     final IntervalBuilder<T> intervalBuilder;

@@ -2,9 +2,9 @@ package org.midheaven.math;
 
 public class StringRandomGeneratorBuilder {
 
-    private final RandomGeneratorBuilder parent;
+    private final RandomGeneratorProvider parent;
 
-    StringRandomGeneratorBuilder(RandomGeneratorBuilder parent) {
+    StringRandomGeneratorBuilder(RandomGeneratorProvider parent) {
         this.parent = parent;
     }
 

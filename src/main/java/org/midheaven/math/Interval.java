@@ -1,15 +1,15 @@
 package org.midheaven.math;
 
+import org.midheaven.lang.Maybe;
+
 import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
 
 public abstract class Interval<T> {
 
     public interface Boundary<T> {
         boolean isOpen();
         boolean isInfinity();
-        Optional<T> value();
+        Maybe<T> value();
     }
 
     /**

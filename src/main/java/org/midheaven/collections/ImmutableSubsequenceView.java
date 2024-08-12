@@ -1,19 +1,19 @@
 package org.midheaven.collections;
 
 import org.midheaven.lang.HashCode;
+import org.midheaven.lang.Maybe;
+import org.midheaven.math.Int;
 
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Optional;
 
 class ImmutableSubsequenceView<T> implements Sequence<T> {
 
 	final Sequence<T> original;
-	final int fromIndex;
-	final int toIndex;
+	final Int fromIndex;
+	final Int toIndex;
 
-	ImmutableSubsequenceView(Sequence<T> original, int fromIndex, int toIndex){
+	ImmutableSubsequenceView(Sequence<T> original, Int fromIndex, Int toIndex){
 		this.original = original;
 		this.fromIndex = fromIndex;
 		this.toIndex = toIndex;
@@ -36,57 +36,57 @@ class ImmutableSubsequenceView<T> implements Sequence<T> {
 	}
 
 	@Override
-	public Optional<T> getAt(int index) {
-		var newIndex = fromIndex + index;
-		if (newIndex > toIndex) {
-			return Optional.empty();
+	public Maybe<T> getAt(Int index) {
+		var newIndex = index.plus(fromIndex);
+		if (newIndex.isGreaterThan(toIndex)) {
+			return Maybe.none();
 		}
 		return original.getAt(newIndex);
 	}
 
 	@Override
-	public int indexOf(Object o) {
+	public Int indexOf(Object o) {
 		var index = original.indexOf(o);
-		if (index < fromIndex || index > toIndex) {
+		if (index.isLessThan(fromIndex) || index.isGreaterThan(toIndex)) {
 			return index;
 		}
-		return index - fromIndex;
+		return index.minus(fromIndex);
 	}
 
 	@Override
-	public int lastIndexOf(Object o) {
+	public Int lastIndexOf(Object o) {
 		var index = original.lastIndexOf(o);
-		if (index < fromIndex || index > toIndex) {
-			return -1;
+		if (index.isLessThan(fromIndex) || index.isGreaterThan(toIndex)) {
+			return Int.MINUS_ONE;
 		}
-		return index - fromIndex;
+		return index.minus(fromIndex);
 	}
 
 	@Override
-	public Optional<T> first() {
+	public Maybe<T> first() {
 		return getAt(0);
 	}
 
 	@Override
-	public Optional<T> last() {
-		return getAt(toIndex - 1);
+	public Maybe<T> last() {
+		return getAt(toIndex.minus(1));
 	}
 
 
 	@Override
 	public Enumerator<T> enumerator() {
-		return new IteratorEnumeratorAdapter<>(this.iterator(), size());
+		return Enumerator.fromIterator(this.iterator(), this.count());
 	}
 
 	@Override
-	public ListIterator<T> reverseIterator() {
+	public Iterator<T> reverseIterator() {
 		return new SubSequenceIterator<>(original,toIndex , fromIndex);
 	}
 
 	@Override
 	public boolean contains(Object any) {
 		var index = indexOf(any);
-		return index >= fromIndex && index <= toIndex;
+		return index.isGreaterThanOrEqualTo(fromIndex) &&  index.isLessThanOrEqualTo(toIndex);
 	}
 
 	@Override
@@ -99,29 +99,22 @@ class ImmutableSubsequenceView<T> implements Sequence<T> {
 		return true;
 	}
 
-	@Override
-	public long count() {
-		return size();
-	}
-
-	@Override
-	public int size() {
-		return toIndex - fromIndex + 1;
+	public Int count() {
+		return toIndex.minus(fromIndex).plus(1);
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return count() == 0;
+		return this.count().isZero();
 	}
 
 	@Override
-	public ListIterator<T> iterator() {
+	public Iterator<T> iterator() {
 		return new SubSequenceIterator<>(original, fromIndex, toIndex);
 	}
 
-
 	@Override
-	public Sequence<T> subSequence(int fromIndex, int toIndex) {
+	public Sequence<T> subSequence(Int fromIndex, Int toIndex) {
 		return new ImmutableSubsequenceView<>(this, fromIndex, toIndex);
 	}
 
@@ -132,7 +125,7 @@ class ImmutableSubsequenceView<T> implements Sequence<T> {
 
 	@Override
 	public List<T> asCollection() {
-		return original.asCollection().subList(fromIndex, toIndex);
+		return original.asCollection().subList(fromIndex.toInt(), toIndex.toInt());
 	}
 
 }

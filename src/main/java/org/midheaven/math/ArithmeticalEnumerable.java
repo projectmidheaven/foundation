@@ -13,25 +13,10 @@ public class ArithmeticalEnumerable<N,S> extends AbstractEnumerableDecorator<N> 
     }
 
     public N sum(){
-        return this.reduce(arithmetic.zero(), arithmetic::sum);
+        return this.collect(arithmetic.sumCollector());
     }
 
     public S average(){
-        var increment = this.reduce(new Increments<N>(arithmetic.zero()), (i, b) -> {
-            i.sum = arithmetic.sum(i.sum, b);
-            i.count++;
-            return i;
-        });
-
-        return arithmetic.over( increment.sum ,  increment.count);
-    }
-}
-
-class Increments<T> {
-    T sum;
-    int count;
-
-    public Increments(T zero) {
-        this.sum = zero;
+        return this.collect(arithmetic.averageCollector());
     }
 }

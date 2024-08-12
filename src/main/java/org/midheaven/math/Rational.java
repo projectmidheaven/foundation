@@ -1,29 +1,38 @@
 package org.midheaven.math;
 
+import org.midheaven.lang.LongOrdered;
+import org.midheaven.lang.NotNull;
 import org.midheaven.lang.Ordered;
+import org.midheaven.lang.Signed;
+import org.midheaven.lang.Strings;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
 
-public interface Rational extends Ordered<Rational>, Field<Rational>{
+public interface Rational extends Ordered<Rational>, LongOrdered, Signed<Rational>, Field<Rational>{
 
 
-    static Arithmetic<Rational, Rational> arithmetic(){
-        return Arithmetic.of( Rational.ZERO , Rational::plus, Rational::over);
+    static @NotNull Arithmetic<Rational, Rational> arithmetic(){
+        return RationalArithmetic.INSTANCE;
     }
 
-    Rational ZERO = new LongRational(0,1);
-    Rational ONE = new LongRational(1,1);
-    Rational MINUS_ONE = new LongRational(-1,1);
-    Rational TEN = new LongRational(10L, 1L);
+    @NotNull Rational ZERO = new WholeRational(0);
+    @NotNull Rational ONE = new WholeRational(1);
+    @NotNull Rational MINUS_ONE = new WholeRational(-1);
+    @NotNull Rational TEN = new WholeRational(10L);
 
     static Rational of(long numerator, long denominator){
-        return LongRational.of(numerator, denominator);
+        if (denominator == 1){
+            return new WholeRational(numerator);
+        } else if (denominator == -1){
+            return new WholeRational(-numerator);
+        }
+        return IntRational.of(Int.of(numerator), Int.of(denominator)).reduce();
     }
 
     static Rational of(long numerator){
-        return of(numerator, 1);
+        return new WholeRational(numerator);
     }
 
     static Rational of(BigInteger numerator, BigInteger denominator){
@@ -32,7 +41,7 @@ public interface Rational extends Ordered<Rational>, Field<Rational>{
         }
         Objects.requireNonNull(denominator);
 
-        return BigRational.of(numerator, denominator);
+        return IntRational.of(Int.of(numerator), Int.of(denominator)).reduce();
     }
 
     static Rational of(BigInteger numerator){
@@ -48,17 +57,28 @@ public interface Rational extends Ordered<Rational>, Field<Rational>{
         }
         int scale = decimal.scale();
         if (scale <= 0) {
-            return new BigRational(decimal.toBigInteger(), BigInteger.ONE);
+            return of(decimal.toBigInteger(), BigInteger.ONE);
         } else {
             var denominator = BigInteger.TEN.pow(scale);
             var numerator = decimal.unscaledValue();
-            return BigRational.of(numerator, denominator);
+            return of(numerator, denominator);
         }
     }
 
     static Rational parse(String number){
         if (number == null || number.isBlank()){
             return null;
+        }
+        if (number.contains("/")){
+            try {
+                var numbers = Strings.Splitter.split( number).by("/").sequence()
+                        .map(it -> it.trim())
+                        .map(BigInteger::new);
+                return numbers.getAt(0).zip(numbers.getAt(1), Rational::of).orElseThrow();
+            }catch (Exception e){
+                throw new IllegalArgumentException("'" + number + "' is not a parseable Rational value");
+            }
+
         }
         return of(new BigDecimal(number));
     }
@@ -72,23 +92,12 @@ public interface Rational extends Ordered<Rational>, Field<Rational>{
 
     boolean isNegativeOne();
 
-    default boolean isPositive(){
-        return sign() > 0;
-    }
-
-    default boolean isNegative(){
-        return sign() < 0;
-    }
-
-    default Rational abs() {
-        return this.sign() < 0 ? this.negate() : this;
-    }
-
     default Rational plus(long other) {
         return this.plus(Rational.of(other));
     }
 
     default Rational minus(Rational other) {
+        Objects.requireNonNull(other);
         return this.plus(other.negate());
     }
 
@@ -101,6 +110,7 @@ public interface Rational extends Ordered<Rational>, Field<Rational>{
     }
 
     default Rational over(Rational other) {
+        Objects.requireNonNull(other);
         return this.times(other.invert());
     }
 
@@ -108,14 +118,18 @@ public interface Rational extends Ordered<Rational>, Field<Rational>{
         return this.over(Rational.of(other));
     }
 
-    int sign();
+    @NotNull default Rational abs(){
+        return this.sign() < 0 ? this.negate() : this;
+    }
 
-    BigInteger numerator();
-    BigInteger denominator();
+    @NotNull Int numerator();
+    @NotNull Int denominator();
 
-    Rational square();
+    @NotNull Rational square();
 
-    BigDecimal toBigDecimal();
+    @NotNull Rational cube();
+
+    @NotNull BigDecimal toBigDecimal();
 
     /***
      * The equivalent {@code Long} value.
@@ -125,11 +139,13 @@ public interface Rational extends Ordered<Rational>, Field<Rational>{
      */
     long toLong();
 
-    Rational floor();
+    @NotNull Rational floor();
 
-    Rational ceil();
+    @NotNull Rational ceil();
 
     boolean isWhole();
 
-    Rational raisedTo(int exponent);
+    @NotNull Rational raisedTo(int exponent);
+
+
 }

@@ -1,7 +1,8 @@
 package org.midheaven.collections;
 
+import org.midheaven.lang.Maybe;
+
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -40,7 +41,7 @@ public interface Association<K,V> extends Assortment<Association.Entry<K,V>> {
 
     /**
      * Determines if this {@code Association} contains the given key
-     * @param key the key to test
+     * @param value the value to test
      * @return {@code true} if the key is contained in the {@code Association}, {@code false} otherwise.
      */
     boolean containsValue(V value);
@@ -77,7 +78,7 @@ public interface Association<K,V> extends Assortment<Association.Entry<K,V>> {
     DistinctAssortment<K> keys();
     Assortment<V> values();
 
-    Optional<V> getValue(K key);
+    Maybe<V> getValue(K key);
 }
 
 record Entry<K,V>(K key, V value) implements Association.Entry<K,V> {

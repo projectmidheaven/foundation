@@ -1,12 +1,16 @@
 package org.midheaven.lang;
 
 import org.junit.jupiter.api.Test;
-import org.midheaven.lang.model.TestPojo;
 import org.midheaven.lang.model.TestInterface;
+import org.midheaven.lang.model.TestPojo;
 import org.midheaven.lang.model.TestRecord;
 import org.midheaven.lang.reflection.Mirror;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.lang.reflect.Modifier;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MirrorTestCases {
 
@@ -22,10 +26,27 @@ public class MirrorTestCases {
         var properties = Mirror.reflect(TestPojo.class).properties();
 
         assertNotNull(properties);
-        assertEquals(2, properties.count());
+        assertEquals(4, properties.count().toInt());
         assertTrue(properties.get("Age").isPresent());
         assertNotNull(properties.get("Name").isPresent());
 
+    }
+
+    @Test
+    public void methods(){
+        var methods = Mirror.reflect(TestPojo.class).methods();
+
+        assertNotNull(methods);
+
+        var found = methods.declared().withModified(Modifier::isStatic).named("fromName").toSequence();
+
+        assertNotNull(found);
+        assertEquals(1, found.count().toInt());
+
+        var method = found.first().get();
+
+        assertEquals("fromName", method.getName());
+        assertEquals(1, method.getParameterCount());
     }
 
     @Test

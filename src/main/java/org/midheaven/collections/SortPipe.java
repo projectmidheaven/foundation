@@ -2,9 +2,8 @@ package org.midheaven.collections;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.function.Consumer;
 
-public final class SortPipe<X> extends Pipe<X,X, ArrayList<X>> {
+public final class SortPipe<X> extends Pipe<X,X, Enumerator<X>> {
 
     private final Comparator<X> comparator;
 
@@ -18,25 +17,31 @@ public final class SortPipe<X> extends Pipe<X,X, ArrayList<X>> {
     }
 
     @Override
-    ArrayList<X> newState(Length length) {
-        if (length instanceof Length.Finite finite){
-            return new ArrayList<>((int)finite.count());
-        } else if (length instanceof Length.Infinite){
+    Enumerator<X> newState(Enumerator<X> original, Length finalLength) {
+        if (finalLength instanceof Length.Infinite){
             throw new IllegalStateException("Infinite enumerable cannot be made into a sequence");
         }
-        return new ArrayList<>();
+
+        ArrayList<X> list;
+        if (finalLength instanceof Length.Finite finite){
+            list = new ArrayList<>((int)finite.count().toLong());
+        } else {
+            list =  new ArrayList<>();
+        }
+
+        while(original.moveNext()){
+            list.add(original.current());
+        }
+        list.sort(comparator);
+        return Sequence.builder().from(list).enumerator();
     }
 
     @Override
-    boolean apply(ArrayList<X> state, X candidate, Consumer<X> objectConsumer) {
-        state.add(candidate);
-        return true;
+    PipeMoveResult<X> move(Enumerator<X> original, Enumerator<X> intermediate) {
+        if (intermediate.moveNext()){
+            return PipeMoveResult.moved(intermediate.current());
+        }
+        return PipeMoveResult.notMoved();
     }
 
-    @Override
-    void terminate(ArrayList<X> state, Consumer<X> objectConsumer){
-
-        state.sort(comparator);
-        state.forEach(objectConsumer);
-    }
 }

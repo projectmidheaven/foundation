@@ -1,7 +1,6 @@
 package org.midheaven.collections;
 
 import org.junit.jupiter.api.Test;
-import org.midheaven.collections.Assortment;
 
 import java.util.ArrayList;
 
@@ -16,7 +15,9 @@ public class EnumeratorTestCases {
 
         var list = new ArrayList<>();
         var enumerator = assortment.enumerator();
-        while(enumerator.tryNext(it -> list.add(it)));
+        while (enumerator.moveNext()){
+            list.add(enumerator.current());
+        }
 
         assertEquals(3, list.size());
     }

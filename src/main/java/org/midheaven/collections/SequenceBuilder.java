@@ -1,5 +1,7 @@
 package org.midheaven.collections;
 
+import org.midheaven.math.Int;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +37,7 @@ public class SequenceBuilder {
 		if (size == null) {
 			return ImmutableEmptySequence.instance();
 		}
-		return new RepeatedSequence<>(value, size);
+		return new RepeatedSequence<>(value, Int.of(size));
 	}
 
 	/***

@@ -1,12 +1,14 @@
 package org.midheaven.collections;
 
 import org.midheaven.lang.HashCode;
+import org.midheaven.lang.Maybe;
+import org.midheaven.math.Int;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Optional;
+import java.util.Objects;
 
 class ImmutableSequenceArrayWrapper<T> implements Sequence<T> {
 
@@ -33,57 +35,70 @@ class ImmutableSequenceArrayWrapper<T> implements Sequence<T> {
     }
 
     @Override
-    public Optional<T> getAt(int index) {
+    public Maybe<T> getAt(int index) {
         try {
-            return Optional.ofNullable(array[index]);
+            return Maybe.of(array[index]);
         } catch (IndexOutOfBoundsException e){
-            return Optional.empty();
+            return Maybe.none();
         }
     }
 
     @Override
-    public int indexOf(Object candidate) {
+    public Maybe<T> getAt(Int index) {
+        try {
+            return Maybe.of(array[index.toInt()]);
+        } catch (ArithmeticException | IndexOutOfBoundsException e){
+            return Maybe.none();
+        }
+    }
+
+    @Override
+    public Int indexOf(Object candidate) {
         for (var index = 0; index < array.length; index++){
             var element = array[index];
-            if (element == null) {
-                if(candidate == null) {
-                    return index;
-                }
-            } else if(element.equals(candidate)) {
-                return index;
+            if (Objects.equals(element, candidate)){
+                return Int.of(index);
             }
         }
-        return -1;
+        return Int.MINUS_ONE;
     }
 
     @Override
-    public int lastIndexOf(Object candidate) {
+    public Int lastIndexOf(Object candidate) {
         for (var index = array.length - 1; index >=0 ; index--){
             var element = array[index];
             if (element == null) {
                 if(candidate == null) {
-                    return index;
+                    return Int.of(index);
                 }
             } else if(element.equals(candidate)) {
-                return index;
+                return Int.of(index);
             }
         }
-        return -1;
+        return Int.MINUS_ONE;
     }
 
     @Override
-    public Optional<T> first() {
-        return Optional.ofNullable(array[0]);
+    public Maybe<T> first() {
+        return Maybe.of(array[0]);
     }
 
     @Override
-    public Optional<T> last() {
-        return Optional.ofNullable(array[array.length - 1]);
+    public Maybe<T> last() {
+        return Maybe.of(array[array.length - 1]);
     }
 
     @Override
     public Sequence<T> subSequence(int fromIndex, int toIndex) {
         if (fromIndex >=0 && fromIndex <= toIndex && toIndex >=0 && toIndex < array.length) {
+            return new ImmutableSubsequenceView<>(this,Int.of(fromIndex), Int.of(toIndex));
+        }
+        throw new IndexOutOfBoundsException();
+    }
+
+    @Override
+    public Sequence<T> subSequence(Int fromIndex, Int toIndex) {
+        if (fromIndex.isGreaterThanOrEqualTo(0) && fromIndex.isLessThanOrEqualTo(toIndex) && toIndex.isGreaterThanOrEqualTo(0) && toIndex.isLessThan(array.length)) {
             return new ImmutableSubsequenceView<>(this, fromIndex, toIndex);
         }
         throw new IndexOutOfBoundsException();
@@ -113,17 +128,12 @@ class ImmutableSequenceArrayWrapper<T> implements Sequence<T> {
 
     @Override
     public Enumerator<T> enumerator() {
-        return new IteratorEnumeratorAdapter<>(this.iterator(), array.length);
+        return Enumerator.fromIterator(this.iterator(), Int.of(array.length));
     }
 
     @Override
-    public long count() {
-        return array.length;
-    }
-
-    @Override
-    public int size() {
-        return array.length;
+    public Int count() {
+        return Int.of(array.length);
     }
 
     @Override

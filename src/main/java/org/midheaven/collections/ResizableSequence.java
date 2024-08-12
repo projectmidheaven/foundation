@@ -1,7 +1,9 @@
 package org.midheaven.collections;
 
+import org.midheaven.lang.Maybe;
+import org.midheaven.math.Int;
+
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
@@ -29,27 +31,21 @@ public interface ResizableSequence<T> extends EditableSequence<T>  {
 
 	void clear();
 
-	Optional<T> removeAt(int index);
+	Maybe<T> removeAt(int index);
 
 	void addAt(int index, T element);
 
 	boolean removeIf(Predicate<? super T> filter);
 
+	Int indexOf(Object o);
 
-	int indexOf(Object o);
-
-	int lastIndexOf(Object o);
-
+	Int lastIndexOf(Object o);
 
 	ResizableSequence<T> subSequence(int fromIndex, int toIndex);
 
 	void addFirst(T e);
 
 	void addLast(T e);
-
-	Optional<T> first();
-
-	Optional<T> last();
 
 	ResizableSequence<T> reversed();
 	

@@ -1,33 +1,31 @@
 package org.midheaven.collections;
 
+import org.midheaven.lang.Maybe;
+import org.midheaven.math.Int;
+import org.midheaven.math.IntAccumulator;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Optional;
 
 final class RepeatedSequence<T> implements Sequence<T> {
 
-    private final long count;
+    private final Int count;
     private final T value;
 
-    public RepeatedSequence(T value, long count) {
+    public RepeatedSequence(T value, Int count) {
         this.value = value;
         this.count = count;
     }
 
     @Override
     public Enumerator<T> enumerator() {
-        return new IteratorEnumeratorAdapter<>(this.iterator(), count);
+        return Enumerator.fromIterator(this.iterator(), count());
     }
 
     @Override
-    public long count() {
+    public Int count() {
         return count;
-    }
-
-    @Override
-    public int size() {
-        return (int) count;
     }
 
     @Override
@@ -36,36 +34,50 @@ final class RepeatedSequence<T> implements Sequence<T> {
     }
 
     @Override
-    public Optional<T> getAt(int index) {
-        if (index >=0 && index< count){
-            return Optional.ofNullable(value);
+    public Maybe<T> getAt(int index) {
+        if (index >=0 && count.isGreaterThan(index)){
+            return Maybe.of(value);
         }
-        return Optional.empty();
+        return Maybe.none();
     }
 
     @Override
-    public int indexOf(Object o) {
-        return value.equals(o) ? 0 : -1;
+    public Maybe<T> getAt(Int index) {
+        if (index.isGreaterThanOrEqualTo(0) && index.isLessThan(count)){
+            return Maybe.of(value);
+        }
+        return Maybe.none();
+    }
+
+
+    @Override
+    public Int indexOf(Object o) {
+        return value.equals(o) ? Int.ZERO : Int.MINUS_ONE;
     }
 
     @Override
-    public int lastIndexOf(Object o) {
-        return value.equals(o) ? (int)count - 1 : -1;
+    public Int lastIndexOf(Object o) {
+        return value.equals(o) ? count.minus(1)  : Int.MINUS_ONE;
     }
 
     @Override
-    public Optional<T> first() {
-        return Optional.ofNullable(value);
+    public Maybe<T> first() {
+        return Maybe.of(value);
     }
 
     @Override
-    public Optional<T> last() {
-        return Optional.ofNullable(value);
+    public Maybe<T> last() {
+        return Maybe.of(value);
     }
 
     @Override
     public Sequence<T> subSequence(int fromIndex, int toIndex) {
-        return new RepeatedSequence<>(value, toIndex - fromIndex);
+        return new RepeatedSequence<>(value, Int.of(toIndex - fromIndex));
+    }
+
+    @Override
+    public Sequence<T> subSequence(Int fromIndex, Int toIndex) {
+        return new RepeatedSequence<>(value, toIndex.minus(fromIndex));
     }
 
     @Override
@@ -81,37 +93,37 @@ final class RepeatedSequence<T> implements Sequence<T> {
     @Override
     public ListIterator<T> iterator() {
         return new ListIterator<T>() {
-            int index = -1;
+            IntAccumulator index = new IntAccumulator(Int.MINUS_ONE);
             @Override
             public boolean hasNext() {
-                return index < count;
+                return index.isLessThan(count);
             }
 
             @Override
             public T next() {
-                index++;
+                index.increment();
                 return value;
             }
 
             @Override
             public boolean hasPrevious() {
-                return index > 0;
+                return index.isPositive();
             }
 
             @Override
             public T previous() {
-                index--;
+                index.decrement();
                 return value;
             }
 
             @Override
             public int nextIndex() {
-                return index + 1;
+                return index.get().plus(1).toInt();
             }
 
             @Override
             public int previousIndex() {
-                return index - 1;
+                return index.get().minus(1).toInt();
             }
 
             @Override
@@ -133,6 +145,6 @@ final class RepeatedSequence<T> implements Sequence<T> {
 
     @Override
     public List<T> asCollection() {
-        return Collections.nCopies((int) count, value);
+        return Collections.nCopies(count.toInt(), value);
     }
 }

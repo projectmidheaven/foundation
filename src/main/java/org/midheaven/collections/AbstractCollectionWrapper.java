@@ -1,5 +1,7 @@
 package org.midheaven.collections;
 
+import org.midheaven.math.Int;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,20 +16,17 @@ abstract class AbstractCollectionWrapper<T> {
 		original().forEach(action);
 	}
 	
-	public long count() {
-		return original().size();
-	}
 
 	public Enumerator<T> enumerator() {
-		return new IteratorEnumeratorAdapter<>(original().iterator(), original().size());
+		return Enumerator.fromIterator(original().iterator(), Int.of(original().size()));
 	}
 
 	public Length length() {
-		return Length.finite(count());
+		return Length.finite(Int.of(original().size()));
 	}
 
-	public int size() {
-		return original().size();
+	public Int count() {
+		return Int.of(original().size());
 	}
 
 	public boolean isEmpty() {

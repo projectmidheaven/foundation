@@ -7,8 +7,8 @@ import java.lang.reflect.Type;
 
 final class TypeReferenceTypeAdapter extends TypeReference {
 
-    private final Type type;
-    private final Sequence<TypeReference> parameterTypes;
+    final Type type;
+    final Sequence<TypeReference> parameterTypes;
 
     TypeReferenceTypeAdapter(Type type) {
         this.type = type;
@@ -18,8 +18,20 @@ final class TypeReferenceTypeAdapter extends TypeReference {
             parameterTypes = Sequence.builder().empty();
         }
     }
+
+    TypeReferenceTypeAdapter(Type type, Sequence<TypeReference> parameterTypes) {
+        this.type = type;
+        this.parameterTypes = parameterTypes;
+    }
+
     public String toString(){
         return type.toString();
+    }
+
+
+    @Override
+    public boolean isPrimitive() {
+        return rootClass().isPrimitive();
     }
 
     @Override
@@ -47,8 +59,4 @@ final class TypeReferenceTypeAdapter extends TypeReference {
         return rootClass().isInstance(instance);
     }
 
-    @Override
-    public boolean isPrimitive() {
-        return type instanceof Class<?> c && c.isPrimitive();
-    }
 }

@@ -1,8 +1,10 @@
 package org.midheaven.collections;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 
-public class DistinctAssortmentBuilder{
+public class DistinctAssortmentBuilder {
 
     public ResizableDistinctAssortmentBuilder resizable() {
         return new ResizableDistinctAssortmentBuilder();
@@ -12,8 +14,12 @@ public class DistinctAssortmentBuilder{
         return EmptyDistinctAssortment.instance();
     }
 
-    @SuppressWarnings("unchecked")
-    public <U> DistinctAssortment<U> of(U ... values){
+    public <U> DistinctAssortment<U> of(U singleValue){
+        return from(Collections.singletonList(singleValue));
+    }
+
+    @SafeVarargs
+    public final <U> DistinctAssortment<U> of(U... values){
         return from(Arrays.asList(values));
     }
 

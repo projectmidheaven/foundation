@@ -1,13 +1,8 @@
 package org.midheaven.collections;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class GroupingPipe<T, G> extends Pipe<T, Association.Entry<G, Enumerable<T>>, Map<G, List<T>>> {
+public class GroupingPipe<T, G> extends Pipe<T, Association.Entry<G, Enumerable<T>>, Enumerator<Association.Entry<G, Enumerable<T>>>> {
     private final Function<T, G> groupSelector;
 
     public GroupingPipe(Function<T, G> groupSelector) {
@@ -20,26 +15,31 @@ public class GroupingPipe<T, G> extends Pipe<T, Association.Entry<G, Enumerable<
     }
 
     @Override
-    Map<G, List<T>> newState(Length length) {
-        return new HashMap<>();
-    }
+    Enumerator<Association.Entry<G, Enumerable<T>>> newState(Enumerator<T> original, Length finalLength) {
+        Association<G, Enumerable<T>> map = Association.builder().resizable().empty();
 
-    @Override
-    boolean apply(Map<G, List<T>> state, T candidate, Consumer<Association.Entry<G, Enumerable<T>>> objectConsumer) {
-        var group = groupSelector.apply((T)candidate);
-        state.computeIfAbsent(group, (k) -> new LinkedList<>()).add(candidate);
-        return true;
-    }
+        while(original.moveNext()){
+            var current = original.current();
+            var group = groupSelector.apply(current);
+            var list = (ResizableSequence<T>) map.computeValueIfAbsent(group, (k) -> Sequence.builder().resizable().empty());
+            list.add(current);
+        }
 
-    void terminate(Map<G, List<T>> state, Consumer<Association.Entry<G, Enumerable<T>>> objectConsumer){
-        state.forEach((key, value) -> objectConsumer.accept(Association.Entry.entry(
-                key,
-                new EditableSequenceListWrapper<T>(value)
-        )));
+        return map.enumerator();
     }
 
 
     PipeAssociatedEnumerable<G, Enumerable<T>> applyTo(Enumerable<T> previous) {
         return new PipeAssociatedEnumerable<>(new PipeEnumerable<>(previous, this));
     }
+
+    @Override
+    PipeMoveResult<Association.Entry<G, Enumerable<T>>> move(Enumerator<T> original, Enumerator<Association.Entry<G, Enumerable<T>>> grouppedEnumerator) {
+        if (grouppedEnumerator.moveNext()){
+            return PipeMoveResult.moved(grouppedEnumerator.current());
+        }
+        return PipeMoveResult.notMoved();
+    }
+
+
 }

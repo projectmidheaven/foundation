@@ -20,6 +20,15 @@ public class RationalTestCases {
     }
 
     @Test
+    public void isParseable(){
+        assertEquals(Rational.of(12345, 100) , Rational.parse(Rational.parse("123.45").toString()));
+        assertEquals(Rational.ONE , Rational.parse("123 / 123"));
+        assertEquals(Rational.ONE , Rational.parse(" 2 / 2 "));
+
+        assertThrows(IllegalArgumentException.class, () ->  Rational.parse(" 1 / 1.5 "));
+    }
+
+    @Test
     public void sumIsCorrect(){
         var a = Rational.of(4, 13);
         var b = Rational.of(BigInteger.valueOf(5), BigInteger.valueOf(17));
@@ -91,5 +100,35 @@ public class RationalTestCases {
 
         assertEquals (sum, Sequence.builder().of(1,2,3,4,5,6,7).map(Rational::of).reduce(Rational.ZERO, Rational::plus));
         assertEquals (sum, Sequence.builder().of(1,2,3,4,5,6,7).map(Rational::of).reduce(Rational::plus).orElse(null));
+    }
+
+    @Test
+    public void floorIsCorrect(){
+        var a = Rational.of(4, 13);
+        var b = Rational.of(21, 17);
+        var c = Rational.of(4);
+        var d = Rational.of(-4, 13);
+        var f = Rational.of(-21, 17);
+
+        assertEquals(Rational.ZERO, a.floor());
+        assertEquals(Rational.ONE, b.floor());
+        assertEquals(c, c.floor());
+        assertEquals(Rational.from(Math.floor(d.toBigDecimal().doubleValue())), d.floor());
+        assertEquals(Rational.from(Math.floor(f.toBigDecimal().doubleValue())), f.floor());
+    }
+
+    @Test
+    public void ceilIsCorrect(){
+        var a = Rational.of(4, 13);
+        var b = Rational.of(21, 17);
+        var c = Rational.of(4);
+        var d = Rational.of(-4, 13);
+        var f = Rational.of(-21, 17);
+
+        assertEquals(Rational.ONE, a.ceil());
+        assertEquals(Rational.of(2), b.ceil());
+        assertEquals(c, c.ceil());
+        assertEquals(Rational.ZERO, d.ceil());
+        assertEquals(Rational.ONE.negate(), f.ceil());
     }
 }

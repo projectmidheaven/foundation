@@ -1,6 +1,8 @@
 package org.midheaven.lang.reflection;
 
 
+import org.midheaven.lang.Maybe;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -8,7 +10,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
-import java.util.Optional;
 
 public class Mirror<T> {
 
@@ -21,45 +22,66 @@ public class Mirror<T> {
         return new Mirror<>(type);
     }
 
-    public static Optional<Property> reflect(Method method){
+    public static <X> Mirror<X> reflect(ParametricTypeReference<X> type){
+        return new Mirror<>(type.rootClass());
+    }
+
+    public static Maybe<Property> reflect(Method method){
         if (method.getName().startsWith("set") && method.getParameterTypes().length == 1){
             return PropertyMirrorSupport.fromModifier(method, method.getDeclaringClass());
         } else if (method.getParameterTypes().length == 0){
             return PropertyMirrorSupport.fromAccessor(method, method.getDeclaringClass());
         }
-        return Optional.empty();
+        return Maybe.none();
     }
 
-    public static Optional<Property> reflect(Field field){
+    public static Maybe<Property> reflect(Field field){
         return PropertyMirrorSupport.fromField(field, field.getDeclaringClass());
     }
 
     private final Class<T> type;
     private PropertiesMirror<T> properties;
+    private MethodsMirror<T> methods;
+    private ConstructorsMirror<T> constructors;
 
     Mirror(Class<T> type) {
         this.type = type;
     }
 
-    public Optional<ParameterizedType> parameterizedType(){
+    public Maybe<ParameterizedType> parameterizedType(){
         return extractParameterizedType(this.type);
     }
 
-    private Optional<ParameterizedType> extractParameterizedType(Class<?> type){
+    private Maybe<ParameterizedType> extractParameterizedType(Class<?> type){
         if (type.getGenericSuperclass() instanceof ParameterizedType parameterizedType){
-            return Optional.of(parameterizedType);
+            return Maybe.some(parameterizedType);
         } else if (type.getSuperclass() == null || type.getSuperclass().equals(Object.class)){
-            return Optional.empty();
+            return Maybe.none();
         }
         return extractParameterizedType(type.getSuperclass());
     }
 
     public PropertiesMirror<T> properties(){
-        if (properties ==null){
+        if (properties == null){
             properties = new ReflectionPropertiesMirror<>(this.type);
         }
         return properties;
     }
+
+    public MethodsMirror<T> methods(){
+        if (methods == null){
+            methods = new ReflectionMethodsMirror<T>(this.type);
+        }
+        return methods;
+    }
+
+    public ConstructorsMirror<T> constructors(){
+        if (constructors == null){
+            constructors = new ReflectionConstructorsMirror<T>(this.type);
+        }
+        return constructors;
+    }
+
     public T newInstance(){
         Constructor<T> constructor;
         try {

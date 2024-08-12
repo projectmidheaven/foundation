@@ -1,6 +1,5 @@
 package org.midheaven.collections;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 class GenerationPipe<T> extends Pipe<T, T, Void> {
@@ -17,14 +16,14 @@ class GenerationPipe<T> extends Pipe<T, T, Void> {
     }
 
     @Override
-    Void newState(Length length) {
+    Void newState(Enumerator<T> original, Length finalLength) {
         return null;
     }
 
     @Override
-    boolean apply(Void state, T candidate, Consumer<T> objectConsumer) {
-        objectConsumer.accept(supplier.get());
-        return true;
+    PipeMoveResult<T> move(Enumerator<T> original, Void unused) {
+        return PipeMoveResult.moved(supplier.get());
     }
+
 
 }

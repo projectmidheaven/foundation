@@ -1,9 +1,11 @@
 package org.midheaven.collections;
 
+import org.midheaven.lang.Maybe;
+import org.midheaven.math.Int;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Optional;
 
 class ImmutableEmptySequence<T> implements Sequence<T> {
 
@@ -17,18 +19,23 @@ class ImmutableEmptySequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public Optional<T> getAt(int index) {
-		return Optional.empty();
+	public Maybe<T> getAt(int index) {
+		return Maybe.none();
 	}
 
 	@Override
-	public int indexOf(Object o) {
-		return -1;
+	public Maybe<T> getAt(Int index) {
+		return Maybe.none();
 	}
 
 	@Override
-	public int lastIndexOf(Object o) {
-		return -1;
+	public Int indexOf(Object o) {
+		return Int.MINUS_ONE;
+	}
+
+	@Override
+	public Int lastIndexOf(Object o) {
+		return Int.MINUS_ONE;
 	}
 
 	@Override
@@ -37,17 +44,22 @@ class ImmutableEmptySequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public Optional<T> first() {
-		return Optional.empty();
+	public Maybe<T> first() {
+		return Maybe.none();
 	}
 
 	@Override
-	public Optional<T> last() {
-		return Optional.empty();
+	public Maybe<T> last() {
+		return Maybe.none();
 	}
 
 	@Override
 	public Sequence<T> subSequence(int fromIndex, int toIndex) {
+		return this;
+	}
+
+	@Override
+	public Sequence<T> subSequence(Int fromIndex, Int toIndex) {
 		return this;
 	}
 
@@ -62,13 +74,8 @@ class ImmutableEmptySequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public long count() {
-		return 0;
-	}
-
-	@Override
-	public int size() {
-		return 0;
+	public Int count() {
+		return Int.ZERO;
 	}
 
 	@Override

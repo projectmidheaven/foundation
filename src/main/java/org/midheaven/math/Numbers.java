@@ -1,8 +1,5 @@
 package org.midheaven.math;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 public class Numbers {
 
     public interface Floats {

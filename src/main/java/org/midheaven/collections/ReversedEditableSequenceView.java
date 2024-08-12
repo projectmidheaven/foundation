@@ -1,7 +1,9 @@
 package org.midheaven.collections;
 
+import org.midheaven.lang.Maybe;
+import org.midheaven.math.Int;
+
 import java.util.List;
-import java.util.Optional;
 
 class ReversedEditableSequenceView<T> extends ReversedImmutableSequenceView<T> implements EditableSequence<T>  {
 
@@ -10,22 +12,27 @@ class ReversedEditableSequenceView<T> extends ReversedImmutableSequenceView<T> i
 	}
 	
 	@Override
-	public Optional<T> setAt(int index, T element) {
+	public Maybe<T> setAt(Int index, T element) {
 		return ((EditableSequence<T>)original).setAt(reverseIndex(index), element);
 	}
 
 	@Override
-	public Optional<T> setFirst(T element) {
+	public Maybe<T> setFirst(T element) {
 		return ((EditableSequence<T>)original).setLast(element);
 	}
 
 	@Override
-	public Optional<T> setLast(T element) {
+	public Maybe<T> setLast(T element) {
 		return ((EditableSequence<T>)original).setFirst(element);
 	}
 
 	@Override
 	public EditableSequence<T> subSequence(int fromIndex, int toIndex) {
+		return subSequence(Int.of(fromIndex), Int.of(toIndex));
+	}
+
+	@Override
+	public EditableSequence<T> subSequence(Int fromIndex, Int toIndex) {
 		return new EditableSubsequenceView<>(this, fromIndex, toIndex);
 	}
 

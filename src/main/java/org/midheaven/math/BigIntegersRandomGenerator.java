@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.Random;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 public final class BigIntegersRandomGenerator extends AbstractDiscreteIntervalRandomGenerator<BigInteger> implements IntervalRandomGenerator<BigInteger>{
 

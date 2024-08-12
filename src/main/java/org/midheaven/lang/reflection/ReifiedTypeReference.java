@@ -4,14 +4,19 @@ import org.midheaven.collections.Sequence;
 
 import java.lang.reflect.ParameterizedType;
 
-public abstract class ReifiedTypeReference<T> extends ParametricTypeReference<T> implements Comparable<ReifiedTypeReference<T>> {
+public abstract non-sealed class ReifiedTypeReference<T> extends ParametricTypeReference<T> implements Comparable<ReifiedTypeReference<T>> {
 
     private final TypeReference typeReference;
 
-    protected ReifiedTypeReference()
+    public ReifiedTypeReference()
     {
         var reifiedType = ((ParameterizedType)  getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         typeReference = TypeReference.of(reifiedType);
+    }
+
+    @Override
+    public boolean isPrimitive() {
+        return typeReference.isPrimitive();
     }
 
     @Override
@@ -25,18 +30,13 @@ public abstract class ReifiedTypeReference<T> extends ParametricTypeReference<T>
     }
 
     @Override
-    public boolean isPrimitive() {
-        return typeReference.isPrimitive();
-    }
-
-    @Override
     public T cast(Object instance) {
         return (T)this.rootClass().cast(instance);
     }
 
     @Override
-    public Class<?> rootClass() {
-        return typeReference.rootClass();
+    public Class<T> rootClass() {
+        return (Class<T>) typeReference.rootClass();
     }
 
     @Override
@@ -52,4 +52,5 @@ public abstract class ReifiedTypeReference<T> extends ParametricTypeReference<T>
     public String toString(){
         return typeReference.toString();
     }
+
 }

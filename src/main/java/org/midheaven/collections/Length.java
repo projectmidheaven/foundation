@@ -1,10 +1,13 @@
 package org.midheaven.collections;
 
+import org.midheaven.lang.Ordered;
+import org.midheaven.math.Int;
+
 public abstract sealed class Length
         permits Length.Finite , Length.Infinite , Length.Unknown
 {
 
-    public static Length finite(long count) {
+    public static Length finite(Int count) {
         return new Finite(count);
     }
 
@@ -16,13 +19,13 @@ public abstract sealed class Length
 
     public static final class Finite extends Length {
 
-        private final long count;
+        private final Int count;
 
-        Finite(long count){
+        Finite(Int count){
             this.count = count;
         }
 
-        public long count(){
+        public Int count(){
             return count;
         }
 
@@ -34,7 +37,7 @@ public abstract sealed class Length
         @Override
         public Length min(Length other) {
             if (other instanceof Finite finite){
-                return new Finite(Long.min(this.count , finite.count));
+                return new Finite(Ordered.min(this.count , finite.count));
             } else if (other instanceof Infinite){
                 return this;
             }

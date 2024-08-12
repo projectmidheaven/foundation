@@ -1,8 +1,12 @@
 package org.midheaven.time;
 
-import java.time.*;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
-public class FixedClockProvider implements ClockProvider{
+public class FixedClockProvider implements org.midheaven.time.ClockProvider {
 
     private final Clock clock;
 

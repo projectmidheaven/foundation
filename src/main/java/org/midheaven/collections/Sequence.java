@@ -1,9 +1,12 @@
 package org.midheaven.collections;
 
+import org.midheaven.lang.Maybe;
+import org.midheaven.math.Int;
+
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public interface Sequence<T> extends Assortment<T> {
 
@@ -20,34 +23,45 @@ public interface Sequence<T> extends Assortment<T> {
 	default <R> Sequence<R> map(Function<T, R> transform) {
 		return new TransformSequenceView<>(this, transform);
 	}
+	@Override
+	default Sequence<T> filter(Predicate<T> predicate){
+		return new FilterSequenceView<>(this, predicate);
+	}
 
 	default Sequence<T> toSequence() {
 		return this;
 	}
 
-	Optional<T> getAt(int index);
+	default Maybe<T> getAt(int index){
+		return getAt(Int.of(index));
+	}
 
-	int indexOf(Object o);
+	Maybe<T> getAt(Int index);
 
-	int lastIndexOf(Object o);
+	Int indexOf(Object o);
+
+	Int lastIndexOf(Object o);
 
 	@Override
 	default boolean contains(T any) {
-		return indexOf(any) >= 0;
+		return indexOf(any).isGreaterThanOrEqualTo(0);
 	}
 
+	Maybe<T> first();
 
-	Optional<T> first();
+	Maybe<T> last();
 
-	Optional<T> last();
+	default Sequence<T> subSequence(int fromIndex, int toIndex){
+		return subSequence(Int.of(fromIndex), Int.of(toIndex));
+	}
 
-	Sequence<T> subSequence(int fromIndex, int toIndex);
+	Sequence<T> subSequence(Int fromIndex, Int toIndex);
 
 	Sequence<T> reversed();
 
-	ListIterator<T> reverseIterator();
+	Iterator<T> reverseIterator();
 
-	ListIterator<T> iterator();
+	Iterator<T> iterator();
 
 	List<T> asCollection();
 }

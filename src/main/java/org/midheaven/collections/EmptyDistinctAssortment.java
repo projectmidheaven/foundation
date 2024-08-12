@@ -1,5 +1,7 @@
 package org.midheaven.collections;
 
+import org.midheaven.math.Int;
+
 import java.util.Collections;
 import java.util.Set;
 
@@ -27,18 +29,13 @@ public class EmptyDistinctAssortment<T> implements DistinctAssortment<T> {
     }
 
     @Override
+    public Int count() {
+        return Int.ZERO;
+    }
+
+    @Override
     public Enumerator<T> enumerator() {
         return Enumerator.empty();
-    }
-
-    @Override
-    public long count() {
-        return 0;
-    }
-
-    @Override
-    public int size() {
-        return 0;
     }
 
     @Override

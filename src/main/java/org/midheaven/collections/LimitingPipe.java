@@ -1,9 +1,8 @@
 package org.midheaven.collections;
 
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
+import org.midheaven.math.Int;
 
-public final class LimitingPipe<T> extends Pipe<T,T, AtomicLong> {
+public final class LimitingPipe<T> extends Pipe<T,T, long[]> {
 
     private final long maxCount;
 
@@ -13,21 +12,21 @@ public final class LimitingPipe<T> extends Pipe<T,T, AtomicLong> {
 
     @Override
     Length estimateLength(Length previousPipeLength) {
-        return Length.finite(maxCount);
+        return Length.finite(Int.of(maxCount));
     }
 
     @Override
-    AtomicLong newState(Length length) {
-        return new AtomicLong(0);
+    long[] newState(Enumerator<T> original, Length finalLength) {
+        return new long[]{0};
     }
 
     @Override
-    boolean apply(AtomicLong state, T candidate, Consumer<T> consumer) {
-        if (state.get() < maxCount){
-            consumer.accept(candidate);
-            return state.incrementAndGet()  < maxCount;
+    PipeMoveResult<T> move(Enumerator<T> original, long[] state) {
+        if (state[0] < maxCount && original.moveNext()){
+            state[0]++;
+            return PipeMoveResult.moved(original.current());
         }
-        return false;
+        return PipeMoveResult.notMoved();
     }
 
 }

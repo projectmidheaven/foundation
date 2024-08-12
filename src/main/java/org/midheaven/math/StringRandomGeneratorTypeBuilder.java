@@ -2,11 +2,11 @@ package org.midheaven.math;
 
 public class StringRandomGeneratorTypeBuilder {
 
-    private final RandomGeneratorBuilder parent;
+    private final RandomGeneratorProvider parent;
     private final int maxLength;
     private final int minLength;
 
-    public StringRandomGeneratorTypeBuilder(RandomGeneratorBuilder parent, int minLength, int maxLength) {
+    public StringRandomGeneratorTypeBuilder(RandomGeneratorProvider parent, int minLength, int maxLength) {
         this.parent = parent;
         this.minLength = minLength;
         this.maxLength = maxLength;

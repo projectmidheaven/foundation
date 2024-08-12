@@ -1,7 +1,6 @@
 package org.midheaven.collections;
 
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 public class ZipPipe<L, R, Final> extends Pipe<L, Final, Enumerator<R>> {
 
@@ -19,12 +18,15 @@ public class ZipPipe<L, R, Final> extends Pipe<L, Final, Enumerator<R>> {
     }
 
     @Override
-    Enumerator<R> newState(Length finalLength) {
+    Enumerator<R> newState(Enumerator<L> original, Length finalLength) {
         return other.enumerator();
     }
 
     @Override
-    boolean apply(Enumerator<R> state, L candidate, Consumer<Final> consumer) {
-        return state.tryNext(otherItem -> consumer.accept(transform.apply(candidate, otherItem)));
+    PipeMoveResult<Final> move(Enumerator<L> original, Enumerator<R> rEnumerator) {
+        if (original.moveNext() && rEnumerator.moveNext()){
+            return PipeMoveResult.moved(transform.apply(original.current(), rEnumerator.current()));
+        }
+        return PipeMoveResult.notMoved();
     }
 }

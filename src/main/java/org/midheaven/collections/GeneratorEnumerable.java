@@ -1,8 +1,5 @@
 package org.midheaven.collections;
 
-import java.util.Iterator;
-import java.util.function.Consumer;
-
 final class GeneratorEnumerable<T, S> implements Enumerable<T>{
 
     private final Pipe<T, T, S> pipe;
@@ -14,11 +11,18 @@ final class GeneratorEnumerable<T, S> implements Enumerable<T>{
     @Override
     public Enumerator<T> enumerator() {
         return new Enumerator<>(){
-            final S state = pipe.newState(Length.Infinite.INSTANCE);
+            private PipeMoveResult<T> move = PipeMoveResult.notMoved();
+            S state = pipe.newState(null,this.length());
 
             @Override
-            public boolean tryNext(Consumer<T> consumer) {
-                return pipe.apply(state, null, consumer);
+            public boolean moveNext() {
+                this.move = pipe.move(null, state);
+                return move.wasSuccessful();
+            }
+
+            @Override
+            public T current() {
+                return move.get();
             }
 
             @Override

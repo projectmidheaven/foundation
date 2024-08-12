@@ -18,4 +18,6 @@ public interface AvailableRandomGenerators {
 
     LocalDatesRandomGenerator localDates();
 
+    RationalRandomGenerator rationals();
+
 }

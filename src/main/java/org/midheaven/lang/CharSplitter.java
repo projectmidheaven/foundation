@@ -1,6 +1,7 @@
 package org.midheaven.lang;
 
-import java.util.stream.Stream;
+import org.midheaven.collections.Sequence;
+import org.midheaven.math.Int;
 
 class CharSplitter implements Strings.Splitter {
 
@@ -10,11 +11,9 @@ class CharSplitter implements Strings.Splitter {
 		this.text = text;
 	}
 
-
-
 	@Override
-	public int size() {
-		return text.length;
+	public Int count() {
+		return Int.of(text.length);
 	}
 
 	@Override
@@ -28,8 +27,8 @@ class CharSplitter implements Strings.Splitter {
 	}
 
 	@Override
-	public Stream<String> stream() {
-		return Stream.of(text).map(it -> String.valueOf(it));
+	public Sequence<String> sequence() {
+		return Sequence.builder().of(text).map(String::valueOf);
 	}
 
 }

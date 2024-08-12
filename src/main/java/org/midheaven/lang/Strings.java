@@ -1,8 +1,6 @@
 package org.midheaven.lang;
 
-import java.util.Optional;
-import java.util.stream.Stream;
-
+import org.midheaven.collections.Sequence;
 import org.midheaven.lang.Strings.Splitter;
 
 public class Strings {
@@ -17,33 +15,28 @@ public class Strings {
 
     public interface Splitter extends Countable{
 		
-		public interface Condition {
-			Splitter by(String regex);
-			Splitter bySpaces();
-			Splitter byDots();
-			Splitter byEachChar();
+		interface Condition {
+			@NotNull Splitter by(String regex);
+			@NotNull Splitter bySpaces();
+			@NotNull Splitter byDots();
+			@NotNull Splitter byEachChar();
 		}
 		
-		public static Condition split(String text) {
-			return Optional.ofNullable(text)
+		static @NotNull Condition split(String text) {
+			return Maybe.of(text)
 					.filter(it -> !it.isEmpty())
 					.<Condition>map(it -> new SplitterCondition(text))
 					.orElse(new EmptyCondition());
 		}
 
-		@Override
-		default long count() {
-			return size();
-		}
-
 		String get(int index);
-		
-		Stream<String> stream();
+
+		@NotNull Sequence<String> sequence();
 	
 	}
 	
-	public static Optional<String> nonEmpty(String text) {
-		return Optional.ofNullable(text).filter(it -> !it.isBlank());
+	public static @NotNull Maybe<String> filled(String text) {
+		return Maybe.of(text).filter(it -> !it.isBlank());
 	}
 
 	private Strings() {}

@@ -1,8 +1,9 @@
 package org.midheaven.lang.reflection;
 
+import org.midheaven.lang.Maybe;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 class CompositeProxyEngine implements ProxyEngine {
 
@@ -20,13 +21,13 @@ class CompositeProxyEngine implements ProxyEngine {
         return compatibleEngine(type).isPresent();
     }
 
-    private Optional<ProxyEngine> compatibleEngine(Class<?> type){
+    private Maybe<ProxyEngine> compatibleEngine(Class<?> type){
         for (var engine : engines){
             if (engine.canProxy(type)){
-                return Optional.of(engine);
+                return Maybe.of(engine);
             }
         }
-        return Optional.empty();
+        return Maybe.none();
     }
 
     @Override

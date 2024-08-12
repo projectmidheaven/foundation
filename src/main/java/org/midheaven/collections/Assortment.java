@@ -1,11 +1,12 @@
 package org.midheaven.collections;
 
 import org.midheaven.lang.Countable;
+import org.midheaven.math.Int;
 
 import java.util.Collection;
 
 /***
- * Represent an aggregation of elements of a single type.
+ * Represent a finite aggregation of elements of a single type.
  * An assortment has no specific properties other than aggregating the elements.
  * There is no operations to obtain the element individually.
  *
@@ -31,7 +32,7 @@ public interface Assortment<T> extends Countable, Enumerable<T> {
 	Collection<T> asCollection();
 
 	@Override
-	long count();
+	Int count();
 
 	@Override
 	boolean isEmpty();

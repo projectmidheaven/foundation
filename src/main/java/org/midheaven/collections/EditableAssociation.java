@@ -1,7 +1,6 @@
 package org.midheaven.collections;
 
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * An {@link Association} that permits changing the values for the present keys, but does not allow
@@ -19,5 +18,11 @@ public interface EditableAssociation<K, V> extends Association<K,V>{
      */
     boolean setValue(K key, V value);
 
-    V computeValue(K key, BiFunction<K, V, V> computation);
+    /**
+     * Recomputed the value of a given key delegation to a given {@code computation}.
+     * If the key is not present, nothing happens.
+     * @param key the value key
+     * @param computation a function that receives the key, the old value and returns the new value
+     */
+    void computeValue(K key, BiFunction<K, V, V> computation);
 }

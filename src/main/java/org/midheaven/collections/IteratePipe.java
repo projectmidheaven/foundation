@@ -1,7 +1,6 @@
 package org.midheaven.collections;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 class IteratePipe<T> extends Pipe<T,T, ArrayList<T>> {
@@ -19,18 +18,17 @@ class IteratePipe<T> extends Pipe<T,T, ArrayList<T>> {
     }
 
     @Override
-    ArrayList<T> newState(Length length) {
+    ArrayList<T> newState(Enumerator<T> original, Length finalLength) {
         var array = new ArrayList<T>(1);
         array.add(seed);
         return array;
     }
 
     @Override
-    boolean apply(ArrayList<T> state, T candidate, Consumer<T> consumer) {
+    PipeMoveResult<T> move(Enumerator<T> original, ArrayList<T> state) {
         var current = state.getFirst();
-        consumer.accept(current);
         state.set(0, successor.apply(current));
-        return true;
+        return PipeMoveResult.moved(current);
     }
 
 }

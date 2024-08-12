@@ -1,10 +1,8 @@
 package org.midheaven.math;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Random;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 public final class LocalDatesRandomGenerator
         extends AbstractDiscreteIntervalRandomGenerator<LocalDate>

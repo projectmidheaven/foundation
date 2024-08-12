@@ -1,7 +1,8 @@
 package org.midheaven.math;
 
-import java.util.Optional;
+import org.midheaven.lang.Maybe;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 final class EmptyInterval<T> extends Interval<T> {
 
     private final static Boundary EMPTY_BOUNDARY = new Boundary() {
@@ -17,8 +18,8 @@ final class EmptyInterval<T> extends Interval<T> {
         }
 
         @Override
-        public Optional value() {
-            return Optional.empty();
+        public Maybe value() {
+            return Maybe.none();
         }
     };
 
@@ -65,6 +66,6 @@ final class EmptyInterval<T> extends Interval<T> {
 
     @Override
     public String toString() {
-        return "\u2205";
+        return "∅";
     }
 }

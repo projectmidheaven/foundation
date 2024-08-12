@@ -2,7 +2,6 @@ package org.midheaven.collections;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class DistintPipe<T> extends Pipe<T, T, Set<T>> {
 
@@ -12,16 +11,19 @@ public class DistintPipe<T> extends Pipe<T, T, Set<T>> {
     }
 
     @Override
-    Set<T> newState(Length length) {
+    Set<T> newState(Enumerator<T> original, Length finalLength) {
         return new HashSet<T>();
     }
 
     @Override
-    boolean apply(Set<T> state, T candidate, Consumer<T> objectConsumer) {
-        if (state.add(candidate)){
-            objectConsumer.accept(candidate);
+    PipeMoveResult<T> move(Enumerator<T> original, Set<T> distinct) {
+        while (original.moveNext()){
+            var current = original.current();
+            if (distinct.add(current)){
+                return PipeMoveResult.moved(current);
+            }
         }
-        return true;
+        return PipeMoveResult.notMoved();
     }
 
 }

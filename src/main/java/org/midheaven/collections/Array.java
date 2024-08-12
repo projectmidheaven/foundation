@@ -1,6 +1,11 @@
 package org.midheaven.collections;
 
-import java.util.*;
+import org.midheaven.lang.Maybe;
+import org.midheaven.math.Int;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -54,17 +59,22 @@ class EmptyArray<T> extends ImmutableEmptySequence<T> implements Array<T> {
 	}
 
 	@Override
-	public Optional<T> setAt(int index, T element) {
+	public Maybe<T> setAt(int index, T element) {
 		throw new IndexOutOfBoundsException(index);
 	}
 
 	@Override
-	public Optional<T> setFirst(T element) {
+	public Maybe<T> setAt(Int index, T element) {
+		throw new IndexOutOfBoundsException();
+	}
+
+	@Override
+	public Maybe<T> setFirst(T element) {
 		throw new IndexOutOfBoundsException(0);
 	}
 
 	@Override
-	public Optional<T> setLast(T element) {
+	public Maybe<T> setLast(T element) {
 		throw new IndexOutOfBoundsException(0);
 	}
 
@@ -83,7 +93,7 @@ class EmptyArray<T> extends ImmutableEmptySequence<T> implements Array<T> {
 	}
 
 	@Override
-	public Enumerable<T> filter(Predicate<T> predicate) {
+	public Array<T> filter(Predicate<T> predicate) {
 		return ME;
 	}
 
@@ -108,24 +118,32 @@ class ArrayWrapper<T>  extends ImmutableSequenceArrayWrapper<T> implements Array
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Optional<T> setAt(int index, T element) {
+	public Maybe<T> setAt(int index, T element) {
 		var previous = array[index];
 		array[index] = element;
-		return Optional.ofNullable((T)previous);
+		return Maybe.of(previous);
 	}
 
 	@Override
-	public Optional<T> setFirst(T element) {
+	public Maybe<T> setAt(Int index, T element) {
+		var p = index.toInt();
+		var previous = array[p];
+		array[p] = element;
+		return Maybe.of(previous);
+	}
+
+	@Override
+	public Maybe<T> setFirst(T element) {
 		var previous = array[0];
 		array[0] = element;
-		return Optional.ofNullable((T)previous);
+		return Maybe.of(previous);
 	}
 
 	@Override
-	public Optional<T> setLast(T element) {
+	public Maybe<T> setLast(T element) {
 		var previous = array[array.length - 1];
 		array[array.length - 1] = element;
-		return Optional.ofNullable((T)previous);
+		return Maybe.of(previous);
 	}
 
 	@Override
@@ -147,11 +165,18 @@ class ArrayWrapper<T>  extends ImmutableSequenceArrayWrapper<T> implements Array
 	@Override
 	public EditableSequence<T> subSequence(int fromIndex, int toIndex) {
 		if (fromIndex >=0 && fromIndex <= toIndex && toIndex >=0 && toIndex < array.length) {
-			return new EditableSubsequenceView<>(this, fromIndex, toIndex);
+			return new EditableSubsequenceView<>(this, Int.of(fromIndex), Int.of(toIndex));
 		}
 		throw new IndexOutOfBoundsException();
 	}
 
+	@Override
+	public EditableSequence<T> subSequence(Int fromIndex, Int toIndex) {
+		if (fromIndex.isGreaterThanOrEqualTo(0) && fromIndex.isLessThanOrEqualTo(toIndex) && toIndex.isGreaterThanOrEqualTo(0) && toIndex.isLessThan(array.length)) {
+			return new EditableSubsequenceView<>(this, fromIndex, toIndex);
+		}
+		throw new IndexOutOfBoundsException();
+	}
 	@Override
 	public EditableSequence<T> reversed() {
 		return new ReversedEditableSequenceView<>(this);

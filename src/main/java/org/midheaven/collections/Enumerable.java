@@ -1,13 +1,22 @@
 package org.midheaven.collections;
 
+import org.midheaven.lang.Maybe;
 import org.midheaven.math.Arithmetic;
 import org.midheaven.math.ArithmeticalEnumerable;
+import org.midheaven.math.Int;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 
 public interface Enumerable<T> extends Iterable<T> {
 
@@ -23,6 +32,19 @@ public interface Enumerable<T> extends Iterable<T> {
         return new GeneratorEnumerable<>(new IteratePipe<>(seed, successor));
     }
 
+    static <X> Enumerable<X> from(Iterable<X> iterable) {
+        return new ImmutableIterableWrapper<>(iterable);
+    }
+
+    static <X> Enumerable<X> single(X value) {
+        return () -> Enumerator.single(value);
+    }
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    static <X> Enumerable<X> from(Optional<X> optional) {
+        return optional.map(Enumerable::single).orElseGet(Enumerable::empty);
+    }
+
     Enumerator<T> enumerator();
 
     @Override
@@ -30,20 +52,21 @@ public interface Enumerable<T> extends Iterable<T> {
         return this.enumerator().toIterator();
     }
 
-    default Optional<T> first() {
+    default Maybe<T> first() {
         var enumerator = enumerator();
 
-        if (enumerator.length() instanceof Length.Finite finite && finite.count() == 0){
-            return Optional.empty();
+        if (enumerator.length() instanceof Length.Finite finite && finite.count().isZero()){
+            return Maybe.none();
         }
-        var object = new Object[1];
 
-        while(object[0] == null && enumerator.tryNext(it -> object[0] = it));
+        if (enumerator.moveNext()){
+            return Maybe.of(enumerator.current());
+        }
 
-        return Optional.ofNullable((T)object[0]);
+        return Maybe.none();
     }
 
-    default long count() {
+    default Int count() {
         var enumerator = enumerator();
         var length = enumerator.length();
         if (length instanceof Length.Finite finite){
@@ -52,21 +75,17 @@ public interface Enumerable<T> extends Iterable<T> {
             throw new IllegalStateException("Infinite enumerable cannot be counted");
         }
 
-        AtomicLong counter = new AtomicLong(0);
-
-        while(enumerator.tryNext(it -> counter.incrementAndGet()));
-
-        return counter.get();
+        return this.map(it -> Int.ONE).with(Int.arithmetic()).sum();
     }
 
     default boolean isEmpty(){
         var enumerator = enumerator();
         var length = enumerator.length();
         if (length instanceof Length.Finite finite){
-            return finite.count() == 0;
+            return finite.count().isZero();
         }
 
-        return !enumerator().tryNext(it -> {});
+        return !enumerator().moveNext();
     }
 
     default boolean any(){
@@ -74,10 +93,10 @@ public interface Enumerable<T> extends Iterable<T> {
         var length = enumerator.length();
 
         if (length instanceof Length.Finite finite){
-            return finite.count() > 0;
+            return finite.count().isPositive();
         }
 
-        return enumerator.tryNext(it -> {});
+        return enumerator().moveNext();
     }
 
     default Sequence<T> toSequence() {
@@ -89,15 +108,17 @@ public interface Enumerable<T> extends Iterable<T> {
 
         List<T> list;
         if (length instanceof Length.Finite finite){
-            if (finite.count() == 0){
+            if (finite.count().isZero()){
                 return ImmutableEmptySequence.instance();
             }
-            list = new ArrayList<T>((int)finite.count());
+            list = new ArrayList<T>((int)finite.count().toLong());
         } else {
             list = new LinkedList<>();
         }
 
-        while(enumerator.tryNext(it -> list.add(it)));
+        while(enumerator.moveNext()){
+            list.add(enumerator.current());
+        }
 
         return new ImmutableSequenceListWrapper<>(list);
     }
@@ -112,15 +133,20 @@ public interface Enumerable<T> extends Iterable<T> {
 
         var sequence = supplier.get();
 
-        if (length instanceof Length.Finite finite && finite.count() == 0){
+        if (length instanceof Length.Finite finite && finite.count().isZero()){
             return sequence;
         }
 
         if (sequence instanceof ResizableSequence resizableSequence){
-            while(enumerator.tryNext(it -> resizableSequence.add(it)));
+            while(enumerator.moveNext()){
+                resizableSequence.add(enumerator.current());
+            }
         } else {
-            AtomicInteger index = new AtomicInteger(0);
-            while(enumerator.tryNext(it -> sequence.setAt(index.getAndIncrement(), it)));
+            var index = 0;
+            while(enumerator.moveNext()){
+                sequence.setAt(index, enumerator.current());
+                index++;
+            }
         }
 
         return sequence;
@@ -130,51 +156,58 @@ public interface Enumerable<T> extends Iterable<T> {
         var enumerator = enumerator();
         var length = enumerator.length();
 
-        if (length instanceof Length.Finite finite && finite.count() == 0){
+        if (length instanceof Length.Finite finite && finite.count().isZero()){
             return false;
         } else if (length instanceof Length.Infinite){
             throw new IllegalStateException("Infinite enumerable cannot be match for all elements");
         }
-        var flag = new AtomicBoolean(false);
 
-        while(!flag.get() && enumerator.tryNext(it -> flag.set(predicate.test(it))));
+        while(enumerator.moveNext()){
+            if (predicate.test(enumerator.current())){
+                return true;
+            }
+        }
 
-        return flag.get();
+        return false;
     }
 
     default boolean allMatch(Predicate<T> predicate){
         var enumerator = enumerator();
         var length = enumerator.length();
 
-        if (length instanceof Length.Finite finite && finite.count() == 0){
+        if (length instanceof Length.Finite finite && finite.count().isZero()){
             return true;
         } else if (length instanceof Length.Infinite){
             throw new IllegalStateException("Infinite enumerable cannot be match for all elements");
         }
-        var flag = new AtomicBoolean(true);
 
-        while(flag.get() && enumerator.tryNext(it -> flag.set(predicate.test(it))));
+        while(enumerator.moveNext()){
+            if (!predicate.test(enumerator.current())){
+                return false;
+            }
+        }
 
-        return flag.get();
+        return true;
     }
 
     default <A> A reduce (A seed, BiFunction<A,T,A> accumulator){
         var enumerator = enumerator();
         var length = enumerator.length();
 
-        if (length instanceof Length.Finite finite && finite.count() == 0){
+        if (length instanceof Length.Finite finite && finite.count().isZero()){
             return seed;
         } else if (length instanceof Length.Infinite){
             throw new IllegalStateException("Infinite enumerable cannot be reduced");
         }
-        var object = new Object[]{seed};
 
-        while(enumerator.tryNext(it -> object[0] = accumulator.apply((A)object[0], it)));
-
-        return (A)object[0];
+        var previous = seed;
+        while (enumerator.moveNext()){
+            previous = accumulator.apply(previous, enumerator.current());
+        }
+        return previous;
     }
 
-    default Optional<T> reduce (BiFunction<T,T,T> accumulator){
+    default Maybe<T> reduce (BiFunction<T,T,T> accumulator){
         var enumerator = enumerator();
         var length = enumerator.length();
 
@@ -182,19 +215,22 @@ public interface Enumerable<T> extends Iterable<T> {
             throw new IllegalStateException("Infinite enumerable cannot be reduced");
         }
 
-        var object = new Object[]{null};
-        if (enumerator.tryNext(it -> object[0] = it)){
-            while(enumerator.tryNext(it -> object[0] = accumulator.apply((T)object[0], it))){};
+        if (enumerator.moveNext()){
+            var previous = enumerator.current();
+            while (enumerator.moveNext()){
+                previous = accumulator.apply(previous, enumerator.current());
+            }
+            return Maybe.of(previous);
         }
 
-        return Optional.ofNullable((T)object[0]);
+        return Maybe.none();
     }
 
-    default Optional<T> minimum(Comparator<T> comparator){
+    default Maybe<T> minimum(Comparator<T> comparator){
         return reduce((a,b) -> comparator.compare(a,b) <= 0 ? a : b);
     }
 
-    default Optional<T> maximum(Comparator<T> comparator){
+    default Maybe<T> maximum(Comparator<T> comparator){
         return reduce((a,b) -> comparator.compare(a,b) >= 0 ? a : b);
     }
 
@@ -251,6 +287,15 @@ public interface Enumerable<T> extends Iterable<T> {
 
     default <K> AssociatedEnumerable<K, Enumerable<T>> groupBy(Function<T, K> groupSelector){
         return new GroupingPipe<>(groupSelector).applyTo(this);
+    }
+
+    default <R,A> R collect(Collector<T, A, R> collector){
+        A aa = collector.supplier().get();
+        var f = collector.accumulator();
+        for (var item : this){
+            f.accept(aa,item);
+        }
+        return collector.finisher().apply(aa);
     }
 
 }

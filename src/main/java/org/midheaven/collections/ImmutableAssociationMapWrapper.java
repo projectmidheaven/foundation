@@ -1,12 +1,14 @@
 package org.midheaven.collections;
 
+import org.midheaven.lang.Maybe;
+import org.midheaven.math.Int;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 class ImmutableAssociationMapWrapper<K, V> implements Association<K,V> {
@@ -23,7 +25,11 @@ class ImmutableAssociationMapWrapper<K, V> implements Association<K,V> {
         Map<K,V> union = new HashMap<>(original);
 
         for (var entry : other){
-           union.put(entry.key(), valueSelector.apply(union.get(entry.key()), entry.value()));
+           if (!union.containsKey(entry.key())){
+               union.put(entry.key(), entry.value());
+           } else {
+               union.put(entry.key(), valueSelector.apply(union.get(entry.key()), entry.value()));
+           }
         }
 
         return new ImmutableAssociationMapWrapper<>(union);
@@ -68,13 +74,13 @@ class ImmutableAssociationMapWrapper<K, V> implements Association<K,V> {
     }
 
     @Override
-    public Optional<V> getValue(K key) {
-        return Optional.ofNullable(this.original.get(key));
+    public Maybe<V> getValue(K key) {
+        return Maybe.of(this.original.get(key));
     }
 
     @Override
     public Enumerator<Entry<K, V>> enumerator() {
-        return new IteratorEnumeratorAdapter<>(this.iterator(), this.size());
+        return Enumerator.fromIterator(this.iterator(), this.count());
     }
 
     @Override
@@ -94,14 +100,10 @@ class ImmutableAssociationMapWrapper<K, V> implements Association<K,V> {
     }
 
     @Override
-    public long count() {
-        return original.size();
+    public Int count() {
+        return Int.of(original.size());
     }
 
-    @Override
-    public int size() {
-        return original.size();
-    }
 
     @Override
     public boolean isEmpty() {
@@ -122,5 +124,33 @@ class ImmutableAssociationMapWrapper<K, V> implements Association<K,V> {
                 return Entry.from(iterator.next());
             }
         };
+    }
+
+    @Override
+    public boolean equals(Object other){
+        if(other instanceof Association association){
+            if (this.original.size() != association.count().toInt()){
+                return false;
+            }
+            for (var entry : this.original.entrySet()) {
+                if (!association.containsKey(entry.getKey()) || !Objects.equals(association.getValue(entry.getKey()).orNull(), entry.getValue())){
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder builder = new StringBuilder("{");
+        for (var entry : this){
+            builder.append(entry.key()).append("->").append(entry.value()).append(",");
+        }
+        builder.deleteCharAt(builder.length() -1);
+        builder.append("}");
+
+        return builder.toString();
     }
 }

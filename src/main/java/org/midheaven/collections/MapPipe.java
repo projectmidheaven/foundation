@@ -1,6 +1,5 @@
 package org.midheaven.collections;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 class MapPipe<T, O> extends Pipe<O, T, Void> {
@@ -17,14 +16,17 @@ class MapPipe<T, O> extends Pipe<O, T, Void> {
     }
 
     @Override
-    Void newState(Length finalLength) {
+    Void newState(Enumerator<O> original, Length finalLength) {
         return null;
     }
 
+
     @Override
-    boolean apply(Void unused, O candidate, Consumer<T> consumer) {
-        consumer.accept(transform.apply(candidate));
-        return true;
+    PipeMoveResult<T> move(Enumerator<O> original, Void unused) {
+        if (original.moveNext()){
+            return PipeMoveResult.moved(transform.apply(original.current()));
+        }
+        return PipeMoveResult.notMoved();
     }
 
 }

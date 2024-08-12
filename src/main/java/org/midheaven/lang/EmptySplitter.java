@@ -1,18 +1,19 @@
 package org.midheaven.lang;
 
-import java.util.stream.Stream;
+import org.midheaven.collections.Sequence;
+import org.midheaven.math.Int;
 
 final class EmptySplitter implements Strings.Splitter{
 
 	private static final EmptySplitter ME = new EmptySplitter();
 	
-	public static EmptySplitter instance() {
+	public static @NotNull EmptySplitter instance() {
 		return ME;
 	}
 
 	@Override
-	public int size() {
-		return 0;
+	public Int count() {
+		return Int.ZERO;
 	}
 
 	@Override
@@ -21,8 +22,8 @@ final class EmptySplitter implements Strings.Splitter{
 	}
 
 	@Override
-	public Stream<String> stream() {
-		return Stream.empty();
+	public Sequence<String> sequence() {
+		return Sequence.builder().empty();
 	}
 
 	@Override

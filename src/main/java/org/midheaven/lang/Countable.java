@@ -1,8 +1,9 @@
 package org.midheaven.lang;
 
+import org.midheaven.math.Int;
+
 public interface Countable {
 
-	long count();
-	int size();
+	Int count();
 	boolean isEmpty();
 }

@@ -1,39 +1,40 @@
 package org.midheaven.collections;
 
-import org.midheaven.collections.Enumerator;
-import org.midheaven.collections.Length;
-import org.midheaven.collections.Pipe;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
-
 public class PipeEnumerator<Original, Final, State> implements Enumerator<Final> {
 
-    private final Enumerator<Original> previous;
+    private final Enumerator<Original> original;
     private final Pipe<Original, Final, State> pipe;
     private final State state;
     private final Length length;
 
-    PipeEnumerator(Enumerator<Original> previous, Pipe<Original, Final, State> pipe){
-        this.previous = previous;
+    private Final current;
+    private boolean moved;
+    PipeEnumerator(Enumerator<Original> original, Pipe<Original, Final, State> pipe){
+        this.original = original;
         this.pipe = pipe;
-        this.length = pipe.estimateLength(previous.length());
-        this.state = pipe.newState(this.length);
+        this.length = pipe.estimateLength(original.length());
+        this.state = pipe.newState(original, this.length);
     }
 
     @Override
-    public boolean tryNext(Consumer<Final> action) {
-        var flag = new AtomicBoolean(true);
-        var originalHasMore = previous.tryNext(sourceItem -> {
-            flag.set(pipe.apply(state, sourceItem, action));
-        });
-        var willContinue = originalHasMore && flag.get();
-
-        if (!willContinue){
-            pipe.terminate(state, action);
+    public boolean moveNext() {
+        if (!moved){
+            moved = true;
         }
+        var move =  pipe.move(original, state);
+        if (move.wasSuccessful()){
+            this.current = move.get();
+            return true;
+        }
+        return false;
+    }
 
-        return willContinue;
+    @Override
+    public Final current() {
+        if (!moved){
+            throw new IllegalStateException();
+        }
+        return current;
     }
 
     @Override

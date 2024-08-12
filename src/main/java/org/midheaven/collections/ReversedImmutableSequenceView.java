@@ -1,9 +1,11 @@
 package org.midheaven.collections;
 
+import org.midheaven.lang.Maybe;
+import org.midheaven.math.Int;
+
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Optional;
 
 class ReversedImmutableSequenceView<T> implements Sequence<T> {
 
@@ -15,34 +17,35 @@ class ReversedImmutableSequenceView<T> implements Sequence<T> {
 
 	@Override
 	public Enumerator<T> enumerator() {
-		return new IteratorEnumeratorAdapter<>(this.iterator(), original.count());
+		return Enumerator.fromIterator(this.iterator(), original.count());
 	}
 
-	protected int reverseIndex(int index){
-		return this.size() - index - 1;
+	protected Int reverseIndex(Int index){
+		return this.count().minus(index).minus(1);
 	}
+
 	@Override
-	public Optional<T> getAt(int index) {
+	public Maybe<T> getAt(Int index) {
 		return original.getAt(reverseIndex(index));
 	}
 
 	@Override
-	public int indexOf(Object o) {
+	public Int indexOf(Object o) {
 		return lastIndexOf(o);
 	}
 
 	@Override
-	public int lastIndexOf(Object o) {
+	public Int lastIndexOf(Object o) {
 		return indexOf(o);
 	}
 
 	@Override
-	public Optional<T> first() {
+	public Maybe<T> first() {
 		return original.last();
 	}
 
 	@Override
-	public Optional<T> last() {
+	public Maybe<T> last() {
 		return original.first();
 	}
 
@@ -51,16 +54,9 @@ class ReversedImmutableSequenceView<T> implements Sequence<T> {
 		return original.contains(any);
 	}
 
-
-
 	@Override
-	public long count() {
+	public Int count() {
 		return original.count();
-	}
-
-	@Override
-	public int size() {
-		return original.size();
 	}
 
 	@Override
@@ -69,12 +65,12 @@ class ReversedImmutableSequenceView<T> implements Sequence<T> {
 	}
 
 	@Override
-	public ListIterator<T> iterator() {
+	public Iterator<T> iterator() {
 		return original.reverseIterator();
 	}
 
 	@Override
-	public Sequence<T> subSequence(int fromIndex, int toIndex) {
+	public Sequence<T> subSequence(Int fromIndex, Int toIndex) {
 		return new ImmutableSubsequenceView<>(this, fromIndex, toIndex);
 	}
 
@@ -84,7 +80,7 @@ class ReversedImmutableSequenceView<T> implements Sequence<T> {
 	}
 
 	@Override
-	public ListIterator<T> reverseIterator() {
+	public Iterator<T> reverseIterator() {
 		return original.iterator();
 	}
 

@@ -1,6 +1,9 @@
 package org.midheaven.collections;
 
-import java.util.*;
+import org.midheaven.lang.Maybe;
+import org.midheaven.math.Int;
+
+import java.util.List;
 
 class EditableSequenceListWrapper<T>  extends ImmutableSequenceListWrapper<T> implements EditableSequence<T> {
 
@@ -9,10 +12,12 @@ class EditableSequenceListWrapper<T>  extends ImmutableSequenceListWrapper<T> im
 	}
 
 	@Override
-	public Optional<T> setAt(int index, T element) {
-		return Optional.ofNullable(original.set(index, element));
+	public Maybe<T> setAt(Int index, T element) {
+		if (index.isNegative() || index.isGreaterThan(this.count().minus(1))){
+			throw new IndexOutOfBoundsException();
+		}
+		return Maybe.of(original.set(index.toInt(), element));
 	}
-
 
 	@Override
 	public EditableSequence<T> subSequence(int fromIndex, int toIndex) {
