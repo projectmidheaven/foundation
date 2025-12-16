@@ -111,7 +111,7 @@ class EmptyArray<T> extends ImmutableEmptySequence<T> implements Array<T> {
 
 
 class ArrayWrapper<T>  extends ImmutableSequenceArrayWrapper<T> implements Array<T> {
-
+ 
 	ArrayWrapper(T[] array){
 		super(array); // non-empty array
 	}

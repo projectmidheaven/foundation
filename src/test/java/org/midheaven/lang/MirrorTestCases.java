@@ -1,11 +1,14 @@
 package org.midheaven.lang;
 
 import org.junit.jupiter.api.Test;
+import org.midheaven.lang.model.A;
 import org.midheaven.lang.model.TestInterface;
 import org.midheaven.lang.model.TestPojo;
 import org.midheaven.lang.model.TestRecord;
+import org.midheaven.lang.reflection.InvocationHandler;
 import org.midheaven.lang.reflection.Mirror;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -101,6 +104,18 @@ public class MirrorTestCases {
         assertNotNull(instance);
         assertEquals(42, instance.getAge());
         assertEquals("Proxy", instance.getName());
+    }
+
+    @Test
+    public void mirror_of_mirror(){
+        var mirror = Mirror.reflect(A.class);
+
+        InvocationHandler handler = (Object a, Method m, Object[] p) -> null;
+        var instance = mirror.proxy(handler);
+
+        var mirror2 = Mirror.reflect(instance.getClass());
+
+        var instance2 = mirror2.proxy(handler);
     }
 }
 

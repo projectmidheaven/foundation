@@ -1,6 +1,6 @@
 package org.midheaven.math;
 
-import org.midheaven.lang.NotNull;
+import org.midheaven.lang.Nullable;
 import org.midheaven.lang.ValueClass;
 
 import java.math.BigDecimal;
@@ -16,14 +16,14 @@ public final class Int32 implements Int {
         this.value = value;
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Rational over(Int other) {
         Objects.requireNonNull(other);
-        return IntRational.of(this, other);
+        return DynamicRational.of(this, other);
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Rational over(long other) {
         return Rational.of(value, other);
@@ -39,33 +39,37 @@ public final class Int32 implements Int {
         return Integer.signum(value);
     }
 
-    @NotNull
+    @Nullable
     @Override
     public BigInteger toBigInteger() {
         return BigInteger.valueOf(value);
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Int square() {
         try {
             return new Int32(Math.multiplyExact(value, value));
         } catch (ArithmeticException e){
-            return new Int64(value).square();
+            return promote().square();
         }
     }
+    
+    private Int promote(){
+        return Int64.fromInt(value);
+    }
 
-    @NotNull
+    @Nullable
     @Override
     public Int cube() {
         try {
             return new Int32(Math.multiplyExact(value, Math.multiplyExact(value, value)));
         } catch (ArithmeticException e){
-            return new Int64(value).cube();
+            return promote().cube();
         }
     }
 
-    @NotNull
+    @Nullable
     @Override
     public BigDecimal toBigDecimal() {
         return BigDecimal.valueOf(value);
@@ -88,14 +92,34 @@ public final class Int32 implements Int {
 
     @Override
     public Int gcd(Int other) {
-        if (other instanceof Int32 that){
-            return new Int32(Numbers.gcd(this.value, that.value));
-        } else if (other instanceof Int64 that){
-            return new Int64(Numbers.gcd(this.value, that.value));
-        }
-        return new BigInt(this.toBigInteger().gcd(other.toBigInteger()));
+        return switch (other){
+            case IntZero ignore-> Int.of(Numbers.gcd(this.value,0));
+            case IntOne ignore ->  Int.of(Numbers.gcd(this.value,1));
+            case IntNegativeOne ignore ->  Int.of(Numbers.gcd(this.value,-1));
+            case Int64 int64 ->  Int.of(Numbers.gcd(this.value, int64.value));
+            case Int32 int32 ->  Int.of(Numbers.gcd(this.value, int32.value));
+            case BigInt bigInt ->  new BigInt(this.toBigInteger().gcd(bigInt.toBigInteger())).reduce();
+        };
     }
-
+    
+    @Override
+    public Int increment() {
+        try {
+            return Int.of(Math.incrementExact(value));
+        } catch (ArithmeticException e){
+            return promote().increment();
+        }
+    }
+    
+    @Override
+    public Int decrement() {
+        try {
+            return Int.of(Math.decrementExact(value));
+        } catch (ArithmeticException e){
+            return promote().decrement();
+        }
+    }
+    
     @Override
     public int compareTo(long other) {
         return Long.compare(value, other);
@@ -103,18 +127,20 @@ public final class Int32 implements Int {
 
     @Override
     public int compareTo(Int other) {
-        if (other instanceof Int32 int32){
-            return Long.compare(value, int32.value);
-        } else if (other instanceof Int32 Int32){
-            return Long.compare(value, Int32.value);
-        }
-        return this.toBigInteger().compareTo(other.toBigInteger());
+        return switch (other) {
+            case Int64 int64 -> Long.compare(this.value, int64.value);
+            case Int32 int32 -> Long.compare(this.value, int32.value);
+            default -> this.toBigInteger().compareTo(other.toBigInteger());
+        };
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Int negate() {
-        return new Int32(-value);
+        if (value < Integer.MAX_VALUE){
+            return new Int32(-value);
+        }
+         return promote().negate();
     }
 
     @Override
@@ -122,18 +148,20 @@ public final class Int32 implements Int {
         return value == 0L;
     }
 
-    @NotNull
+    @Nullable
     @Override
-    public Int plus(@NotNull Int other) {
+    public Int plus(@Nullable Int other) {
         try {
-            if (other instanceof Int32 Int32) {
-                return new Int32( Math.addExact(value , Int32.value));
-            } else if (other instanceof Int32 int32) {
-                return new Int32( Math.addExact(value , int32.value));
-            }
-            return new BigInt(this.toBigInteger()).plus(other);
+            return switch (other){
+                case IntZero ignore -> this;
+                case IntOne ignore -> this.increment();
+                case IntNegativeOne ignore -> this.decrement();
+                case Int64 int64 ->  new Int64( Math.addExact(value , int64.value));
+                case Int32 int32 ->  new Int32( Math.addExact(value , int32.value));
+                case BigInt bigInt -> bigInt.plus(this);
+            };
         } catch (ArithmeticException e){
-            return new BigInt(this.toBigInteger()).plus(other);
+            return promote().plus(other);
         }
     }
 
@@ -142,46 +170,87 @@ public final class Int32 implements Int {
         return value == 1L;
     }
 
-    @NotNull
+    @Nullable
     @Override
-    public Int times(@NotNull Int other) {
+    public Int times(@Nullable Int other) {
         try {
-            if (other instanceof Int32 Int32) {
-                return new Int32( Math.multiplyExact(value , Int32.value));
-            } else if (other instanceof Int32 int32) {
-                return new Int32( Math.multiplyExact(value , int32.value));
-            }
-            return new BigInt(this.toBigInteger()).times(other);
+            return switch (other){
+                case IntZero z-> z;
+                case IntOne ignore -> this;
+                case IntNegativeOne ignore -> this.negate();
+                case Int64 int64 ->  new Int64( Math.multiplyExact(value , int64.value));
+                case Int32 int32 ->  new Int64( Math.multiplyExact(value , int32.value));
+                case BigInt bigInt -> bigInt.times(this);
+            };
         } catch (ArithmeticException e){
-            return new BigInt(this.toBigInteger()).times(other);
+            return promote().times(other);
         }
     }
 
     @Override
     public Int plus(long other) {
-        return new Int64(value).plus(other);
+        try {
+            return new Int64(Math.addExact(value , other));
+        } catch (ArithmeticException e){
+            return promote().plus(other);
+        }
+    }
+    
+    @Override
+    public Int plus(int other) {
+        try {
+            return new Int32(Math.addExact(value , other));
+        } catch (ArithmeticException e){
+            return promote().plus(other);
+        }
     }
 
     @Override
     public Int minus(long other) {
-        return new Int64(value).minus(other);
+        try {
+            return new Int64(Math.subtractExact(value , other));
+        } catch (ArithmeticException e){
+            return promote().minus(other);
+        }
+    }
+    
+    @Override
+    public Int minus(int other) {
+        try {
+            return new Int32(Math.subtractExact(value , other));
+        } catch (ArithmeticException e){
+            return promote().minus(other);
+        }
     }
 
     @Override
     public Int times(long other) {
-        return new Int64(value).times(other);
+        try {
+            return new Int64(Math.multiplyExact(value , other));
+        } catch (ArithmeticException e){
+            return promote().times(other);
+        }
+    }
+    
+    @Override
+    public Int times(int other) {
+        try {
+            return new Int32(Math.multiplyExact(value , other));
+        } catch (ArithmeticException e){
+            return promote().times(other);
+        }
     }
 
     @Override
     public boolean equals(Object other){
-        if (other instanceof Int64 that){
-            return this.value == that.value;
-        } else if (other instanceof Int32 that){
-            return this.value == that.value;
-        } else if (other instanceof Int){
-            return this.toBigInteger().compareTo(((Int) other).toBigInteger()) == 0;
-        }
-        return false;
+        return (other instanceof Int i) && switch (i){
+            case IntZero z-> this.isZero();
+            case IntOne ignore -> this.isOne();
+            case IntNegativeOne ignore -> this.isNegativeOne();
+            case Int64 int64 -> this.value == int64.value;
+            case Int32 int32 -> this.value == int32.value;
+            case BigInt bigInt -> this.toBigInteger().compareTo(bigInt.value) == 0;
+        };
     }
 
     @Override

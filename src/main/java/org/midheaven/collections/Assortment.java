@@ -27,13 +27,18 @@ public interface Assortment<T> extends Countable, Enumerable<T> {
 	
 	/**
 	 * Returns a view of this Assortment for compatibility with JDK collections.
-	 * @return
 	 */
 	Collection<T> asCollection();
-
-	@Override
-	Int count();
-
+    
+    /**
+     * The number of elements in the {@code Assortment}
+     * This override {@link Enumerable::count } and an exception will never occur, since {@code Assortment}s have a finite number of elements.
+     * @return the number of elements in the {@code Assortment}
+     */
+    @Override
+    Int count();
+    
 	@Override
 	boolean isEmpty();
+
 }

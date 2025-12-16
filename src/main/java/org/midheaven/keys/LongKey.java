@@ -34,4 +34,9 @@ final class LongKey<C extends Concept> extends Key<C> {
     public UUID uuidValue() {
         throw new IllegalStateException("Long value is not an UUID");
     }
+    
+    @Override
+    public Object value() {
+        return value;
+    }
 }

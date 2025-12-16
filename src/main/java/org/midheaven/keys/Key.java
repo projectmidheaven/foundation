@@ -2,7 +2,7 @@ package org.midheaven.keys;
 
 import org.midheaven.lang.HashCode;
 import org.midheaven.lang.Maybe;
-import org.midheaven.lang.NotNull;
+import org.midheaven.lang.Nullable;
 import org.midheaven.lang.Strings;
 import org.midheaven.lang.ValueClass;
 
@@ -12,24 +12,37 @@ import java.util.UUID;
 @ValueClass
 public abstract class Key<C extends Concept> {
 
-    public static <K extends Concept> @NotNull Key<K> of(Class<K> concept, String value){
+    public static <K extends Concept> Key<K> of(Class<K> concept, String value){
         return Strings.filled(value)
             .<Key<K>>map(it -> new StringKey<>(conceptNameOf(concept), it))
             .orNull();
     }
 
-    public static <K extends Concept> @NotNull Key<K> of(Class<K> concept, Long value){
-        return Maybe.of(value)
-                .<Key<K>>map(it -> new LongKey<>(conceptNameOf(concept), it))
-                .orNull();
+    public static <K extends Concept> @Nullable Key<K> of(Class<K> concept, long value){
+        return new LongKey<>(conceptNameOf(concept), value);
     }
 
-    public static <K extends Concept> @NotNull Key<K> of(Class<K> concept, UUID value){
+    public static <K extends Concept> Key<K> of(Class<K> concept, UUID value){
         return Maybe.of(value)
                 .<Key<K>>map(it -> new UuidKey<>(conceptNameOf(concept), it))
                 .orNull();
     }
-
+    
+    public static <K extends Concept> Key<K> compose(String conceptName, Object value) {
+        if (conceptName == null || value == null){
+            return null;
+        } else if (value instanceof String id){
+            return new StringKey<>(conceptName, id);
+        } else if (value instanceof Long id){
+            return new LongKey<>(conceptName, id);
+        } else if (value instanceof Integer id){
+            return new LongKey<>(conceptName, id);
+        } else if (value instanceof UUID id){
+            return new UuidKey<>(conceptName, id);
+        }
+        throw new IllegalArgumentException(value.getClass() + " is not a recognized key type");
+    }
+    
     public static <K extends Concept> Key<K> parse(String textualRepresentation) {
         if (Strings.isBlank(textualRepresentation)){
             return null;
@@ -74,7 +87,8 @@ public abstract class Key<C extends Concept> {
     public abstract String stringValue();
     public abstract long longValue();
     public abstract UUID uuidValue();
-
+    public abstract Object value();
+    
     @Override
     public int hashCode(){
         return HashCode.asymmetric().add(stringValue()).add(conceptName()).hashCode();

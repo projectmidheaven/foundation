@@ -9,13 +9,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.time.temporal.Temporal;
 import java.util.Arrays;
 
 public class Mirror<T> {
 
     private static final ProxyEngine engine = new CompositeProxyEngine()
-            .add(new NativeMirrorEngine())
             .add(new ByteBuddyProxyEngine())
+            .add(new NativeMirrorEngine())
             ;
 
     public static <X> Mirror<X> reflect(Class<X> type){
@@ -37,6 +38,19 @@ public class Mirror<T> {
 
     public static Maybe<Property> reflect(Field field){
         return PropertyMirrorSupport.fromField(field, field.getDeclaringClass());
+    }
+
+    public static boolean isPossiblyABean(Class<?> type){
+        return isPossiblyABean(ParametricTypeReference.of(type));
+    }
+
+    public static boolean isPossiblyABean(ParametricTypeReference<?> type){
+        return type.kind().isClass()
+                && !type.isAssignableTo(String.class)
+                && !type.isAssignableTo(Number.class)
+                && !type.isAssignableTo(Iterable.class)
+                && !type.isAssignableTo(Temporal.class)
+                ;
     }
 
     private final Class<T> type;
@@ -134,10 +148,13 @@ public class Mirror<T> {
     }
 
     public T proxy(InvocationHandler handler, Class<?>...  otherTypes){
-        if (engine.canProxy(this.type)){
-            return engine.proxy(this.type, otherTypes, handler);
+        if (!engine.canProxy(this.type)) {
+            throw new ReflectionException("Is not possible to proxy " + this.type.getName());
         }
-
-        throw new ReflectionException("Is not possible to proxy " + this.type.getName());
+        try {
+            return engine.proxy(this.type, otherTypes, handler);
+        } catch (Exception e){
+            throw new ReflectionException("Is not possible to proxy " + this.type.getName());
+        }
     }
 }

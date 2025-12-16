@@ -1,28 +1,32 @@
 package org.midheaven.math;
 
-import java.util.Comparator;
 import java.util.Objects;
 
-public class IntervalBuilder<T> {
+public class IntervalBuilder<T, U> {
 
-    final Comparator<T> comparator;
+    final Interval.Domain<T, U> domain;
 
-    IntervalBuilder(Comparator<T> comparator) {
-        this.comparator = comparator;
+    IntervalBuilder(Interval.Domain<T, U> domain) {
+        this.domain = domain;
     }
 
-    Interval<T> between(T min , T max){
+    Interval<T> between(U min , U max){
         Objects.requireNonNull(min);
         Objects.requireNonNull(max);
         return from(min).inclusive().to(max).inclusive();
     }
+    
+    Interval<T> at(U value){
+        Objects.requireNonNull(value);
+        return from(value).inclusive().to(value).inclusive();
+    }
 
-    public StartInclusionBuilder<T> from(T value){
+    public StartInclusionBuilder<T, U> from(U value){
         Objects.requireNonNull(value);
         return new StartInclusionBuilder<>(this, value);
     }
 
-    public EndIntervalBuilder<T> fromInfinity(){
+    public EndIntervalBuilder<T, U> fromInfinity(){
         return new EndIntervalBuilder<>(this, null, true);
     }
 }

@@ -7,7 +7,9 @@ import org.midheaven.collections.Sequence;
 import java.math.BigInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IntTestCases {
 
@@ -25,7 +27,18 @@ public class IntTestCases {
 
         assertThrows(IllegalArgumentException.class, () ->  Int.parse("1.5"));
     }
+    
+    @Test
+    public void zeroDividerAndRemainder(){
+        var r = Int.ZERO.divideAndRemainder(Int.of(10));
+        
+        assertEquals(Int.ZERO ,  r.divider());
+        assertEquals(Int.ZERO ,  r.remainder());
+        
+        assertThrows(ArithmeticException.class, () -> Int.of(2).divideAndRemainder(Int.ZERO));
 
+    }
+    
     @Test
     public void dividerAndRemainder(){
         var r = Int.of(123).divideAndRemainder(Int.of(10));
@@ -38,7 +51,48 @@ public class IntTestCases {
         assertEquals(Int.of(0) ,  r.divider());
         assertEquals(Int.of(2) ,  r.remainder());
     }
-
+    
+    @SuppressWarnings("EqualsWithItself")
+    @Test
+    public void comparisonIsCorrect(){
+    
+        var positive = Int.of(5);
+        var negative = positive.negate();
+        
+        assertEquals(Int.ZERO, Int.ZERO);
+        assertEquals(Int.ONE, Int.ONE);
+        assertEquals(Int.NEGATIVE_ONE, Int.NEGATIVE_ONE);
+        
+        assertSame(Int.ZERO, Int.of(0));
+        assertSame(Int.ONE, Int.of(1));
+        assertSame(Int.NEGATIVE_ONE, Int.of(-1));
+        
+        assertSame(Int.ZERO, Int.of(0L));
+        assertSame(Int.ONE, Int.of(1L));
+        assertSame(Int.NEGATIVE_ONE, Int.of(-1L));
+        
+        assertSame(Int.ZERO, Int.of(BigInteger.ZERO));
+        assertSame(Int.ONE, Int.of(BigInteger.ONE));
+        assertSame(Int.NEGATIVE_ONE, Int.of(BigInteger.ONE.negate()));
+        
+        assertEquals(0, Int.ZERO.compareTo(Int.ZERO));
+        assertEquals(0, Int.ONE.compareTo(Int.ONE));
+        assertEquals(0, Int.NEGATIVE_ONE.compareTo(Int.NEGATIVE_ONE));
+        
+        assertTrue(Int.ZERO.compareTo(Int.ONE) < 0);
+        assertTrue(Int.ONE.compareTo(Int.ZERO) > 0);
+        assertTrue(Int.ZERO.compareTo(Int.NEGATIVE_ONE) > 0);
+        assertTrue(Int.ZERO.compareTo(positive) < 0);
+        assertTrue(Int.ZERO.compareTo(negative) > 0);
+        
+        assertTrue(Int.ONE.compareTo(positive) < 0);
+        assertTrue(Int.ONE.compareTo(negative) > 0);
+        assertTrue(Int.ONE.compareTo(Int.NEGATIVE_ONE) > 0);
+        
+        assertTrue(Int.NEGATIVE_ONE.compareTo(Int.ZERO) < 0);
+        assertTrue(Int.NEGATIVE_ONE.compareTo(Int.ONE) < 0);
+    }
+    
     @Test
     public void sumIsCorrect(){
         var a = Int.of(4);
@@ -110,6 +164,14 @@ public class IntTestCases {
 
         assertEquals (sum, Sequence.builder().of(1,2,3,4,5,6,7).map(Int::of).reduce(Int.ZERO, Int::plus));
         assertEquals (sum, Sequence.builder().of(1,2,3,4,5,6,7).map(Int::of).reduce(Int::plus).orElse(null));
+    }
+    
+    @Test
+    public void sumOfZero(){
+        var intSequence = Enumerable.iterate(0, it -> it).limit(100).map(Int::of).with(Int.arithmetic());
+        
+        assertEquals(Int.ZERO ,  intSequence.sum());
+        
     }
 
 }

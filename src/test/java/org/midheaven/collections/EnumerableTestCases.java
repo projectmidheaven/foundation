@@ -6,6 +6,7 @@ import org.midheaven.math.Numbers;
 import org.midheaven.math.Rational;
 
 import java.util.Comparator;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -117,7 +118,66 @@ public class EnumerableTestCases {
         assertEquals(4, sequence.getAt(4).orElse(-1));
         assertEquals(5, sequence.getAt(5).orElse(-1));
     }
-
+    
+    @Test
+    public void enumerableSkip(){
+        var sequence = Enumerable.from(List.of(1,2,3,4,5,6)).skip(3).toSequence();
+        
+        assertFalse(sequence.isEmpty());
+        assertEquals(3, sequence.count().toInt());
+        assertEquals(4, sequence.getAt(0).orElse(-1));
+        assertEquals(5, sequence.getAt(1).orElse(-1));
+        assertEquals(6, sequence.getAt(2).orElse(-1));
+        
+        var collectedSequence = Enumerable.from(List.of(1,2,3,4,5,6)).skip(3).collect(Collectors.toSequence());
+        
+        assertEquals(sequence, collectedSequence);
+        
+        sequence = Enumerable.from(List.of(1,2,3,4,5,6)).skip(6).toSequence();
+        
+        assertTrue(sequence.isEmpty());
+    }
+    
+    @Test
+    public void enumerableConcat(){
+        var a =  Enumerable.from(List.of(1,2,3)).concat(Enumerable.from(List.of(4,5,6)));
+       
+        assertEquals(6, a.count().toInt());
+        
+        var sequence = a.toSequence();
+        
+        assertFalse(sequence.isEmpty());
+        assertEquals(6, sequence.count().toInt());
+        assertEquals(1, sequence.getAt(0).orElse(-1));
+        assertEquals(2, sequence.getAt(1).orElse(-1));
+        assertEquals(3, sequence.getAt(2).orElse(-1));
+        assertEquals(4, sequence.getAt(3).orElse(-1));
+        assertEquals(5, sequence.getAt(4).orElse(-1));
+        assertEquals(6, sequence.getAt(5).orElse(-1));
+        
+        sequence = Enumerable.from(List.<Integer>of()).concat(Enumerable.from(List.of(1,2,3))).toSequence();
+        
+        assertFalse(sequence.isEmpty());
+        assertEquals(3, sequence.count().toInt());
+        assertEquals(1, sequence.getAt(0).orElse(-1));
+        assertEquals(2, sequence.getAt(1).orElse(-1));
+        assertEquals(3, sequence.getAt(2).orElse(-1));
+        
+        sequence = Enumerable.from(List.of(1,2,3)).concat(Enumerable.from( List.<Integer>of())).toSequence();
+        
+        assertFalse(sequence.isEmpty());
+        assertEquals(3, sequence.count().toInt());
+        assertEquals(1, sequence.getAt(0).orElse(-1));
+        assertEquals(2, sequence.getAt(1).orElse(-1));
+        assertEquals(3, sequence.getAt(2).orElse(-1));
+        
+        sequence = Enumerable.from(List.<Integer>of()).concat(Enumerable.from( List.<Integer>of())).toSequence();
+        
+        assertTrue(sequence.isEmpty());
+        assertEquals(0, sequence.count().toInt());
+        
+    }
+    
     @Test
     public void enumerableGroup(){
         var sequence = Enumerable.iterate(0, it -> it + 1).limit(10).groupBy(it -> it % 2 == 0).toSequence();

@@ -1,7 +1,7 @@
 package org.midheaven.math;
 
 import org.midheaven.lang.HashCode;
-import org.midheaven.lang.NotNull;
+import org.midheaven.lang.Nullable;
 import org.midheaven.lang.ValueClass;
 
 import java.math.BigDecimal;
@@ -33,32 +33,49 @@ final class WholeRational implements Rational {
 
     @Override
     public Rational plus(Rational other) {
-
         if (other instanceof WholeRational wholeRational){
             try {
-                var n = Math.addExact(this.value, wholeRational.value);
-                return new WholeRational(n);
-            }catch (ArithmeticException e){
-                return IntRational.from(this).plus(other);
+                return new WholeRational(Math.addExact(this.value, wholeRational.value));
+            } catch (ArithmeticException e){
+               // fall thought
             }
         }
 
-        return IntRational.from(this).plus(other);
+        return other.plus(value);
+    }
+    
+    @Override
+    public Rational plus(long other) {
+        try {
+            return new WholeRational(Math.addExact(this.value, other));
+        }catch (ArithmeticException e){
+            return DynamicRational.from(this).plus(other);
+        }
     }
 
     @Override
     public Rational minus(Rational other) {
         Objects.requireNonNull(other);
+        
         if (other instanceof WholeRational wholeRational){
             try {
-                var n = Math.subtractExact(this.value, wholeRational.value);
-                return new WholeRational(n);
-            }catch (ArithmeticException e){
-                return IntRational.from(this).minus(other);
+                return new WholeRational(Math.subtractExact(this.value, wholeRational.value));
+            } catch (ArithmeticException e){
+                // fall thought
             }
         }
 
-        return IntRational.from(this).minus(other);
+        // a - b = -b + a
+        return other.negate().plus(this);
+    }
+    
+    @Override
+    public Rational minus(long other) {
+        try {
+            return new WholeRational(Math.subtractExact(this.value, other));
+        }catch (ArithmeticException e){
+            return DynamicRational.from(this).minus(other);
+        }
     }
 
     @Override
@@ -69,11 +86,31 @@ final class WholeRational implements Rational {
                 var n = Math.multiplyExact(this.value, wholeRational.value);
                 return new WholeRational(n);
             }catch (ArithmeticException e){
-                return IntRational.from(this).times(other);
+                return DynamicRational.from(this).times(other);
             }
         }
 
-        return IntRational.from(this).times(other);
+        return other.times(value);
+    }
+    
+    @Override
+    public Rational times(long value) {
+        try {
+            var n = Math.multiplyExact(this.value, value);
+            return new WholeRational(n);
+        }catch (ArithmeticException e){
+            return DynamicRational.from(this).times(value);
+        }
+    }
+    
+    @Override
+    public Rational over(long value) {
+        try {
+            var n = Math.divideExact(this.value, value);
+            return new WholeRational(n);
+        }catch (ArithmeticException e){
+            return DynamicRational.from(this).over(value);
+        }
     }
 
     @Override
@@ -83,12 +120,11 @@ final class WholeRational implements Rational {
 
     @Override
     public Rational invert() {
-        if (this.value == 0){
-            throw new ArithmeticException("Cannot invert zero");
-        }else if (this.value > 0){
-            return  Rational.of(1, this.value);
+        if (this.value == 0) {
+            throw ArithmeticExceptions.divisionByZero();
         }
-        return Rational.of(-1, -this.value);
+        
+        return new InvertedRational(value);
     }
 
     @Override
@@ -96,13 +132,13 @@ final class WholeRational implements Rational {
         return Long.signum(this.value);
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Int numerator() {
-        return new Int64(value);
+        return Int.of(value);
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Int denominator() {
         return Int.ONE;
@@ -114,18 +150,18 @@ final class WholeRational implements Rational {
             var n = Math.multiplyExact(this.value, this.value);
             return new WholeRational(n);
         }catch (ArithmeticException e){
-            return IntRational.from(this).square();
+            return DynamicRational.from(this).square();
         }
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Rational cube() {
         try {
             var n = Math.multiplyExact(this.value, Math.multiplyExact(this.value, this.value));
             return new WholeRational(n);
         }catch (ArithmeticException e){
-            return IntRational.from(this).cube();
+            return DynamicRational.from(this).cube();
         }
     }
 
@@ -153,21 +189,27 @@ final class WholeRational implements Rational {
     public boolean isWhole() {
         return true;
     }
-
+    
+    @Nullable
     @Override
-    public Rational raisedTo(int exponent) {
-        if (exponent == 0){
-            return Rational.ONE;
-        } else if (exponent == 1){
-            return this;
-        } else if (exponent == 2){
-            return this.times(this);
-        }  else if (exponent == 3){
-            return this.times(this).times(this);
+    public Rational increment() {
+        try {
+            return new WholeRational(Math.incrementExact(this.value));
+        } catch (ArithmeticException e){
+            return DynamicRational.from(this).increment();
         }
-        return IntRational.from(this).raisedTo(exponent);
     }
-
+    
+    @Nullable
+    @Override
+    public Rational decrement() {
+        try {
+            return new WholeRational(Math.decrementExact(this.value));
+        } catch (ArithmeticException e){
+            return DynamicRational.from(this).decrement();
+        }
+    }
+    
     @Override
     public int compareTo(long other) {
         return Long.compare(value, other);

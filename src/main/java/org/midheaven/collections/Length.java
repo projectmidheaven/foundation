@@ -16,7 +16,9 @@ public abstract sealed class Length
     }
 
     public abstract Length min(Length other);
-
+    
+    public abstract Length minus(Length other);
+    
     public static final class Finite extends Length {
 
         private final Int count;
@@ -43,6 +45,14 @@ public abstract sealed class Length
             }
             return other;
         }
+        
+        @Override
+        public Length minus(Length other) {
+            if (other instanceof Finite finite){
+                return new Finite(finite.count.minus(this.count));
+            }
+            return other;
+        }
     }
 
     public static final class Infinite extends Length {
@@ -52,6 +62,11 @@ public abstract sealed class Length
         public Length min(Length other) {
             return other;
         }
+        
+        @Override
+        public Length minus(Length other) {
+            return this;
+        }
     }
 
     public static final class Unknown extends Length {
@@ -59,6 +74,11 @@ public abstract sealed class Length
 
         @Override
         public Length min(Length other) {
+            return this;
+        }
+        
+        @Override
+        public Length minus(Length other) {
             return this;
         }
     }

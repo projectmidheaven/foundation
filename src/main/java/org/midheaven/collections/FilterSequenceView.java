@@ -46,7 +46,7 @@ class FilterSequenceView<T> implements Sequence<T> {
             }
             index.increment();
         }
-        return Int.MINUS_ONE;
+        return Int.NEGATIVE_ONE;
     }
 
     @Override
@@ -61,7 +61,7 @@ class FilterSequenceView<T> implements Sequence<T> {
             }
             index.decrement();
         }
-        return Int.MINUS_ONE;
+        return Int.NEGATIVE_ONE;
     }
 
     @Override
@@ -104,7 +104,7 @@ class FilterSequenceView<T> implements Sequence<T> {
     @Override
     public Maybe<T> getAt(Int index) {
         var iterator =  iterator();
-        IntAccumulator position = new IntAccumulator(Int.MINUS_ONE);
+        IntAccumulator position = new IntAccumulator(Int.NEGATIVE_ONE);
         T found = null;
         while (iterator.hasNext() && position.isLessThan(index)) {
             found = iterator.next();

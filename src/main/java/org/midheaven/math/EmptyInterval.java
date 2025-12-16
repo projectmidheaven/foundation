@@ -3,8 +3,10 @@ package org.midheaven.math;
 import org.midheaven.lang.Maybe;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-final class EmptyInterval<T> extends Interval<T> {
-
+final class EmptyInterval<T> implements Interval<T> {
+    
+    static final Interval INSTANCE = new EmptyInterval();
+    
     private final static Boundary EMPTY_BOUNDARY = new Boundary() {
 
         @Override
@@ -22,12 +24,12 @@ final class EmptyInterval<T> extends Interval<T> {
             return Maybe.none();
         }
     };
-
+    
     @Override
-    public Boundary<T> mininum() {
+    public Boundary<T> minimum() {
         return EMPTY_BOUNDARY;
     }
-
+    
     @Override
     public Boundary<T> maximum() {
         return EMPTY_BOUNDARY;
@@ -52,7 +54,7 @@ final class EmptyInterval<T> extends Interval<T> {
     public boolean contains(Interval<T> other) {
         return other.isEmpty();
     }
-
+    
     @Override
     public boolean equals(Object other) {
         return this == other

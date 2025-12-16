@@ -1,13 +1,16 @@
 package org.midheaven.math;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.midheaven.collections.Enumerable;
 import org.midheaven.collections.Sequence;
 
 import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RationalTestCases {
 
@@ -63,6 +66,38 @@ public class RationalTestCases {
         assertEquals(Rational.ZERO, Rational.ZERO.times(b));
         assertEquals(Rational.of(20, 221), a.times(b));
     }
+    
+    @Test
+    public void inversionIsCorrect(){
+        var a = Rational.of(4);
+        var b = Rational.of(BigInteger.valueOf(-5));
+        var c = Rational.of(1, 3);
+        
+        var bigInteger = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE);
+        var d = Rational.of(bigInteger);
+        var g = Rational.of(BigInteger.TWO, BigInteger.valueOf(3));
+        
+        assertEquals(Rational.of(1, 4), a.invert());
+        assertEquals(Rational.of(-1, 5), b.invert());
+        assertEquals(Rational.of(3), c.invert());
+        assertEquals(Rational.of(BigInteger.ONE,bigInteger ), d.invert());
+        assertEquals(Rational.of(BigInteger.valueOf(3), BigInteger.TWO), g.invert());
+        
+        assertEquals(Rational.of(1, 9), c.square());
+        assertEquals(Rational.of(1, 27), c.cube());
+        
+        assertEquals(Rational.ONE, b.times(b.invert()));
+        assertEquals(Rational.ONE, a.times(a.invert()));
+        assertEquals(Rational.ONE, c.times(c.invert()));
+        assertEquals(Rational.ONE, d.times(d.invert()));
+        assertEquals(Rational.ONE, g.times(g.invert()));
+        
+        assertEquals(Rational.ONE, b.invert().times(b));
+        assertEquals(Rational.ONE, a.invert().times(a));
+        assertEquals(Rational.ONE, c.invert().times(c));
+        assertEquals(Rational.ONE, d.invert().times(d));
+        assertEquals(Rational.ONE, g.invert().times(g));
+    }
 
     @Test
     public void divisionIsCorrect(){
@@ -75,11 +110,19 @@ public class RationalTestCases {
         assertEquals(Rational.ZERO, Rational.ZERO.over(b));
         assertEquals(Rational.of(68, 65), a.over(b));
     }
-
+    
+    @Test
+    public void raiseToPowerIsCorrect(){
+        var a = Rational.of(2, 11);
+        
+        assertEquals( Rational.of(4, 121) , a.raisedTo(2));
+        assertEquals( Rational.of(121, 4) , a.raisedTo(-2));
+    }
+    
     @Test
     public void enumerableSum(){
         var rationalEnumerable = Enumerable.iterate(Rational.ONE, it -> it.plus(1))
-                .map(it -> it.invert())
+                .map(MultiplicationGroup::invert)
                 .limit(10)
                 .with(Rational.arithmetic());
 
@@ -130,5 +173,22 @@ public class RationalTestCases {
         assertEquals(c, c.ceil());
         assertEquals(Rational.ZERO, d.ceil());
         assertEquals(Rational.ONE.negate(), f.ceil());
+    }
+    
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    public void approximationEnumerable(){
+        var target = Rational.PI.square().over(6);
+        
+        var value = Enumerable.iterate(1 , i -> i + 1)
+                        .limit(10_000)
+                        .map(i -> Rational.of(1, i).square())
+                        .with(Rational.arithmetic())
+                        .sum();
+      
+        var diff = target.minus(value);
+        assertTrue(diff.isLessThan(Rational.parse("0.0001")) , "Difference is " + diff.toBigDecimal());
+        
+        
     }
 }

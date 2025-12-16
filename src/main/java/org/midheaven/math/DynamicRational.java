@@ -1,21 +1,21 @@
 package org.midheaven.math;
 
 import org.midheaven.lang.HashCode;
-import org.midheaven.lang.NotNull;
+import org.midheaven.lang.Nullable;
 import org.midheaven.lang.ValueClass;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 @ValueClass
-final class IntRational implements Rational{
+final class DynamicRational implements Rational{
 
-    static IntRational from(Rational other){
+    static DynamicRational from(Rational other){
         return of(other.numerator(), other.denominator());
     }
-    static IntRational of(Int numerator, Int denominator){
+    
+    static DynamicRational of(Int numerator, Int denominator){
         if (denominator.sign() == 0){
-            throw new ArithmeticException("Denominator cannot be zero");
+            throw ArithmeticExceptions.divisionByZero();
         } else if (denominator.sign()  < 0) {
             // switch signs
             numerator = numerator.negate();
@@ -24,62 +24,53 @@ final class IntRational implements Rational{
 
         if (denominator.isOne()){
             // gcd division is not necessary
-            return new IntRational(numerator, denominator);
+            return new DynamicRational(numerator, denominator);
         }
 
         var gcd = numerator.gcd(denominator);
         numerator = numerator.divideAndRemainder(gcd).divider();
         denominator  = denominator.divideAndRemainder(gcd).divider();
 
-        return new IntRational(numerator, denominator);
+        return new DynamicRational(numerator, denominator);
     }
     
     final Int numerator;
     final Int denominator;
 
-    IntRational(Int numerator, Int denominator){
+    DynamicRational(Int numerator, Int denominator){
         this.numerator = numerator;
         this.denominator = denominator;
     }
 
-    @Override
-    public boolean isNegativeOne() {
-        return false;
-    }
 
-    @NotNull
+
+    @Nullable
     @Override
     public Int numerator() {
         return numerator;
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Int denominator() {
         return denominator;
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Rational square() {
         return of(numerator.square(), denominator.square());
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Rational cube() {
         return of(numerator.cube(), denominator.cube());
     }
-
-    @NotNull
-    @Override
-    public Rational raisedTo(int exponent) {
-        return of(numerator.raisedTo(exponent), denominator.raisedTo(exponent));
-    }
-
+    
     @Override
     public BigDecimal toBigDecimal() {
-        return new BigDecimal(this.numerator.toBigInteger()).divide(new BigDecimal(this.denominator.toBigInteger()), 20, RoundingMode.HALF_DOWN);
+        return RationalDivisionSpecification.reduceToBigDecimal(this);
     }
 
     @Override
@@ -87,7 +78,7 @@ final class IntRational implements Rational{
         return toBigDecimal().longValue();
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Rational floor() {
         // ⌊−x⌋=−⌊x⌋−1.
@@ -100,7 +91,7 @@ final class IntRational implements Rational{
         ).reduce();
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Rational ceil() {
         // ⌈x/y⌉=⌊(x−1)/y⌋+1
@@ -109,12 +100,12 @@ final class IntRational implements Rational{
             return this.abs().floor().negate();
         }
         return of(
-                Int.ONE.plus(this.numerator.minus(Int.ONE).divideAndRemainder(this.denominator).divider()),
+                this.numerator.decrement().divideAndRemainder(this.denominator).divider().increment(),
                 Int.ONE
         ).reduce();
     }
 
-    @NotNull
+    @Nullable
     Rational reduce() {
         if (this.denominator.isOne() && this.numerator instanceof BigInt bigNumerator){
             var reduced = bigNumerator.reduce();
@@ -131,7 +122,21 @@ final class IntRational implements Rational{
     public boolean isWhole() {
         return this.denominator.isOne();
     }
-
+    
+    @Nullable
+    @Override
+    public Rational increment() {
+        // a /b + 1 = a / b + b/ b = (a+b) b
+        return DynamicRational.of(numerator.plus(denominator), denominator);
+    }
+    
+    @Nullable
+    @Override
+    public Rational decrement() {
+        // a /b - 1 = a / b - b/ b = (a-b) b
+        return DynamicRational.of(numerator.minus(denominator), denominator);
+    }
+    
     @Override
     public int compareTo(long other) {
         if (other == 0){
@@ -164,27 +169,27 @@ final class IntRational implements Rational{
         return numerator.isZero();
     }
 
-    @NotNull
+    @Nullable
     @Override
-    public Rational plus(@NotNull Rational other) {
+    public Rational plus(@Nullable Rational other) {
         return of(
             this.numerator.times(other.denominator()).plus(this.denominator.times(other.numerator())),
             this.denominator.times(other.denominator())
         );
     }
 
-    @NotNull
+    @Nullable
     @Override
-    public Rational times(@NotNull Rational other) {
+    public Rational times(@Nullable Rational other) {
         return of(
             this.numerator.times(other.numerator()),
             this.denominator.times(other.denominator())
         );
     }
 
-    @NotNull
+    @Nullable
     @Override
-    public Rational over(@NotNull Rational other) {
+    public Rational over(@Nullable Rational other) {
         return of(
                 this.numerator.times(other.denominator()),
                 this.denominator.times(other.numerator())
@@ -199,10 +204,7 @@ final class IntRational implements Rational{
         return of(denominator, numerator);
     }
 
-    @Override
-    public boolean isOne() {
-        return numerator.equals(denominator);
-    }
+
 
     @Override
     public boolean equals(Object other){

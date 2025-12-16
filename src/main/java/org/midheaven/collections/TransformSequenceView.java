@@ -45,7 +45,7 @@ final class TransformSequenceView<O, T> implements Sequence<T>{
             }
             index.increment();
         }
-        return Int.MINUS_ONE;
+        return Int.NEGATIVE_ONE;
     }
 
     @Override
@@ -59,7 +59,7 @@ final class TransformSequenceView<O, T> implements Sequence<T>{
             }
             index = index.minus(1);
         }
-        return Int.MINUS_ONE;
+        return Int.NEGATIVE_ONE;
     }
 
     @Override
@@ -151,28 +151,3 @@ final class TransformSequenceView<O, T> implements Sequence<T>{
 
 }
 
-class TransformIterator<O,T> implements Iterator<T> {
-
-    private final Iterator<O> original;
-    private final Function<O, T> transformation;
-
-    TransformIterator(Iterator<O> original, Function<O,T> transformation){
-        this.original = original;
-        this.transformation = transformation;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return original.hasNext();
-    }
-
-    @Override
-    public T next() {
-        return transformation.apply(original.next());
-    }
-
-    @Override
-    public void remove(){
-        original.remove();
-    }
-}

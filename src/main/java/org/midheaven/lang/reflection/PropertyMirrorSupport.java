@@ -128,10 +128,7 @@ class PropertyMirrorSupport {
 
     private static Maybe<Property> from(PropertyMetaInfo info) {
         return Maybe.<Property>of(new MethodBaseProperty(
-                info.propertyName,
-                info.accessor,
-                info.modifier,
-                info.field,
+                info,
                 info.valueType().orElse(null),
                 info.accessor != null ? info.accessor.getReturnType() : null
         )).filter(p -> info.accessor != null || info.modifier != null); // single fields are not properties

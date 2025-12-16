@@ -37,6 +37,7 @@ public class ArchitectureConformityTestCases {
                 .check(allClasses);
 
         fields().that().areDeclaredInClassesThat().areAnnotatedWith(ValueClass.class)
+                .and().areNotStatic()
                 .should().beFinal()
                 .andShould().notHaveModifier(JavaModifier.PUBLIC)
                 .check(allClasses);

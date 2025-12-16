@@ -65,7 +65,12 @@ public interface Enumerable<T> extends Iterable<T> {
 
         return Maybe.none();
     }
-
+    
+    /**
+     * Best effort to count the elements.
+     * If the Enumerable is Infinite, an {link IllegalStateException} will be thrown
+     * @return the number of elements in the Enumerable
+     */
     default Int count() {
         var enumerator = enumerator();
         var length = enumerator.length();
@@ -241,7 +246,11 @@ public interface Enumerable<T> extends Iterable<T> {
     default <E extends Enumerable<T>> E as(EnumerableExtension<T, E> extension){
         return extension.extend(this);
     }
-
+    
+    default Enumerable<T> concat(Enumerable<T> other) {
+        return new ComposedEnumerable<>(this, other);
+    }
+    
     default Enumerable<T> filter(Predicate<T> predicate){
         return new FilterPipe<>(predicate).applyTo(this);
     }
@@ -267,6 +276,10 @@ public interface Enumerable<T> extends Iterable<T> {
 
     default Enumerable<T> limit(long maxCount){
         return new LimitingPipe<T>(maxCount).applyTo(this);
+    };
+    
+    default Enumerable<T> skip(long minCount){
+        return new SkipPipe<T>(minCount).applyTo(this);
     };
 
     default Enumerable<T> distinct(){

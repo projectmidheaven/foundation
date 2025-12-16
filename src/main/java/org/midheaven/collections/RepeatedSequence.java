@@ -52,12 +52,12 @@ final class RepeatedSequence<T> implements Sequence<T> {
 
     @Override
     public Int indexOf(Object o) {
-        return value.equals(o) ? Int.ZERO : Int.MINUS_ONE;
+        return value.equals(o) ? Int.ZERO : Int.NEGATIVE_ONE;
     }
 
     @Override
     public Int lastIndexOf(Object o) {
-        return value.equals(o) ? count.minus(1)  : Int.MINUS_ONE;
+        return value.equals(o) ? count.minus(1)  : Int.NEGATIVE_ONE;
     }
 
     @Override
@@ -93,7 +93,7 @@ final class RepeatedSequence<T> implements Sequence<T> {
     @Override
     public ListIterator<T> iterator() {
         return new ListIterator<T>() {
-            IntAccumulator index = new IntAccumulator(Int.MINUS_ONE);
+            final IntAccumulator index = new IntAccumulator(Int.NEGATIVE_ONE);
             @Override
             public boolean hasNext() {
                 return index.isLessThan(count);

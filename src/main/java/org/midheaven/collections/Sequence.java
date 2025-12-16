@@ -9,11 +9,10 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public interface Sequence<T> extends Assortment<T> {
-
+ 
 	/**
 	 * Returns a builder for Sequence. The default is an immutable sequence, use {@code editable()} and {@code resizable()}
 	 * to build mutable versions.
-	 * @return
 	 */
 	static SequenceBuilder builder(){
 		return new SequenceBuilder();

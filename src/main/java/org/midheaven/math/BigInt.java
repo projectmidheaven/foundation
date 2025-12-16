@@ -1,6 +1,6 @@
 package org.midheaven.math;
 
-import org.midheaven.lang.NotNull;
+import org.midheaven.lang.Nullable;
 import org.midheaven.lang.ValueClass;
 
 import java.math.BigDecimal;
@@ -25,25 +25,25 @@ public final class BigInt implements Int {
         return value.signum();
     }
 
-    @NotNull
+    @Nullable
     @Override
     public BigInteger toBigInteger() {
         return value;
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Int square() {
         return new BigInt(this.value.pow(2));
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Int cube() {
         return new BigInt(this.value.pow(3));
     }
 
-    @NotNull
+    @Nullable
     @Override
     public BigDecimal toBigDecimal() {
         return new BigDecimal(this.value.toString());
@@ -64,7 +64,7 @@ public final class BigInt implements Int {
         return Rational.of(this.value);
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Int raisedTo(int exponent) {
         return new BigInt(value.pow(exponent));
@@ -74,7 +74,17 @@ public final class BigInt implements Int {
     public Int gcd(Int other) {
         return new BigInt(this.toBigInteger().gcd(other.toBigInteger()));
     }
-
+    
+    @Override
+    public Int increment() {
+        return new BigInt(value.add(BigInteger.ONE)).reduce();
+    }
+    
+    @Override
+    public Int decrement() {
+        return new BigInt(value.subtract(BigInteger.ONE)).reduce();
+    }
+    
     @Override
     public int compareTo(long other) {
         return value.compareTo(BigInteger.valueOf(other));
@@ -85,7 +95,7 @@ public final class BigInt implements Int {
         return value.compareTo(other.toBigInteger());
     }
 
-    @NotNull
+    @Nullable
     @Override
     public Int negate() {
         return new BigInt(value.negate());
@@ -96,15 +106,15 @@ public final class BigInt implements Int {
         return value.signum() == 0;
     }
 
-    @NotNull
+    @Nullable
     @Override
-    public Int plus(@NotNull Int other) {
+    public Int plus(@Nullable Int other) {
         return new BigInt(value.add(other.toBigInteger()));
     }
 
-    @NotNull
+    @Nullable
     @Override
-    public Int minus(@NotNull Int other) {
+    public Int minus(@Nullable Int other) {
         return new BigInt(value.subtract(other.toBigInteger()));
     }
 
@@ -113,23 +123,22 @@ public final class BigInt implements Int {
         return value.equals(BigInteger.ONE);
     }
 
-    @NotNull
+    @Nullable
     @Override
-    public Int times(@NotNull Int other) {
+    public Int times(@Nullable Int other) {
         return new BigInt(value.multiply(other.toBigInteger()));
     }
 
     public Int reduce() {
         try {
-            return new Int32(value.intValueExact());
+            return Int.of(value.intValueExact());
         } catch (ArithmeticException e){
             try {
-                return new Int64(value.longValueExact());
+                return Int.of(value.longValueExact());
             } catch (ArithmeticException e2){
                 return this;
             }
         }
-
     }
 
     @Override

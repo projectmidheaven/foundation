@@ -34,4 +34,9 @@ final class UuidKey<C extends Concept> extends Key<C> {
     public UUID uuidValue() {
        return value;
     }
+    
+    @Override
+    public Object value() {
+        return value;
+    }
 }

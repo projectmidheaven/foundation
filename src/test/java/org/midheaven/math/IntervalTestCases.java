@@ -1,8 +1,9 @@
 package org.midheaven.math;
 
 import org.junit.jupiter.api.Test;
+import org.midheaven.lang.Maybe;
 
-import java.util.Comparator;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -13,10 +14,10 @@ public class IntervalTestCases {
     @Test
     public void boundariesAreConsistent(){
 
-        var minor = new ActualBoundary<Integer>(Comparator.naturalOrder(), true, true, null);
-        var min = new ActualBoundary<Integer>(Comparator.naturalOrder(), true, true, 1);
-        var max = new ActualBoundary<Integer>(Comparator.naturalOrder(), false, true, 4);
-        var major = new ActualBoundary<Integer>(Comparator.naturalOrder(), false, true, null);
+        var minor = new ActualBoundary<Integer>(Interval.Domain.natural(), true, true, null);
+        var min = new ActualBoundary<Integer>(Interval.Domain.natural(), true, true, 1);
+        var max = new ActualBoundary<Integer>(Interval.Domain.natural(), false, true, 4);
+        var major = new ActualBoundary<Integer>(Interval.Domain.natural(), false, true, null);
 
         assertTrue(minor.isEqualTo(minor));
         assertTrue(major.isEqualTo(major));
@@ -127,5 +128,19 @@ public class IntervalTestCases {
         assertTrue(a.intersects(b));
         assertTrue(b.intersects(a));
 
+    }
+    
+    @Test
+    public void applyIsConsistent(){
+        var a = Interval.ranging(Integer.class).between(3, 9);
+      
+        assertEquals(Maybe.of(6), a.apply(distance()));
+        assertEquals(Maybe.of(0), Interval.<Integer>empty().apply(distance()));
+    }
+    
+    private <R> Function<Interval<Integer>, Maybe<Integer>> distance() {
+        return (i) -> i.isEmpty()
+                          ? Maybe.of(0)
+                          : i.maximum().value().merge(i.minimum().value(), (max, min) -> max - min);
     }
 }

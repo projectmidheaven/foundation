@@ -34,4 +34,9 @@ final class StringKey<C extends Concept> extends Key<C> {
     public UUID uuidValue() {
         return UUID.fromString(value);
     }
+    
+    @Override
+    public Object value() {
+        return value;
+    }
 }

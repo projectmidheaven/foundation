@@ -9,25 +9,25 @@ import java.util.Optional;
 
 final class MethodBaseProperty implements Property {
 
-    private final String name;
+    private final PropertyMetaInfo info;
     private final Method getter;
     private final Method setter;
     private final Class<?> valueType;
     private final Class<?> readType;
     private final Field field;
 
-    MethodBaseProperty(String name, Method getter, Method setter, Field field, Class<?> valueType, Class<?> readType) {
-        this.name = name;
-        this.field = field;
-        this.getter = getter;
-        this.setter = setter;
+    MethodBaseProperty(PropertyMetaInfo info,  Class<?> valueType, Class<?> readType) {
+        this.info =  info;
+        this.getter = info.accessor;
+        this.setter =  info.modifier;
+        this.field =   info.field;
         this.valueType = valueType;
         this.readType = readType;
     }
 
     @Override
     public String name() {
-        return name;
+        return info.propertyName;
     }
 
     @Override
@@ -72,18 +72,30 @@ final class MethodBaseProperty implements Property {
 
     @Override
     public void setValue(Object instance, Object value) {
-        if (setter != null){
-            try {
-                setter.invoke(instance, value);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new ReflectionException(e);
+        try {
+            if (setter != null) {
+                try {
+                    setter.invoke(instance, value);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new ReflectionException(e);
+                }
+            } else if (field != null) {
+                try {
+                    field.set(instance, value);
+                } catch (IllegalAccessException e) {
+                    throw new ReflectionException(e);
+                }
             }
-        } else if (field != null){
-            try {
-                field.set(instance, value);
-            } catch (IllegalAccessException e) {
-                throw new ReflectionException(e);
-            }
+        } catch (IllegalArgumentException e){
+            throw new ReflectionException(
+                    "Cannot set value "
+                    + value
+                    + " of type " + value.getClass()
+                    + " into property "
+                    + this.info.declaringClass.getName()
+                    + "." + this.info.propertyName
+                    + " of type " + this.valueType
+            );
         }
 
     }

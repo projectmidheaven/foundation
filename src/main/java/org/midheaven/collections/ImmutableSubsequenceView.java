@@ -57,7 +57,7 @@ class ImmutableSubsequenceView<T> implements Sequence<T> {
 	public Int lastIndexOf(Object o) {
 		var index = original.lastIndexOf(o);
 		if (index.isLessThan(fromIndex) || index.isGreaterThan(toIndex)) {
-			return Int.MINUS_ONE;
+			return Int.NEGATIVE_ONE;
 		}
 		return index.minus(fromIndex);
 	}

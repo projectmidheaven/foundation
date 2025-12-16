@@ -1,10 +1,13 @@
 package org.midheaven.math;
 
-import org.midheaven.lang.NotNull;
+import org.midheaven.lang.Nullable;
 
 public interface AdditionGroup<T extends AdditionGroup<T>> extends AdditionMonoid<T>{
 
-    @NotNull T negate();
-    @NotNull T minus(@NotNull T other);
-    @NotNull T abs();
+    @Nullable
+    T negate();
+    @Nullable
+    T minus(@Nullable T other);
+    @Nullable
+    T abs();
 }

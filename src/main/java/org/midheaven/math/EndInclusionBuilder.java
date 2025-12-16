@@ -1,28 +1,30 @@
 package org.midheaven.math;
 
-public class EndInclusionBuilder<T> {
+public class EndInclusionBuilder<T, U> {
 
-    private final EndIntervalBuilder<T> endIntervalBuilder;
-    private final T maximum;
+    private final EndIntervalBuilder<T, U> endIntervalBuilder;
+    private final U maximum;
 
-    public EndInclusionBuilder(EndIntervalBuilder<T> endIntervalBuilder,  T maximum) {
+    public EndInclusionBuilder(EndIntervalBuilder<T, U> endIntervalBuilder,  U maximum) {
         this.endIntervalBuilder = endIntervalBuilder;
         this.maximum = maximum;
     }
 
     public Interval<T> inclusive(){
+        var domain =  this.endIntervalBuilder.intervalBuilder.domain;
         return new BoundaryInterval<>(
-                this.endIntervalBuilder.intervalBuilder.comparator,
-                new ActualBoundary<>(this.endIntervalBuilder.intervalBuilder.comparator, true, endIntervalBuilder.isOpen, endIntervalBuilder.minimum),
-                new ActualBoundary<>(this.endIntervalBuilder.intervalBuilder.comparator, false, false, maximum)
-        );
+            domain,
+            new ActualBoundary<>(domain, true, endIntervalBuilder.isOpen,  endIntervalBuilder.minimum),
+            new ActualBoundary<>(domain, false, false, maximum)
+        ).reduce();
     }
 
     public Interval<T> exclusive(){
+        var domain =  this.endIntervalBuilder.intervalBuilder.domain;
         return new BoundaryInterval<>(
-                this.endIntervalBuilder.intervalBuilder.comparator,
-                new ActualBoundary<>(this.endIntervalBuilder.intervalBuilder.comparator, true, endIntervalBuilder.isOpen, endIntervalBuilder.minimum),
-                new ActualBoundary<>(this.endIntervalBuilder.intervalBuilder.comparator, false, true, maximum)
+            domain,
+            new ActualBoundary<>(domain, true, endIntervalBuilder.isOpen, endIntervalBuilder.minimum),
+            new ActualBoundary<>(domain, false, true, maximum)
         ).reduce();
     }
 }

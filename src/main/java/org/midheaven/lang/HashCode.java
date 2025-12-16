@@ -13,61 +13,62 @@ public class HashCode {
 		
 		int hashCode();
 
-		@NotNull Composition add(int value);
+		@Nullable
+        Composition add(int value);
 		
-		default @NotNull Composition add(long value) {
+		default @Nullable Composition add(long value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @NotNull Composition add(boolean value) {
+		default @Nullable Composition add(boolean value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @NotNull Composition add(double value) {
+		default @Nullable Composition add(double value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @NotNull Composition add(float value) {
+		default @Nullable Composition add(float value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @NotNull Composition add(Object value) {
+		default @Nullable Composition add(Object value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @NotNull <T> Composition add(T[] value) {
+		default @Nullable <T> Composition add(T[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @NotNull Composition add(byte[] value) {
+		default @Nullable Composition add(byte[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @NotNull Composition add(short[] value) {
+		default @Nullable Composition add(short[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @NotNull Composition add(char[] value) {
+		default @Nullable Composition add(char[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @NotNull Composition add(int[] value) {
+		default @Nullable Composition add(int[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @NotNull Composition add(long[] value) {
+		default @Nullable Composition add(long[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @NotNull Composition add(float[] value) {
+		default @Nullable Composition add(float[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @NotNull Composition add(double[] value) {
+		default @Nullable Composition add(double[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @NotNull Composition add(boolean[] value) {
+		default @Nullable Composition add(boolean[] value) {
 			return add(HashCode.of(value));
 		}
 		
@@ -138,7 +139,7 @@ public class HashCode {
 	 *
 	 * @return a symmetric {@code HashCode.Composition}
 	 */
-	public static @NotNull Composition symmetric() {
+	public static @Nullable Composition symmetric() {
 		return new SymmetricHashCodeComposition();
 	}
 
@@ -147,7 +148,7 @@ public class HashCode {
 	 *
 	 * @return an asymmetric {@code HashCode.Composition}
 	 */
-	public static @NotNull Composition asymmetric() {
+	public static @Nullable Composition asymmetric() {
 		return new AsymmetricHashCodeComposition();
 	}
 	

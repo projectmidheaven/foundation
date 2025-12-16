@@ -60,7 +60,7 @@ class ImmutableSequenceArrayWrapper<T> implements Sequence<T> {
                 return Int.of(index);
             }
         }
-        return Int.MINUS_ONE;
+        return Int.NEGATIVE_ONE;
     }
 
     @Override
@@ -75,7 +75,7 @@ class ImmutableSequenceArrayWrapper<T> implements Sequence<T> {
                 return Int.of(index);
             }
         }
-        return Int.MINUS_ONE;
+        return Int.NEGATIVE_ONE;
     }
 
     @Override

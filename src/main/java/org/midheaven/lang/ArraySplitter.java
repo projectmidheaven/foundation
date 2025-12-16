@@ -1,35 +1,35 @@
 package org.midheaven.lang;
 
 import org.midheaven.collections.Sequence;
-import org.midheaven.math.Int;
 
-final class ArraySplitter implements Strings.Splitter {
+final class ArraySplitter extends AbstractIndexedSplitter {
 
-    private String[] parts;
+    static Strings.Splitter fromArray(String[] array){
+        if (array.length == 0){
+            return EmptySplitter.instance();
+        }
+        return new ArraySplitter(array);
+    }
+    
+    private final String[] parts;
 
-	ArraySplitter(String[] parts) {
+	private ArraySplitter(String[] parts) {
 		this.parts = parts;
 	}
-
-	@Override
-	public Int count() {
-		return Int.of(parts.length);
-	}
-
-	@Override
-	public String get(int index) {
+    
+    @Override
+    protected int length() {
+        return parts.length;
+    }
+    
+    @Override
+	protected String secureGetAt(int index) {
 		return parts[index];
 	}
-
-	@Override
+    
+    @Override
 	public Sequence<String> sequence() {
 		return Sequence.builder().of(parts);
 	}
-
-
-	@Override
-	public boolean isEmpty() {
-		return parts.length  == 0;
-	}
-
+ 
 }

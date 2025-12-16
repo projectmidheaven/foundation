@@ -30,12 +30,12 @@ class ImmutableEmptySequence<T> implements Sequence<T> {
 
 	@Override
 	public Int indexOf(Object o) {
-		return Int.MINUS_ONE;
+		return Int.NEGATIVE_ONE;
 	}
 
 	@Override
 	public Int lastIndexOf(Object o) {
-		return Int.MINUS_ONE;
+		return Int.NEGATIVE_ONE;
 	}
 
 	@Override

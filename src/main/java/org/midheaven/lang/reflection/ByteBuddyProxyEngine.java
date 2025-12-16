@@ -5,6 +5,7 @@ import net.bytebuddy.implementation.InvocationHandlerAdapter;
 import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
 public class ByteBuddyProxyEngine implements ProxyEngine {
@@ -13,7 +14,8 @@ public class ByteBuddyProxyEngine implements ProxyEngine {
         return !type.isPrimitive()
                 && !type.isRecord()
                 && !type.isEnum()
-                && !type.isSealed();
+                && !type.isSealed()
+                && !Proxy.isProxyClass(type);
     }
 
     @Override

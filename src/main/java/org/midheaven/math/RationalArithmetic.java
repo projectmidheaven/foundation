@@ -28,7 +28,7 @@ final class RationalArithmetic implements Arithmetic<Rational, Rational>{
 
     @Override
     public ArithmeticAccumulatorCollector<Rational, Rational> averageCollector(){
-        return new ArithmeticAccumulatorCollector<>(new RationalSumArithmeticAccumulator((total, count) -> total.over(count)));
+        return new ArithmeticAccumulatorCollector<>(new RationalSumArithmeticAccumulator(Rational::over));
     }
 }
 

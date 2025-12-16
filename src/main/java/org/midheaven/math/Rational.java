@@ -1,62 +1,100 @@
 package org.midheaven.math;
 
 import org.midheaven.lang.LongOrdered;
-import org.midheaven.lang.NotNull;
+import org.midheaven.lang.Nullable;
 import org.midheaven.lang.Ordered;
 import org.midheaven.lang.Signed;
 import org.midheaven.lang.Strings;
+import org.midheaven.lang.ValueClass;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
 
-public interface Rational extends Ordered<Rational>, LongOrdered, Signed<Rational>, Field<Rational>{
-
-
-    static @NotNull Arithmetic<Rational, Rational> arithmetic(){
+@ValueClass
+public sealed interface Rational extends Ordered<Rational>, LongOrdered, Signed<Rational>, Field<Rational>
+    permits DynamicRational, InvertedRational, RationalNegativeOne, RationalOne, RationalZero, WholeRational {
+    
+    static @Nullable Arithmetic<Rational, Rational> arithmetic(){
         return RationalArithmetic.INSTANCE;
     }
 
-    @NotNull Rational ZERO = new WholeRational(0);
-    @NotNull Rational ONE = new WholeRational(1);
-    @NotNull Rational MINUS_ONE = new WholeRational(-1);
-    @NotNull Rational TEN = new WholeRational(10L);
-
-    static Rational of(long numerator, long denominator){
-        if (denominator == 1){
-            return new WholeRational(numerator);
-        } else if (denominator == -1){
-            return new WholeRational(-numerator);
+    @Nullable
+    Rational ZERO = new RationalZero();
+    @Nullable
+    Rational ONE = new RationalOne();
+    @Nullable
+    Rational NEGATIVE_ONE = new RationalNegativeOne();
+    @Nullable
+    Rational TEN =  new WholeRational(10);
+    @Nullable
+    Rational PI = of(3141592653589793238L, 1000000000000000000L);
+    
+    static @Nullable Rational of(long numerator, long denominator){
+        if (numerator == 0){
+            return ZERO;
+        } else if (numerator == denominator){
+            return ONE;
+        } else if (numerator == -denominator){
+            return NEGATIVE_ONE;
+        } else if (denominator == 1){
+            // whole number
+            return of(numerator);
+        } else if (denominator < 0){
+            // normalize the negative sign on the numerator
+            return of(-numerator, - denominator);
+        }  else if (numerator == 1){
+            return new InvertedRational(denominator);
         }
-        return IntRational.of(Int.of(numerator), Int.of(denominator)).reduce();
+        return DynamicRational.of(Int.of(numerator), Int.of(denominator)).reduce();
     }
-
-    static Rational of(long numerator){
+    
+    static @Nullable Rational of(long numerator){
+        if (numerator == 0){
+            return ZERO;
+        } else if (numerator == 1){
+            return ONE;
+        }  else if (numerator == -1){
+            return NEGATIVE_ONE;
+        }
         return new WholeRational(numerator);
     }
-
+    
     static Rational of(BigInteger numerator, BigInteger denominator){
-        if (numerator == null){
+        if (numerator == null || denominator == null){
             return null;
         }
-        Objects.requireNonNull(denominator);
-
-        return IntRational.of(Int.of(numerator), Int.of(denominator)).reduce();
+        
+        return DynamicRational.of(Int.of(numerator), Int.of(denominator)).reduce();
     }
-
+    
     static Rational of(BigInteger numerator){
         if (numerator == null){
             return null;
+        } else if (numerator.signum() == 0){
+            return ZERO;
+        } else if (BigInteger.ONE.equals(numerator)){
+            return ONE;
+        } else if (BigInteger.ONE.negate().equals(numerator)){
+            return NEGATIVE_ONE;
         }
-        return of(numerator, BigInteger.ONE);
+        return DynamicRational.of(Int.of(numerator), Int.ONE);
     }
-
+    
     static Rational of(BigDecimal decimal){
         if (decimal == null){
             return null;
+        } else if (decimal.signum() == 0){
+            return ZERO;
+        } else if (BigDecimal.ONE.equals(decimal)){
+            return ONE;
+        } else if (BigDecimal.ONE.negate().equals(decimal)){
+            return NEGATIVE_ONE;
         }
+        
         int scale = decimal.scale();
         if (scale <= 0) {
+            // whole number
             return of(decimal.toBigInteger(), BigInteger.ONE);
         } else {
             var denominator = BigInteger.TEN.pow(scale);
@@ -64,7 +102,7 @@ public interface Rational extends Ordered<Rational>, LongOrdered, Signed<Rationa
             return of(numerator, denominator);
         }
     }
-
+    
     static Rational parse(String number){
         if (number == null || number.isBlank()){
             return null;
@@ -82,54 +120,64 @@ public interface Rational extends Ordered<Rational>, LongOrdered, Signed<Rationa
         }
         return of(new BigDecimal(number));
     }
-
+    
     static Rational from(Double value){
         if (value == null || value.isInfinite() || value.isNaN()){
             return null;
         }
         return parse(value.toString());
     }
-
-    boolean isNegativeOne();
-
-    default Rational plus(long other) {
+    
+    @Override
+    boolean equals(Object other);
+    
+    @Override
+    int hashCode();
+    
+    default @Nullable Rational plus(long other) {
         return this.plus(Rational.of(other));
     }
-
-    default Rational minus(Rational other) {
+    
+    default @Nullable Rational minus(Rational other) {
         Objects.requireNonNull(other);
-        return this.plus(other.negate());
+        // a - b = -b + a
+        return other.negate().plus(this);
     }
-
-    default Rational minus(long other) {
+    
+    default @Nullable Rational minus(long other) {
         return this.plus(Rational.of(-other));
     }
-
-    default Rational times(long other) {
+    
+    default @Nullable Rational times(long other) {
         return this.times(Rational.of(other));
     }
-
-    default Rational over(Rational other) {
+    
+    default @Nullable Rational over(Rational other) {
         Objects.requireNonNull(other);
         return this.times(other.invert());
     }
-
-    default Rational over(long other) {
+    
+    default @Nullable Rational over(long other) {
         return this.over(Rational.of(other));
     }
-
-    @NotNull default Rational abs(){
+    
+    default @Nullable Rational abs(){
         return this.sign() < 0 ? this.negate() : this;
     }
-
-    @NotNull Int numerator();
-    @NotNull Int denominator();
-
-    @NotNull Rational square();
-
-    @NotNull Rational cube();
-
-    @NotNull BigDecimal toBigDecimal();
+    
+    @Nullable
+    Int numerator();
+    @Nullable
+    Int denominator();
+    
+    @Nullable
+    Rational square();
+    
+    @Nullable
+    Rational cube();
+    
+    @Nullable
+    BigDecimal toBigDecimal();
 
     /***
      * The equivalent {@code Long} value.
@@ -138,14 +186,40 @@ public interface Rational extends Ordered<Rational>, LongOrdered, Signed<Rationa
      * @return the equivalent long value.
      */
     long toLong();
-
-    @NotNull Rational floor();
-
-    @NotNull Rational ceil();
-
+    
+    @Nullable
+    Rational floor();
+    
+    @Nullable
+    Rational ceil();
+    
     boolean isWhole();
-
-    @NotNull Rational raisedTo(int exponent);
-
-
+    
+    default @Nullable Rational raisedTo(int exponent) {
+        if (exponent == 0){
+            return Rational.ONE; // 0^0 = 1 per definition
+        } else if (exponent == 1){
+            return this;
+        } else if (exponent == 2){
+            return this.square();
+        } else if (exponent == 3){
+            return this.cube();
+        } else if (exponent < 0){
+            return this.raisedTo(-exponent).invert();
+        }
+        return DynamicRational.of(numerator().raisedTo(exponent), denominator().raisedTo(exponent)).reduce();
+    }
+    
+    default boolean isNegativeOne() {
+        return numerator().isNegativeOne() && denominator().isOne();
+    }
+    
+    default boolean isOne() {
+        return numerator().isOne() && denominator().isOne();
+    }
+    
+    @Nullable
+    Rational increment();
+    @Nullable
+    Rational decrement();
 }

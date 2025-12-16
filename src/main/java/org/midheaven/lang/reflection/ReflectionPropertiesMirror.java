@@ -72,7 +72,7 @@ class PropertySelector<T> implements InvocationHandler{
                     .map(m -> PropertyMirrorSupport.fromAccessor(m , type).orElse(null))
                     .filter(Objects::nonNull)
                     .associate(Property::name)
-                    .forEach(entry -> propertyAssociation.putValue(entry.key(), entry.value()));
+                    .forEach(entry -> propertyAssociation.putValue(entry.key().toLowerCase(), entry.value()));
         }
         return propertyAssociation;
     }
@@ -88,7 +88,7 @@ class PropertySelector<T> implements InvocationHandler{
         if (selectedMethod == null){
             return Maybe.none();
         }
-        var name = PropertyMirrorSupport.propertyNameFromAccessor(selectedMethod);
+        var name = PropertyMirrorSupport.propertyNameFromAccessor(selectedMethod).toLowerCase();
 
         var possibleProperty = this.propertiesAssociation().getValue(name);
         if (possibleProperty.isPresent()){
@@ -97,12 +97,12 @@ class PropertySelector<T> implements InvocationHandler{
 
         possibleProperty = PropertyMirrorSupport.fromAccessor(selectedMethod, type);
 
-        possibleProperty.ifPresent(p ->  this.propertiesAssociation().putValue(p.name(), p));
+        possibleProperty.ifPresent(p ->  this.propertiesAssociation().putValue(p.name().toLowerCase(), p));
 
         return possibleProperty;
     }
 
     public Maybe<Property> getByName(String name) {
-        return propertiesAssociation().getValue(name);
+        return propertiesAssociation().getValue(name.toLowerCase());
     }
 }

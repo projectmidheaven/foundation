@@ -13,7 +13,8 @@ public interface Signed<T> {
         return sign() < 0;
     }
 
-    @NotNull default T abs() {
+    @Nullable
+    default T abs() {
         return this.sign() < 0 ? this.negate() : (T)this;
     }
 

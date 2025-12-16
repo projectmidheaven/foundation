@@ -35,8 +35,8 @@ public abstract class AbstractIntervalRandomGenerator<T>
     protected final int checkBounds(T lowerBound, T upperBound){
         Objects.requireNonNull(lowerBound);
         Objects.requireNonNull(upperBound);
-        var comparison = compare(upperBound, lowerBound);
-        if (comparison < 0){
+        var comparison = compare(lowerBound, upperBound);
+        if (comparison > 0){
             throw new IllegalArgumentException("Upper bound must be greater or equal to lower bound");
         }
         return comparison;

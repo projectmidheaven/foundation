@@ -58,8 +58,8 @@ final class IntSumArithmeticAccumulator<R> implements ArithmeticAccumulator<Int,
 
     @Override
     public ArithmeticAccumulator<Int, R> combine(ArithmeticAccumulator<Int, R> other) {
-         if (other instanceof IntSumArithmeticAccumulator a){
-             var c = new IntSumArithmeticAccumulator(finisher);
+         if (other instanceof IntSumArithmeticAccumulator<?> a){
+             var c = new IntSumArithmeticAccumulator<>(finisher);
              c.accumulator.incrementBy(this.accumulator);
              c.accumulator.incrementBy(a.accumulator);
          }

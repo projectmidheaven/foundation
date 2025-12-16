@@ -1,20 +1,20 @@
 package org.midheaven.math;
 
-public class StartInclusionBuilder<T> {
+public class StartInclusionBuilder<T, U> {
 
-    private final IntervalBuilder<T> intervalBuilder;
-    private final T minimum;
+    private final IntervalBuilder<T, U> intervalBuilder;
+    private final U minimum;
 
-    StartInclusionBuilder(IntervalBuilder<T> intervalBuilder, T minimum) {
+    StartInclusionBuilder(IntervalBuilder<T, U> intervalBuilder, U minimum) {
         this.intervalBuilder = intervalBuilder;
         this.minimum = minimum;
     }
 
-    public EndIntervalBuilder<T> inclusive(){
+    public EndIntervalBuilder<T, U> inclusive(){
         return new EndIntervalBuilder<>(this.intervalBuilder, minimum, false);
     }
 
-    public EndIntervalBuilder<T> exclusive(){
+    public EndIntervalBuilder<T, U> exclusive(){
         return new EndIntervalBuilder<>(this.intervalBuilder, minimum, true);
     }
 }

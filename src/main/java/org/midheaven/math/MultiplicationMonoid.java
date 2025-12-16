@@ -1,9 +1,10 @@
 package org.midheaven.math;
 
-import org.midheaven.lang.NotNull;
+import org.midheaven.lang.Nullable;
 
 public interface MultiplicationMonoid<T extends MultiplicationMonoid<T>> {
 
     boolean isOne();
-    @NotNull T times(@NotNull T other);
+    @Nullable
+    T times(@Nullable T other);
 }

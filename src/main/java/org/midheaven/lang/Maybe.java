@@ -15,57 +15,57 @@ import java.util.function.Supplier;
 public sealed interface Maybe<T> permits Some, None{
 
     @SuppressWarnings("unchecked")
-    static <X> @NotNull Maybe<X> none(){
+    static <X> @NotNullable Maybe<X> none(){
         return None.INSTANCE;
     }
 
-    static <X> @NotNull Maybe<X> of(X value){
+    static <X> @NotNullable Maybe<X> of(X value){
         if (value == null){
             return none();
         }
         return new Some<>(value);
     }
 
-    static <X> @NotNull  Maybe<X> some(X value){
+    static <X> @NotNullable Maybe<X> some(X value){
         Objects.requireNonNull(value);
         return new Some<>(value);
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    static <X> @NotNull Maybe<X> from(Optional<X> optional){
+    static <X> @NotNullable Maybe<X> from(Optional<X> optional){
         if (optional.isPresent()){
             return some(optional.orElseThrow());
         }
         return none();
     }
+    
+    @NotNullable Enumerable<T> enumerable();
 
-    Enumerable<T> enumerable();
-
-    @NotNull T get();
+    @NotNullable T get();
 
     boolean isPresent();
     boolean isAbsent();
 
-    @NotNull Maybe<T> filter(Predicate<T> predicate);
-    @NotNull <R> Maybe<R> map(Function<T, R> transform);
-    @NotNull <R> Maybe<R> flatMap(Function<T, Maybe<R>> transform);
+    @NotNullable Maybe<T> filter(Predicate<T> predicate);
+    @NotNullable <R> Maybe<R> map(Function<T, R> transform);
+    @NotNullable <R> Maybe<R> flatMap(Function<T, Maybe<R>> transform);
 
-    T orNull();
-    @NotNull T orElseThrow();
-    <E extends Throwable> T orElseThrow(Supplier<E> supplier) throws E;
-    T orElse(T defaultValue);
-    T orElseGet(Supplier<T> supplier);
-    @NotNull Maybe<T> or(Maybe<T> alternative);
-    @NotNull Maybe<T> orGet(Supplier<Maybe<T>> alternative);
-    @NotNull <R,S> Maybe<R> zip(Maybe<S> other, BiFunction<T, S, R> calculation);
-    @NotNull <R,S> Maybe<R> flatZip(Maybe<S> other, BiFunction<T, S, Maybe<R>> calculation);
-    @NotNull Maybe<T> merge(Maybe<T> other, BiFunction<T, T, T> calculation);
-    @NotNull Maybe<T> flatMerge(Maybe<T> other, BiFunction<T, T, Maybe<T>> calculation);
+    @Nullable T orNull();
+    @NotNullable T orElseThrow();
+    <E extends Throwable> @NotNullable T orElseThrow(Supplier<@NotNullable E> supplier) throws E;
+    @Nullable T orElse(@Nullable T defaultValue);
+    @Nullable T orElseGet(@NotNullable Supplier<@Nullable T> supplier);
+    @NotNullable Maybe<T> or(@NotNullable Maybe<T> alternative);
+    @NotNullable Maybe<T> orGet(@NotNullable Supplier<@NotNullable Maybe<T>> alternative);
+    @NotNullable <R,S> Maybe<R> zip(@NotNullable Maybe<S> other,@NotNullable  BiFunction<T, S, R> calculation);
+    @NotNullable
+    <R,S> Maybe<R> flatZip(@NotNullable Maybe<S> other,@NotNullable BiFunction<T, S, Maybe<R>> calculation);
+    @NotNullable Maybe<T> merge(@NotNullable Maybe<T> other, @NotNullable BiFunction<T, T, T> calculation);
+    @NotNullable Maybe<T> flatMerge(@NotNullable Maybe<T> other, @NotNullable BiFunction<T, T, Maybe<T>> calculation);
 
-
-    @NotNull Optional<T> toOptional();
-    void ifPresent(Consumer<T> consumer);
-    void ifPresentOrElse(Consumer<T> consumer, Runnable action);
+    @NotNullable Optional<T> toOptional();
+    void ifPresent(@NotNullable Consumer<T> consumer);
+    void ifPresentOrElse(@NotNullable Consumer<T> consumer, @NotNullable Runnable action);
 }
 
 
@@ -156,7 +156,7 @@ record Some<T>(T value) implements Maybe<T> {
     public <R, S> Maybe<R> zip(Maybe<S> other, BiFunction<T, S, R> calculation) {
         Objects.requireNonNull(other);
         Objects.requireNonNull(calculation);
-        return other.flatMap(b -> Maybe.some(calculation.apply(value, b)));
+        return other.flatMap(b -> Maybe.of(calculation.apply(value, b)));
     }
 
     @Override
@@ -204,8 +204,8 @@ record Some<T>(T value) implements Maybe<T> {
 
     @Override
     public boolean equals(Object other){
-        return other instanceof Some<?> some
-                && this.value.equals(some.value);
+        return other instanceof Some<?>(Object otherValue)
+                && this.value.equals(otherValue);
     }
 
     @Override
