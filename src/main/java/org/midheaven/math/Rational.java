@@ -1,6 +1,8 @@
 package org.midheaven.math;
 
+import org.midheaven.lang.Check;
 import org.midheaven.lang.LongOrdered;
+import org.midheaven.lang.NotNullable;
 import org.midheaven.lang.Nullable;
 import org.midheaven.lang.Ordered;
 import org.midheaven.lang.Signed;
@@ -15,22 +17,17 @@ import java.util.Objects;
 public sealed interface Rational extends Ordered<Rational>, LongOrdered, Signed<Rational>, Field<Rational>
     permits DynamicRational, InvertedRational, RationalNegativeOne, RationalOne, RationalZero, WholeRational {
     
-    static @Nullable Arithmetic<Rational, Rational> arithmetic(){
+    static @NotNullable Arithmetic<Rational, Rational> arithmetic(){
         return RationalArithmetic.INSTANCE;
     }
 
-    @Nullable
-    Rational ZERO = new RationalZero();
-    @Nullable
-    Rational ONE = new RationalOne();
-    @Nullable
-    Rational NEGATIVE_ONE = new RationalNegativeOne();
-    @Nullable
-    Rational TEN =  new WholeRational(10);
-    @Nullable
-    Rational PI = of(3141592653589793238L, 1000000000000000000L);
+    @NotNullable Rational ZERO = new RationalZero();
+    @NotNullable Rational ONE = new RationalOne();
+    @NotNullable Rational NEGATIVE_ONE = new RationalNegativeOne();
+    @NotNullable Rational TEN = new WholeRational(10);
+    @NotNullable Rational PI = of(3141592653589793238L, 1000000000000000000L);
     
-    static @Nullable Rational of(long numerator, long denominator){
+    static @NotNullable Rational of(long numerator, long denominator){
         if (numerator == 0){
             return ZERO;
         } else if (numerator == denominator){
@@ -49,7 +46,7 @@ public sealed interface Rational extends Ordered<Rational>, LongOrdered, Signed<
         return DynamicRational.of(Int.of(numerator), Int.of(denominator)).reduce();
     }
     
-    static @Nullable Rational of(long numerator){
+    static @NotNullable Rational of(long numerator){
         if (numerator == 0){
             return ZERO;
         } else if (numerator == 1){
@@ -60,15 +57,18 @@ public sealed interface Rational extends Ordered<Rational>, LongOrdered, Signed<
         return new WholeRational(numerator);
     }
     
-    static Rational of(BigInteger numerator, BigInteger denominator){
+    static @Nullable Rational of(@Nullable BigInteger numerator, @Nullable BigInteger denominator){
         if (numerator == null || denominator == null){
             return null;
         }
         
-        return DynamicRational.of(Int.of(numerator), Int.of(denominator)).reduce();
+        return DynamicRational.of(
+            Objects.requireNonNull(Int.of(numerator)),
+            Objects.requireNonNull(Int.of(denominator))
+        ).reduce();
     }
     
-    static Rational of(BigInteger numerator){
+    static @Nullable Rational of(@Nullable BigInteger numerator){
         if (numerator == null){
             return null;
         } else if (numerator.signum() == 0){
@@ -78,13 +78,12 @@ public sealed interface Rational extends Ordered<Rational>, LongOrdered, Signed<
         } else if (BigInteger.ONE.negate().equals(numerator)){
             return NEGATIVE_ONE;
         }
-        return DynamicRational.of(Int.of(numerator), Int.ONE);
+        return DynamicRational.of(Objects.requireNonNull(Int.of(numerator)), Int.ONE);
     }
     
-    static Rational of(BigDecimal decimal){
-        if (decimal == null){
-            return null;
-        } else if (decimal.signum() == 0){
+    static @NotNullable Rational of(@NotNullable BigDecimal decimal){
+        Check.argumentIsNotNull(decimal);
+        if (decimal.signum() == 0){
             return ZERO;
         } else if (BigDecimal.ONE.equals(decimal)){
             return ONE;
@@ -103,14 +102,14 @@ public sealed interface Rational extends Ordered<Rational>, LongOrdered, Signed<
         }
     }
     
-    static Rational parse(String number){
+    static @Nullable Rational parse(@Nullable String number){
         if (number == null || number.isBlank()){
             return null;
         }
         if (number.contains("/")){
             try {
                 var numbers = Strings.Splitter.split( number).by("/").sequence()
-                        .map(it -> it.trim())
+                        .map(String::trim)
                         .map(BigInteger::new);
                 return numbers.getAt(0).zip(numbers.getAt(1), Rational::of).orElseThrow();
             }catch (Exception e){
@@ -121,7 +120,7 @@ public sealed interface Rational extends Ordered<Rational>, LongOrdered, Signed<
         return of(new BigDecimal(number));
     }
     
-    static Rational from(Double value){
+    static @Nullable Rational from(@Nullable Double value){
         if (value == null || value.isInfinite() || value.isNaN()){
             return null;
         }
@@ -134,50 +133,51 @@ public sealed interface Rational extends Ordered<Rational>, LongOrdered, Signed<
     @Override
     int hashCode();
     
-    default @Nullable Rational plus(long other) {
+    default @NotNullable Rational plus(long other) {
         return this.plus(Rational.of(other));
     }
     
-    default @Nullable Rational minus(Rational other) {
-        Objects.requireNonNull(other);
+    default @NotNullable Rational minus(@NotNullable Rational other) {
+        Check.argumentIsNotNull(other, "other");
         // a - b = -b + a
         return other.negate().plus(this);
     }
     
-    default @Nullable Rational minus(long other) {
+    default @NotNullable Rational minus(long other) {
         return this.plus(Rational.of(-other));
     }
     
-    default @Nullable Rational times(long other) {
+    default @NotNullable Rational times(long other) {
         return this.times(Rational.of(other));
     }
     
-    default @Nullable Rational over(Rational other) {
-        Objects.requireNonNull(other);
+    default @NotNullable Rational over(@NotNullable Rational other) {
+        Check.argumentIsNotNull(other, "other");
+        if (other.isZero()){
+            throw ArithmeticExceptions.divisionByZero();
+        }
         return this.times(other.invert());
     }
     
-    default @Nullable Rational over(long other) {
+    default @NotNullable Rational over(long other) {
+        if (other == 0){
+            throw ArithmeticExceptions.divisionByZero();
+        }
         return this.over(Rational.of(other));
     }
     
-    default @Nullable Rational abs(){
+    default @NotNullable Rational abs(){
         return this.sign() < 0 ? this.negate() : this;
     }
     
-    @Nullable
-    Int numerator();
-    @Nullable
-    Int denominator();
+    @NotNullable Int numerator();
+    @NotNullable Int denominator();
     
-    @Nullable
-    Rational square();
+    @NotNullable Rational square();
     
-    @Nullable
-    Rational cube();
+    @NotNullable Rational cube();
     
-    @Nullable
-    BigDecimal toBigDecimal();
+    @NotNullable BigDecimal toBigDecimal();
 
     /***
      * The equivalent {@code Long} value.
@@ -187,15 +187,13 @@ public sealed interface Rational extends Ordered<Rational>, LongOrdered, Signed<
      */
     long toLong();
     
-    @Nullable
-    Rational floor();
+    @NotNullable Rational floor();
     
-    @Nullable
-    Rational ceil();
+    @NotNullable Rational ceil();
     
     boolean isWhole();
     
-    default @Nullable Rational raisedTo(int exponent) {
+    default @NotNullable Rational raisedTo(int exponent) {
         if (exponent == 0){
             return Rational.ONE; // 0^0 = 1 per definition
         } else if (exponent == 1){
@@ -218,8 +216,9 @@ public sealed interface Rational extends Ordered<Rational>, LongOrdered, Signed<
         return numerator().isOne() && denominator().isOne();
     }
     
-    @Nullable
-    Rational increment();
-    @Nullable
-    Rational decrement();
+    @Override
+    boolean isZero();
+    
+    @NotNullable Rational increment();
+    @NotNullable Rational decrement();
 }

@@ -46,14 +46,14 @@ public sealed interface Maybe<T> permits Some, None{
     boolean isPresent();
     boolean isAbsent();
 
-    @NotNullable Maybe<T> filter(Predicate<T> predicate);
-    @NotNullable <R> Maybe<R> map(Function<T, R> transform);
-    @NotNullable <R> Maybe<R> flatMap(Function<T, Maybe<R>> transform);
+    @NotNullable Maybe<T> filter(@NotNullable Predicate<T> predicate);
+    @NotNullable <R> Maybe<R> map(@NotNullable Function<T, R> transform);
+    @NotNullable <R> Maybe<R> flatMap(@NotNullable Function<T, Maybe<R>> transform);
 
     @Nullable T orNull();
     @NotNullable T orElseThrow();
     <E extends Throwable> @NotNullable T orElseThrow(Supplier<@NotNullable E> supplier) throws E;
-    @Nullable T orElse(@Nullable T defaultValue);
+    @NotNullable T orElse(@NotNullable T defaultValue);
     @Nullable T orElseGet(@NotNullable Supplier<@Nullable T> supplier);
     @NotNullable Maybe<T> or(@NotNullable Maybe<T> alternative);
     @NotNullable Maybe<T> orGet(@NotNullable Supplier<@NotNullable Maybe<T>> alternative);
@@ -272,24 +272,27 @@ record None<T>() implements Maybe<T> {
 
     @Override
     public T orElse(T defaultValue) {
+        if (defaultValue == null){
+            throw new IllegalArgumentException("orElse does not receive null. Use orNull instead");
+        }
         return defaultValue;
     }
 
     @Override
     public T orElseGet(Supplier<T> supplier) {
-        Objects.requireNonNull(supplier);
+        Check.argumentIsNotNull(supplier, "supplier");
         return supplier.get();
     }
 
     @Override
     public Maybe<T> or(Maybe<T> alternative) {
-        Objects.requireNonNull(alternative);
+        Check.argumentIsNotNull(alternative, "alternative");
         return alternative;
     }
 
     @Override
     public Maybe<T> orGet(Supplier<Maybe<T>> alternative) {
-        Objects.requireNonNull(alternative);
+        Check.argumentIsNotNull(alternative, "alternative");
         return alternative.get();
     }
 
@@ -327,7 +330,7 @@ record None<T>() implements Maybe<T> {
 
     @Override
     public void ifPresentOrElse(Consumer<T> consumer, Runnable action) {
-        Objects.requireNonNull(action);
+        Check.argumentIsNotNull(action);
         action.run();
     }
 

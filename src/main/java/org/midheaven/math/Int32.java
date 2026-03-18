@@ -16,14 +16,14 @@ public final class Int32 implements Int {
         this.value = value;
     }
 
-    @Nullable
+   
     @Override
     public Rational over(Int other) {
         Objects.requireNonNull(other);
         return DynamicRational.of(this, other);
     }
 
-    @Nullable
+   
     @Override
     public Rational over(long other) {
         return Rational.of(value, other);
@@ -39,13 +39,13 @@ public final class Int32 implements Int {
         return Integer.signum(value);
     }
 
-    @Nullable
+   
     @Override
     public BigInteger toBigInteger() {
         return BigInteger.valueOf(value);
     }
 
-    @Nullable
+   
     @Override
     public Int square() {
         try {
@@ -59,7 +59,7 @@ public final class Int32 implements Int {
         return Int64.fromInt(value);
     }
 
-    @Nullable
+   
     @Override
     public Int cube() {
         try {
@@ -69,7 +69,7 @@ public final class Int32 implements Int {
         }
     }
 
-    @Nullable
+   
     @Override
     public BigDecimal toBigDecimal() {
         return BigDecimal.valueOf(value);
@@ -134,7 +134,7 @@ public final class Int32 implements Int {
         };
     }
 
-    @Nullable
+   
     @Override
     public Int negate() {
         if (value < Integer.MAX_VALUE){
@@ -145,10 +145,19 @@ public final class Int32 implements Int {
 
     @Override
     public boolean isZero() {
-        return value == 0L;
+        return value == 0;
     }
-
-    @Nullable
+    
+    @Override
+    public boolean isPositive() {
+        return value > 0;
+    }
+    
+    @Override
+    public boolean isNegative() {
+        return value < 0;
+    }
+   
     @Override
     public Int plus(@Nullable Int other) {
         try {
@@ -170,7 +179,7 @@ public final class Int32 implements Int {
         return value == 1L;
     }
 
-    @Nullable
+   
     @Override
     public Int times(@Nullable Int other) {
         try {

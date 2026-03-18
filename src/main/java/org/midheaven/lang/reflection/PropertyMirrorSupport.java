@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 class PropertyMirrorSupport {
@@ -144,12 +143,12 @@ class PropertyMetaInfo {
     public Method modifier;
     public Field field;
 
-    public Optional<Class<?>> valueType() {
+    public Maybe<Class<?>> valueType() {
         if (field != null){
-            return Optional.of(field.getType());
+            return Maybe.of(field.getType());
         } else if (modifier != null){
-            return Optional.of(modifier.getParameterTypes()[0]);
+            return Maybe.of(modifier.getParameterTypes()[0]);
         }
-        return Optional.empty();
+        return Maybe.none();
     }
 }

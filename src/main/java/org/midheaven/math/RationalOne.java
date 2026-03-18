@@ -1,6 +1,5 @@
 package org.midheaven.math;
 
-import org.midheaven.lang.Nullable;
 import org.midheaven.lang.ValueClass;
 
 import java.math.BigDecimal;
@@ -10,7 +9,7 @@ final class RationalOne implements Rational{
     
     @Override
     public boolean equals(Object other) {
-        return this == other || other instanceof Rational that && that.isOne();
+        return this == other || (other instanceof Rational that && that.isOne());
     }
     
     @Override
@@ -23,38 +22,36 @@ final class RationalOne implements Rational{
         return "1";
     }
     
-    
-    
     @Override
     public boolean isNegativeOne() {
         return false;
     }
     
-    @Nullable
+    
     @Override
     public Int numerator() {
         return Int.ONE;
     }
     
-    @Nullable
+    
     @Override
     public Int denominator() {
         return Int.ONE;
     }
     
-    @Nullable
+    
     @Override
     public Rational square() {
         return this;
     }
     
-    @Nullable
+    
     @Override
     public Rational cube() {
         return this;
     }
     
-    @Nullable
+    
     @Override
     public BigDecimal toBigDecimal() {
         return BigDecimal.ONE;
@@ -65,13 +62,13 @@ final class RationalOne implements Rational{
         return 1;
     }
     
-    @Nullable
+    
     @Override
     public Rational floor() {
         return this;
     }
     
-    @Nullable
+    
     @Override
     public Rational ceil() {
         return this;
@@ -82,13 +79,13 @@ final class RationalOne implements Rational{
         return true;
     }
     
-    @Nullable
+    
     @Override
     public Rational increment() {
         return new WholeRational(2);
     }
     
-    @Nullable
+    
     @Override
     public Rational decrement() {
         return Rational.ZERO;
@@ -119,9 +116,18 @@ final class RationalOne implements Rational{
         return false;
     }
     
-    @Nullable
     @Override
-    public Rational plus(@Nullable Rational other) {
+    public boolean isPositive() {
+        return true;
+    }
+    
+    @Override
+    public boolean isNegative() {
+        return false;
+    }
+    
+    @Override
+    public Rational plus( Rational other) {
         return other.increment();
     }
     
@@ -135,9 +141,9 @@ final class RationalOne implements Rational{
         return true;
     }
     
-    @Nullable
+    
     @Override
-    public Rational times(@Nullable Rational other) {
+    public Rational times( Rational other) {
         return other;
     }
 }

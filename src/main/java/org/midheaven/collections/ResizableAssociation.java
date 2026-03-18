@@ -58,4 +58,13 @@ public interface ResizableAssociation<K, V> extends EditableAssociation<K,V>{
             }
         }
     }
+    
+    /**
+     * Recomputed the value of a given key delegation to a given {@code computation}.
+     * If the key is not present, the {@code defaultValue} is used in the computation
+     * @param key the value key
+     * @param defaultValue the value to use then the key is not found
+     * @param computation a function that receives the key, the old value and returns the new value
+     */
+    void computeValue(K key, V defaultValue, BiFunction<K, V, V> computation);
 }

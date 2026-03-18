@@ -13,62 +13,62 @@ public class HashCode {
 		
 		int hashCode();
 
-		@Nullable
+		@NotNullable
         Composition add(int value);
 		
-		default @Nullable Composition add(long value) {
+		default @NotNullable Composition add(long value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @Nullable Composition add(boolean value) {
+		default @NotNullable Composition add(boolean value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @Nullable Composition add(double value) {
+		default @NotNullable Composition add(double value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @Nullable Composition add(float value) {
+		default @NotNullable Composition add(float value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @Nullable Composition add(Object value) {
+		default @NotNullable Composition add(Object value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @Nullable <T> Composition add(T[] value) {
+		default @NotNullable <T> Composition add(T[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @Nullable Composition add(byte[] value) {
+		default @NotNullable Composition add(byte[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @Nullable Composition add(short[] value) {
+		default @NotNullable Composition add(short[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @Nullable Composition add(char[] value) {
+		default @NotNullable Composition add(char[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @Nullable Composition add(int[] value) {
+		default @NotNullable Composition add(int[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @Nullable Composition add(long[] value) {
+		default @NotNullable Composition add(long[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @Nullable Composition add(float[] value) {
+		default @NotNullable Composition add(float[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @Nullable Composition add(double[] value) {
+		default @NotNullable Composition add(double[] value) {
 			return add(HashCode.of(value));
 		}
 		
-		default @Nullable Composition add(boolean[] value) {
+		default @NotNullable Composition add(boolean[] value) {
 			return add(HashCode.of(value));
 		}
 		
@@ -94,43 +94,43 @@ public class HashCode {
 		return Boolean.hashCode(value);
 	}
 	
-	public static int of(Object value) {
+	public static int of(@Nullable Object value) {
 		return value == null ? 0: value.hashCode();
 	}
 	
-	public static <T> int of(T[] array) {
+	public static <T> int of(@NotNullable T[] array) {
 		return Arrays.hashCode(array);
 	}
 	
-	public static int of(byte[] array) {
+	public static int of(@NotNullable byte[] array) {
 		return Arrays.hashCode(array);
 	}
 	
-	public static int of(short[] array) {
+	public static int of(@NotNullable short[] array) {
 		return Arrays.hashCode(array);
 	}
 	
-	public static int of(char[] array) {
+	public static int of(@NotNullable char[] array) {
 		return Arrays.hashCode(array);
 	}
 	
-	public static int of(int[] array) {
+	public static int of(@NotNullable int[] array) {
 		return Arrays.hashCode(array);
 	}
 
-	public static int of(long[] array) {
+	public static int of(@NotNullable long[] array) {
 		return Arrays.hashCode(array);
 	}
 	
-	public static int of(float[] array) {
+	public static int of(@NotNullable float[] array) {
 		return Arrays.hashCode(array);
 	}
 	
-	public static int of(double[] array) {
+	public static int of(@NotNullable double[] array) {
 		return Arrays.hashCode(array);
 	}
 	
-	public static int of(boolean[] array) {
+	public static int of(@NotNullable boolean[] array) {
 		return Arrays.hashCode(array);
 	}
 	
@@ -139,7 +139,7 @@ public class HashCode {
 	 *
 	 * @return a symmetric {@code HashCode.Composition}
 	 */
-	public static @Nullable Composition symmetric() {
+	public static @NotNullable Composition symmetric() {
 		return new SymmetricHashCodeComposition();
 	}
 
@@ -148,7 +148,7 @@ public class HashCode {
 	 *
 	 * @return an asymmetric {@code HashCode.Composition}
 	 */
-	public static @Nullable Composition asymmetric() {
+	public static @NotNullable Composition asymmetric() {
 		return new AsymmetricHashCodeComposition();
 	}
 	

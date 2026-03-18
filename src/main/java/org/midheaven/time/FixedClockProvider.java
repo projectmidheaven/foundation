@@ -1,5 +1,7 @@
 package org.midheaven.time;
 
+import org.midheaven.lang.NotNullable;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -10,19 +12,19 @@ public class FixedClockProvider implements org.midheaven.time.ClockProvider {
 
     private final Clock clock;
 
-    public static FixedClockProvider newInstance(ZonedDateTime dateTime){
+    public static @NotNullable FixedClockProvider newInstance(ZonedDateTime dateTime){
         return newInstance(dateTime.toInstant(), dateTime.getZone());
     }
 
-    public static FixedClockProvider newInstanceAtUtc(LocalDateTime dateTime){
+    public static @NotNullable FixedClockProvider newInstanceAtUtc(LocalDateTime dateTime){
         return newInstance(dateTime.atZone(ZoneId.of("UTC")));
     }
 
-    public static FixedClockProvider newInstance(LocalDateTime dateTime, ZoneId zoneId){
+    public static @NotNullable FixedClockProvider newInstance(LocalDateTime dateTime, ZoneId zoneId){
         return newInstance(dateTime.atZone(zoneId));
     }
 
-    public static FixedClockProvider newInstance(Instant instant, ZoneId zoneId){
+    public static @NotNullable FixedClockProvider newInstance(Instant instant, ZoneId zoneId){
         return new FixedClockProvider(Clock.fixed(instant, zoneId));
     }
 

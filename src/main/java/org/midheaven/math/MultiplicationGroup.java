@@ -1,7 +1,9 @@
 package org.midheaven.math;
 
-public interface MultiplicationGroup<T extends MultiplicationGroup<T>> extends MultiplicationMonoid<T> {
+import org.midheaven.lang.NotNullable;
 
-    T invert();
-    T over(T other);
+public interface MultiplicationGroup<T extends MultiplicationGroup<T>> extends MultiplicationMonoid<T> {
+    
+    @NotNullable T invert();
+    @NotNullable T over(@NotNullable T other);
 }

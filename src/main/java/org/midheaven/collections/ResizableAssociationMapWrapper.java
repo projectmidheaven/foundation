@@ -4,6 +4,7 @@ import org.midheaven.lang.Maybe;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 class ResizableAssociationMapWrapper<K, V> extends EditableAssociationMapWrapper<K,V> implements ResizableAssociation<K,V> {
@@ -34,6 +35,11 @@ class ResizableAssociationMapWrapper<K, V> extends EditableAssociationMapWrapper
 
     public Iterator<Entry<K,V>> iterator(){
         return new TransformIterator<>(this.original.entrySet().iterator(), Entry::from);
+    }
+    
+    @Override
+    public void computeValue(K key, V defaultValue, BiFunction<K, V, V> computation){
+         this.putValue(key, computation.apply(key, this.getValue(key).orElse(defaultValue)));
     }
 //
 //    @Override

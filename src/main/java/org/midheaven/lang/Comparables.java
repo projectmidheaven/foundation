@@ -42,7 +42,7 @@ public class Comparables {
         all.add(a);
         all.add(b);
         all.addAll(Arrays.asList(others));
-        return min(comparator, all).orElse(null);
+        return min(comparator, all).orNull();
     }
 
     public static <T extends Comparable<T>> Maybe<T> min(Iterable<T> elements){

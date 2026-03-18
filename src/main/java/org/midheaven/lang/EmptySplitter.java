@@ -3,7 +3,6 @@ package org.midheaven.lang;
 import org.midheaven.collections.Sequence;
 import org.midheaven.math.Int;
 
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
@@ -11,7 +10,7 @@ final class EmptySplitter implements Strings.Splitter{
 
 	private static final EmptySplitter ME = new EmptySplitter();
 	
-	public static @Nullable EmptySplitter instance() {
+	public static @NotNullable EmptySplitter instance() {
 		return ME;
 	}
 
@@ -36,13 +35,13 @@ final class EmptySplitter implements Strings.Splitter{
     }
     
     @Override
-    public Optional<String> first() {
-        return Optional.empty();
+    public Maybe<String> first() {
+        return Maybe.none();
     }
     
     @Override
-    public Optional<String> last() {
-        return Optional.empty();
+    public Maybe<String> last() {
+        return Maybe.none();
     }
     
     @Override

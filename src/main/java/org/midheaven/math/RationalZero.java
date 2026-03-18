@@ -1,6 +1,5 @@
 package org.midheaven.math;
 
-import org.midheaven.lang.Nullable;
 import org.midheaven.lang.ValueClass;
 
 import java.math.BigDecimal;
@@ -10,7 +9,7 @@ final class RationalZero implements Rational{
     
     @Override
     public boolean equals(Object other) {
-        return this == other || other instanceof Rational that && that.isZero();
+        return this == other || (other instanceof Rational that && that.isZero());
     }
     
     @Override
@@ -29,31 +28,31 @@ final class RationalZero implements Rational{
         return false;
     }
     
-    @Nullable
+    
     @Override
     public Int numerator() {
         return Int.ZERO;
     }
     
-    @Nullable
+    
     @Override
     public Int denominator() {
         return Int.ONE;
     }
     
-    @Nullable
+    
     @Override
     public Rational square() {
         return this;
     }
     
-    @Nullable
+    
     @Override
     public Rational cube() {
         return this;
     }
     
-    @Nullable
+    
     @Override
     public BigDecimal toBigDecimal() {
         return BigDecimal.ZERO;
@@ -64,13 +63,13 @@ final class RationalZero implements Rational{
         return 0;
     }
     
-    @Nullable
+    
     @Override
     public Rational floor() {
         return this;
     }
     
-    @Nullable
+    
     @Override
     public Rational ceil() {
         return this;
@@ -106,15 +105,25 @@ final class RationalZero implements Rational{
         return true;
     }
     
-    @Nullable
     @Override
-    public Rational plus(@Nullable Rational other) {
+    public boolean isPositive() {
+        return false;
+    }
+    
+    @Override
+    public boolean isNegative() {
+        return false;
+    }
+    
+    
+    @Override
+    public Rational plus( Rational other) {
         return other;
     }
     
-    @Nullable
+    
     @Override
-    public Rational minus(@Nullable Rational other) {
+    public Rational minus( Rational other) {
         return other.negate();
     }
     
@@ -128,13 +137,13 @@ final class RationalZero implements Rational{
         return false;
     }
     
-    @Nullable
+    
     @Override
-    public Rational times(@Nullable Rational other) {
+    public Rational times( Rational other) {
         return this;
     }
     
-    @Nullable
+    
     @Override
     public Rational raisedTo(int exponent) {
         if (exponent == 0){
@@ -143,13 +152,13 @@ final class RationalZero implements Rational{
         return this;
     }
     
-    @Nullable
+    
     @Override
     public Rational increment() {
         return Rational.ONE;
     }
     
-    @Nullable
+    
     @Override
     public Rational decrement() {
         return Rational.NEGATIVE_ONE;

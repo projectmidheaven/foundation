@@ -1,7 +1,6 @@
 package org.midheaven.math;
 
 import org.midheaven.lang.HashCode;
-import org.midheaven.lang.Nullable;
 import org.midheaven.lang.ValueClass;
 
 import java.math.BigDecimal;
@@ -36,19 +35,19 @@ final class InvertedRational implements Rational {
         return denominator <0;
     }
     
-    @Nullable
+    
     @Override
     public Int numerator() {
         return denominator < 0 ? Int.NEGATIVE_ONE : Int.ONE;
     }
     
-    @Nullable
+    
     @Override
     public Int denominator() {
         return denominator < 0 ? Int.of(-denominator) : Int.of(denominator);
     }
     
-    @Nullable
+    
     @Override
     public Rational square() {
         try {
@@ -58,7 +57,7 @@ final class InvertedRational implements Rational {
         }
     }
     
-    @Nullable
+    
     @Override
     public Rational cube() {
         try {
@@ -68,7 +67,7 @@ final class InvertedRational implements Rational {
         }
     }
     
-    @Nullable
+    
     @Override
     public BigDecimal toBigDecimal() {
         return RationalDivisionSpecification.reduceToBigDecimal(this);
@@ -79,13 +78,13 @@ final class InvertedRational implements Rational {
         return 0;
     }
     
-    @Nullable
+    
     @Override
     public Rational floor() {
         return Rational.ZERO;
     }
     
-    @Nullable
+    
     @Override
     public Rational ceil() {
         return denominator < 0 ? Rational.NEGATIVE_ONE : Rational.ONE;
@@ -96,7 +95,7 @@ final class InvertedRational implements Rational {
         return false;
     }
     
-    @Nullable
+    
     @Override
     public Rational increment() {
         // 1 /a + 1 = 1 + a / a
@@ -108,7 +107,7 @@ final class InvertedRational implements Rational {
 
     }
     
-    @Nullable
+    
     @Override
     public Rational decrement() {
         try {
@@ -143,9 +142,18 @@ final class InvertedRational implements Rational {
         return false;
     }
     
-    @Nullable
     @Override
-    public Rational plus(@Nullable Rational other) {
+    public boolean isPositive() {
+        return denominator > 0;
+    }
+    
+    @Override
+    public boolean isNegative() {
+        return denominator < 0;
+    }
+    
+    @Override
+    public Rational plus( Rational other) {
         // 1 /a + b/c = (c + b) / ac
         return other.numerator().plus(other.denominator()).over(other.denominator().times(denominator));
     }
@@ -160,9 +168,9 @@ final class InvertedRational implements Rational {
         return false;
     }
     
-    @Nullable
+    
     @Override
-    public Rational times(@Nullable Rational other) {
+    public Rational times( Rational other) {
         return other.numerator().over(other.denominator().times(denominator));
     }
     

@@ -4,6 +4,6 @@ import org.midheaven.math.Int;
 
 public interface Countable {
 
-	Int count();
+	@NotNullable Int count();
 	boolean isEmpty();
 }

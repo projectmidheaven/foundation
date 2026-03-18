@@ -1,8 +1,10 @@
 package org.midheaven.time;
 
+import org.midheaven.lang.NotNullable;
+
 import java.time.Clock;
 
 public interface ClockProvider {
 
-    Clock clock();
+    @NotNullable Clock clock();
 }

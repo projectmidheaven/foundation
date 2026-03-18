@@ -30,7 +30,16 @@ final class WholeRational implements Rational {
     public boolean isNegativeOne() {
         return this.value == -1;
     }
-
+    
+    @Override
+    public boolean isPositive() {
+        return value > 0;
+    }
+    
+    @Override
+    public boolean isNegative() {
+        return value < 0;
+    }
     @Override
     public Rational plus(Rational other) {
         if (other instanceof WholeRational wholeRational){

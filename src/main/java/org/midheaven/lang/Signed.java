@@ -4,7 +4,11 @@ public interface Signed<T> {
 
     int sign();
     T negate();
-
+    
+    default boolean isZero(){
+        return sign() == 0;
+    }
+    
     default boolean isPositive(){
         return sign() > 0;
     }

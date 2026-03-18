@@ -1,6 +1,8 @@
 package org.midheaven.math;
 
+import org.midheaven.lang.Check;
 import org.midheaven.lang.LongOrdered;
+import org.midheaven.lang.NotNullable;
 import org.midheaven.lang.Nullable;
 import org.midheaven.lang.Ordered;
 import org.midheaven.lang.Signed;
@@ -12,19 +14,15 @@ import java.util.Objects;
 public sealed interface Int extends Ordered<Int> , LongOrdered, Signed<Int>, AdditionGroup<Int>, MultiplicationMonoid<Int>
     permits Int32, Int64, IntZero, IntOne, IntNegativeOne, BigInt{
 
-    static @Nullable Arithmetic<Int, Rational> arithmetic(){
+    static @NotNullable Arithmetic<Int, Rational> arithmetic(){
         return IntArithmetic.INSTANCE;
     }
     
-    @Nullable
-    Int ZERO = new IntZero();
-    @Nullable
-    Int ONE = new IntOne();
-    @Nullable
-    Int NEGATIVE_ONE = new IntNegativeOne();
-
-    @Nullable
-    static Int of(int value){
+    @NotNullable Int ZERO = new IntZero();
+    @NotNullable Int ONE = new IntOne();
+    @NotNullable Int NEGATIVE_ONE = new IntNegativeOne();
+    
+    static @NotNullable Int of(int value){
         return switch (value){
             case 0 -> ZERO;
             case 1 -> ONE;
@@ -32,9 +30,8 @@ public sealed interface Int extends Ordered<Int> , LongOrdered, Signed<Int>, Add
             default -> new Int32(value);
         };
     }
-
-    @Nullable
-    static Int of(long value){
+    
+    static @NotNullable Int of(long value){
         if (value == 0L){
             return ZERO;
         } else if (value == 1L){
@@ -47,7 +44,7 @@ public sealed interface Int extends Ordered<Int> , LongOrdered, Signed<Int>, Add
         return new Int64(value);
     }
     
-    static Int of(BigInteger value){
+    static @Nullable Int of(@Nullable BigInteger value){
         if (value == null){
             return null;
         } else if (value.signum() == 0){
@@ -56,7 +53,7 @@ public sealed interface Int extends Ordered<Int> , LongOrdered, Signed<Int>, Add
         return new BigInt(value).reduce();
     }
 
-    static Int parse(String number){
+    static @Nullable Int parse(@Nullable String number){
         if (number == null || number.isBlank()){
             return null;
         }
@@ -66,33 +63,33 @@ public sealed interface Int extends Ordered<Int> , LongOrdered, Signed<Int>, Add
 
     boolean isNegativeOne();
 
-    @Nullable
-    default Int abs(){
+    
+    default @NotNullable Int abs(){
         return this.sign() < 0 ? this.negate() : this;
     }
 
-    default Int plus(long other) {
+    default @NotNullable Int plus(long other) {
         return other == 0 ? this : this.plus(Int.of(other));
     }
     
-    default Int plus(int other) {
+    default @NotNullable Int plus(int other) {
         return plus((long)other);
     }
     
-    default Int minus(Int other) {
-        Objects.requireNonNull(other);
+    default @NotNullable Int minus(Int other) {
+        Check.argumentIsNotNull(other, "other");
         return this.plus(other.negate());
     }
 
-    default Int minus(long other) {
+    default @NotNullable Int minus(long other) {
         return other == 0 ? this : this.minus(Int.of(other));
     }
     
-    default Int minus(int other) {
+    default @NotNullable Int minus(int other) {
         return minus((long) other);
     }
 
-    default Int times(long other) {
+    default @NotNullable Int times(long other) {
         if (other == 1L){
             return this;
         } else if (other == 0L){
@@ -103,16 +100,16 @@ public sealed interface Int extends Ordered<Int> , LongOrdered, Signed<Int>, Add
         return this.times(Int.of(other));
     }
     
-    default Int times(int other) {
+    default @NotNullable Int times(int other) {
        return times((long)other);
     }
 
-    default Rational over(Int other) {
+    default @NotNullable Rational over(@NotNullable Int other) {
         Objects.requireNonNull(other);
         return DynamicRational.of(this, other);
     }
 
-    default Rational over(long other) {
+    default @NotNullable Rational over(long other) {
         if (other == 0L){
             throw ArithmeticExceptions.divisionByZero();
         } else if (other == 1L){
@@ -123,29 +120,25 @@ public sealed interface Int extends Ordered<Int> , LongOrdered, Signed<Int>, Add
         return DynamicRational.of(this, Int.of(other));
     }
     
-    default Rational over(int other) {
+    default @NotNullable Rational over(int other) {
         return over((long)other);
     }
     
-    @Nullable
-    BigInteger toBigInteger();
+    @NotNullable BigInteger toBigInteger();
 
-    @Nullable
-    Int square();
-
-    @Nullable
-    Int cube();
-
-    @Nullable
-    BigDecimal toBigDecimal();
+    @NotNullable Int square();
+    
+    @NotNullable Int cube();
+    
+    @NotNullable BigDecimal toBigDecimal();
 
     long toLong();
 
     int toInt();
+    
+    @NotNullable Rational toRational();
 
-    Rational toRational();
-
-    default @Nullable Int raisedTo(int exponent){
+    default @NotNullable Int raisedTo(int exponent){
         if (exponent < 0) {
             throw ArithmeticExceptions.integerInversion();
         }
@@ -158,7 +151,7 @@ public sealed interface Int extends Ordered<Int> , LongOrdered, Signed<Int>, Add
         };
     }
 
-    default DividerAndRemainder<Int> divideAndRemainder(Int other){
+    default @NotNullable DividerAndRemainder<Int> divideAndRemainder(@NotNullable Int other){
         if (other.isZero()){
             throw ArithmeticExceptions.divisionByZero();
         }
@@ -179,10 +172,13 @@ public sealed interface Int extends Ordered<Int> , LongOrdered, Signed<Int>, Add
             Int.of(dividerAndRemainder[1])
         );
     }
-
-    Int gcd(Int other);
     
-    Int increment();
+    @NotNullable Int gcd(@NotNullable Int other);
     
-    Int decrement();
+    @NotNullable Int increment();
+    
+    @NotNullable Int decrement();
+    
+    @Override
+    boolean isZero();
 }

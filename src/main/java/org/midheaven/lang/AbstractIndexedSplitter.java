@@ -2,7 +2,6 @@ package org.midheaven.lang;
 
 import org.midheaven.math.Int;
 
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
@@ -48,17 +47,17 @@ abstract sealed class AbstractIndexedSplitter implements Strings.Splitter
     }
     
     @Override
-    public Optional<String> first() {
+    public Maybe<String> first() {
         return isEmpty()
-                   ? Optional.empty()
-                   : Optional.of(secureGetAt(0));
+                   ? Maybe.none()
+                   : Maybe.of(secureGetAt(0));
     }
     
     @Override
-    public Optional<String> last() {
+    public Maybe<String> last() {
         return isEmpty()
-                   ? Optional.empty()
-                   : Optional.of(secureGetAt(length() - 1));
+                   ? Maybe.none()
+                   : Maybe.of(secureGetAt(length() - 1));
     }
     
     @Override

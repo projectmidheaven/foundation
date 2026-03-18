@@ -1,22 +1,38 @@
 package org.midheaven.math;
 
-import org.midheaven.lang.Nullable;
+import org.midheaven.lang.Check;
+import org.midheaven.lang.NotNullable;
 import org.midheaven.lang.Ordered;
 
 import java.math.BigDecimal;
 
 public class Angle implements AdditionGroup<Angle>, Ordered<Angle> {
     
-    public static Angle ofRadians(Rational radians){
+    public static @NotNullable Angle ofRadians(@NotNullable Rational radians){
+        Check.argumentIsNotNull(radians);
         return new Angle(radians.times(180).over(Rational.PI));
     }
     
-    public static Angle ofDegrees(Rational degrees){
+    public static @NotNullable Angle ofDegrees(@NotNullable Rational degrees){
+        Check.argumentIsNotNull(degrees);
         return new Angle(reduceDegrees(degrees));
     }
     
-    public static Angle ofDegrees(long degrees){
+    public static @NotNullable Angle ofDegrees(long degrees){
         return ofDegrees(Rational.of(degrees));
+    }
+  
+    private static @NotNullable Rational reduceDegrees(@NotNullable Rational degrees) {
+        if (degrees.isZero()){
+            return Rational.ZERO;
+        }
+        var fullCircle = BigDecimal.valueOf(360);
+        var modulo = degrees.toBigDecimal().divideAndRemainder(fullCircle)[1];
+        
+        if (modulo.signum() < 0){
+            modulo = modulo.add(fullCircle);
+        }
+        return Rational.of(modulo);
     }
     
     private final Rational angleInDegrees;
@@ -25,27 +41,24 @@ public class Angle implements AdditionGroup<Angle>, Ordered<Angle> {
         this.angleInDegrees = angleInDegrees;
     }
     
-    @Nullable
+    
     @Override
-    public Angle negate() {
+    public @NotNullable Angle negate() {
         return new Angle(reduceDegrees(this.angleInDegrees.negate()));
     }
     
-    @Nullable
     @Override
-    public Angle minus(@Nullable Angle other) {
+    public @NotNullable Angle minus(@NotNullable Angle other) {
         return new Angle(reduceDegrees(this.angleInDegrees.minus(other.angleInDegrees)));
     }
     
-    @Nullable
     @Override
-    public Angle plus(@Nullable Angle other) {
+    public @NotNullable Angle plus(@NotNullable Angle other) {
         return new Angle(reduceDegrees(this.angleInDegrees.plus(other.angleInDegrees)));
     }
     
-    @Nullable
     @Override
-    public Angle abs() {
+    public @NotNullable Angle abs() {
         return new Angle(this.angleInDegrees.abs());
     }
     
@@ -59,45 +72,37 @@ public class Angle implements AdditionGroup<Angle>, Ordered<Angle> {
         return angleInDegrees.compareTo(other.angleInDegrees);
     }
     
-    private static Rational reduceDegrees(Rational degrees) {
-        if (degrees.isZero()){
-            return Rational.ZERO;
-        }
-        var fullCircle = BigDecimal.valueOf(360);
-        var modulo = degrees.toBigDecimal().divideAndRemainder(fullCircle)[1];
-        
-        if (modulo.signum() < 0){
-            modulo = modulo.add(fullCircle);
-        }
-        return Rational.of(modulo);
-    }
     
-    public Angle times(Rational factor){
+    public @NotNullable Angle times(@NotNullable Rational factor){
         if (factor.isOne()){
             return this;
         }
         return new Angle(reduceDegrees(this.angleInDegrees.times(factor)));
     }
     
-    public Angle over(Rational factor){
+    public @NotNullable Angle over(@NotNullable Rational factor){
         if (factor.isOne()){
             return this;
         }
         return new Angle(reduceDegrees(this.angleInDegrees.over(factor)));
     }
     
-    public Angle times(long factor){
+    public @NotNullable Angle times(long factor){
         if (factor == 1){
             return this;
         }
         return times(Rational.of(factor));
     }
     
-    public Angle over(long factor){
+    public @NotNullable Angle over(long factor){
         if (factor == 1){
             return this;
         }
         return over(Rational.of(factor));
+    }
+    
+    public @NotNullable Rational ratio(Angle other){
+        return this.angleInDegrees.over(other.angleInDegrees);
     }
     
     @Override

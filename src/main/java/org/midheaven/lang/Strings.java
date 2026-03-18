@@ -3,7 +3,6 @@ package org.midheaven.lang;
 import org.midheaven.collections.Sequence;
 import org.midheaven.lang.Strings.Splitter;
 
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
@@ -13,7 +12,7 @@ public class Strings {
 	
     public interface Transform {
         
-        static StringTransformBuilder create(){
+        static @NotNullable StringTransformBuilder create(){
             return new ChainStringTransformBuilder();
         }
         
@@ -23,46 +22,40 @@ public class Strings {
 	public interface Splitter extends Countable {
 		
 		interface Condition {
-			@Nullable
-			Splitter by(String delimiter);
-			@Nullable
-			Splitter by(char delimiter);
-			@Nullable
-			Splitter by(Pattern pattern);
-			@Nullable
-			Splitter byEachChar();
+			@NotNullable Splitter by(@NotNullable String delimiter);
+			@NotNullable Splitter by(char delimiter);
+			@NotNullable Splitter by(@NotNullable Pattern pattern);
+			@NotNullable Splitter byEachChar();
 		}
 		
-		static @Nullable Condition split(CharSequence text) {
+		static @NotNullable Condition split(@NotNullable CharSequence text) {
 			return Maybe.of(text)
 					   .filter(it -> !it.isEmpty())
 					   .<Condition>map(it -> new SplitterCondition(text.toString()))
 					   .orElse(new EmptyCondition());
 		}
 		
-		String get(int index);
+		@NotNullable String get(int index);
 		
-
-		@Nullable
-		Sequence<String> sequence();
+		@NotNullable Sequence<String> sequence();
 		
-        Splitter map(Function<String, String> transform);
+		@NotNullable Splitter map(@NotNullable Function<String, String> transform);
+		
+		@NotNullable Maybe<String> first();
+		@NotNullable Maybe<String> last();
+		
+		@NotNullable  Splitter withoutFirst();
+		@NotNullable Splitter withoutLast();
         
-        Optional<String> first();
-        Optional<String> last();
-        
-        Splitter withoutFirst();
-        Splitter withoutLast();
-        
-        default String join(char delimiter){
+        default @NotNullable String join(char delimiter){
             return collect(Collectors.joining(Character.toString(delimiter)));
         }
         
-        default String join(String delimiter){
+        default @NotNullable String join(@NotNullable String delimiter){
             return collect(Collectors.joining(delimiter));
         }
         
-        <A> String collect(Collector<CharSequence, A, String> collector);
+        <A> @NotNullable String collect(@NotNullable Collector<CharSequence, A, String> collector);
 	}
 	
 	public enum Casing {
@@ -163,7 +156,7 @@ public class Strings {
 		}
 	}
 	
-	public static boolean isBlank(CharSequence text) {
+	public static boolean isBlank(@Nullable CharSequence text) {
         return switch (text){
             case null -> false;
             case String s -> isBlank(s);
@@ -171,7 +164,7 @@ public class Strings {
         };
 	}
 
-	public static boolean isFilled(CharSequence text) {
+	public static boolean isFilled(@Nullable CharSequence text) {
         return switch (text){
             case null -> false;
             case String s -> isFilled(s);
@@ -179,15 +172,15 @@ public class Strings {
         };
 	}
 
-	public static boolean isBlank(String text) {
+	public static boolean isBlank(@Nullable String text) {
 		return text == null || text.isBlank();
 	}
     
-    public static boolean areBlank(CharSequence a, CharSequence b) {
+    public static boolean areBlank(@Nullable CharSequence a, @Nullable CharSequence b) {
         return isBlank(a) && isBlank(b);
     }
     
-    public static boolean areBlank(CharSequence a, CharSequence b, CharSequence ... others) {
+    public static boolean areBlank(@Nullable CharSequence a, @Nullable CharSequence b, @Nullable CharSequence ... others) {
         var blank = isBlank(a) && isBlank(b);
         
         for (var text : others){
@@ -200,15 +193,15 @@ public class Strings {
         return blank;
     }
     
-	public static boolean isFilled(String text) {
+	public static boolean isFilled(@Nullable String text) {
 		return text != null && !text.isBlank();
 	}
     
-    public static boolean areFilled(CharSequence a, CharSequence b) {
+    public static boolean areFilled(@Nullable CharSequence a, @Nullable CharSequence b) {
         return isFilled(a) && isFilled(b);
     }
     
-    public static boolean areFilled(CharSequence a, CharSequence b, CharSequence ... others) {
+    public static boolean areFilled(@Nullable CharSequence a, @Nullable CharSequence b,@Nullable CharSequence ... others) {
         var filled = isFilled(a) && isFilled(b);
         
         for (var text : others){
@@ -221,11 +214,14 @@ public class Strings {
         return filled;
     }
     
-	public static @Nullable Maybe<String> filled(String text) {
+	public static @NotNullable Maybe<String> filled(@Nullable String text) {
 		return Maybe.of(text).filter(it -> !it.isBlank());
 	}
  
-	public static String transform(String text, Casing original, Casing target){
+	public static @Nullable String transform(@Nullable String text,@NotNullable Casing original, @NotNullable Casing target){
+		if (text == null){
+			return null;
+		}
 		return target.joinWords(original.splitWords(text));
 	}
 	
@@ -270,13 +266,11 @@ record SplitterCondition(String text) implements Splitter.Condition {
 		return ArraySplitter.fromArray(text.split(delimiter));
 	}
 	
-	@Nullable
 	@Override
 	public Splitter by(char delimiter) {
 		return  ArraySplitter.fromArray(regexEscape(delimiter));
 	}
 	
-	@Nullable
 	@Override
 	public Splitter by(Pattern pattern) {
 		return ArraySplitter.fromArray(pattern.split(text));

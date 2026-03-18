@@ -125,7 +125,7 @@ public class RationalTestCases {
                 .map(MultiplicationGroup::invert)
                 .limit(10)
                 .with(Rational.arithmetic());
-
+      
         assertEquals(Rational.of(7381,2520),  rationalEnumerable.sum());
         assertEquals(Rational.of(7381,25200),  rationalEnumerable.average());
 
@@ -142,7 +142,7 @@ public class RationalTestCases {
         assertEquals(sum.over(7) , avg);
 
         assertEquals (sum, Sequence.builder().of(1,2,3,4,5,6,7).map(Rational::of).reduce(Rational.ZERO, Rational::plus));
-        assertEquals (sum, Sequence.builder().of(1,2,3,4,5,6,7).map(Rational::of).reduce(Rational::plus).orElse(null));
+        assertEquals (sum, Sequence.builder().of(1,2,3,4,5,6,7).map(Rational::of).reduce(Rational::plus).orNull());
     }
 
     @Test

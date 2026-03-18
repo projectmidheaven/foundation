@@ -1,10 +1,9 @@
 package org.midheaven.math;
 
-import org.midheaven.lang.Nullable;
+import org.midheaven.lang.NotNullable;
 
 public interface AdditionMonoid<T extends AdditionMonoid<T>> {
 
     boolean isZero();
-    @Nullable
-    T plus(@Nullable T other);
+    @NotNullable T plus(@NotNullable T other);
 }

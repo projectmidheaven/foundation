@@ -1,6 +1,5 @@
 package org.midheaven.math;
 
-import org.midheaven.lang.Nullable;
 import org.midheaven.lang.ValueClass;
 
 import java.math.BigDecimal;
@@ -19,7 +18,7 @@ public final class Int64 implements Int {
         this.value = value;
     }
 
-    @Nullable
+    
     @Override
     public Rational over(long other) {
         return Rational.of(value, other);
@@ -34,14 +33,12 @@ public final class Int64 implements Int {
     public int sign() {
         return Long.signum(value);
     }
-
-    @Nullable
+    
     @Override
     public BigInteger toBigInteger() {
         return BigInteger.valueOf(value);
     }
-
-    @Nullable
+    
     @Override
     public Int square() {
         try {
@@ -55,7 +52,7 @@ public final class Int64 implements Int {
         return new BigInt(BigInteger.valueOf(value));
     }
 
-    @Nullable
+    
     @Override
     public Int cube() {
         try {
@@ -65,7 +62,7 @@ public final class Int64 implements Int {
         }
     }
 
-    @Nullable
+    
     @Override
     public BigDecimal toBigDecimal() {
         return BigDecimal.valueOf(value);
@@ -100,7 +97,7 @@ public final class Int64 implements Int {
         };
     }
 
-    @Nullable
+    
     @Override
     public Int negate() {
         if (value > Long.MIN_VALUE){
@@ -113,10 +110,20 @@ public final class Int64 implements Int {
     public boolean isZero() {
         return value == 0L;
     }
-
-    @Nullable
+    
     @Override
-    public Int plus(@Nullable Int other) {
+    public boolean isPositive() {
+        return value > 0;
+    }
+    
+    @Override
+    public boolean isNegative() {
+        return value < 0;
+    }
+    
+    
+    @Override
+    public Int plus( Int other) {
         try {
             return switch (other){
                 case IntZero ignore -> this;
@@ -136,9 +143,9 @@ public final class Int64 implements Int {
         return value == 1L;
     }
 
-    @Nullable
+    
     @Override
-    public Int times(@Nullable Int other) {
+    public Int times( Int other) {
         try {
             return switch (other){
                 case IntZero z-> z;

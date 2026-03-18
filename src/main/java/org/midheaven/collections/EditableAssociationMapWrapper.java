@@ -22,4 +22,5 @@ class EditableAssociationMapWrapper<K, V> extends ImmutableAssociationMapWrapper
     public void computeValue(K key, BiFunction<K, V, V> computation) {
         getValue(key).ifPresent(value -> original.put(key, computation.apply(key,value)));
     }
+    
 }
