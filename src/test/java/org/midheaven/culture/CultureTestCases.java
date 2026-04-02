@@ -28,4 +28,13 @@ public class CultureTestCases {
         assertEquals(Locale.of("pt", "BR").toString(),  Culture.parse("pt-BR").toString());
         assertEquals(Locale.of("pt"),  Culture.parse("pt").toLocale());
     }
+    
+    
+    @Test
+    public void cultureLanguageAndCountry(){
+        var culture = Culture.parse("pt-BR");
+        assertEquals( LanguageCode.parse("pt"), culture.languageCode());
+        assertEquals( CountryCode.parse("BR"), culture.countryCode().orNull());
+
+    }
 }

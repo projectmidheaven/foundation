@@ -6,7 +6,6 @@ import org.midheaven.math.Int;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
 
@@ -17,11 +16,12 @@ class ImmutableSequenceArrayWrapper<T> implements Sequence<T> {
     ImmutableSequenceArrayWrapper(T[] array){
         this.array = array; // non-empty array
     }
-
+    
+    
     @Override
     public boolean equals(Object other){
         return other instanceof Sequence sequence
-               && SequencesSupport.equals(this , sequence);
+               && AssortmentSupport.equals(this , sequence);
     }
 
     @Override
@@ -118,14 +118,7 @@ class ImmutableSequenceArrayWrapper<T> implements Sequence<T> {
     public ListIterator<T> reverseIterator() {
         return Collections.unmodifiableList(Arrays.asList(this.array)).listIterator(this.array.length);
     }
-
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<T> asCollection() {
-        return Collections.unmodifiableList(Arrays.asList(this.array));
-    }
-
+    
     @Override
     public Enumerator<T> enumerator() {
         return Enumerator.fromIterator(this.iterator(), Int.of(array.length));

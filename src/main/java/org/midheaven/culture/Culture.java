@@ -3,7 +3,7 @@ package org.midheaven.culture;
 import org.midheaven.lang.HashCode;
 import org.midheaven.lang.Maybe;
 import org.midheaven.lang.Nullable;
-import org.midheaven.lang.ParsingException;
+import org.midheaven.lang.Parser;
 import org.midheaven.lang.Strings;
 import org.midheaven.lang.ValueClass;
 
@@ -13,32 +13,37 @@ import java.util.regex.Pattern;
 
 @ValueClass
 public final class Culture {
-
+    
     private static final Pattern pattern = Pattern.compile("[a-z]{2}(-|_)?[A-Z]{0,2}");
-
+    
+    private static final Parser<Culture> PARSER  = new Parser<Culture>() {
+        @Override
+        protected boolean matchesExpectedPattern(String text) {
+            return pattern.matcher(text).matches();
+        }
+        
+        @Override
+        protected String removeIllegalChars(String text) {
+            return Strings.Transform.create().thenRemoveAllNumerics().thenRemoveAllSymbolsExcept('-', '_').apply(text);
+        }
+        
+        @Override
+        protected Culture wrap(String text) {
+            var parts = Strings.Splitter.split(text).by("-|_");
+            if (parts.count().isOne()){
+                return new Culture(text, null);
+            } else {
+                return new Culture(parts.get(0), parts.get(1));
+            }
+        }
+    };
+    
     public static Culture parse(String code){
-        if (Strings.isBlank(code)){
-            return null;
-        }
-
-        if (!pattern.matcher(code).matches()){
-            throw new ParsingException("Cannot parse " + code);
-        }
-
-        var parts = Strings.Splitter.split(code).by("-|_");
-        if (parts.count().isOne()){
-            return new Culture(code, null);
-        } else {
-            return new Culture(parts.get(0), parts.get(1));
-        }
+        return PARSER.parse(code);
     }
 
     public static Maybe<Culture> tryParse(String code){
-        try {
-            return Maybe.of(parse(code));
-        } catch (ParsingException e){
-            return Maybe.none();
-        }
+        return PARSER.tryParse(code);
     }
 
     private final String languageIsoCode;

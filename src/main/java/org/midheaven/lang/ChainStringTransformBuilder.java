@@ -1,7 +1,10 @@
 package org.midheaven.lang;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.function.IntPredicate;
 
 class ChainStringTransformBuilder implements StringTransformBuilder{
     
@@ -48,41 +51,73 @@ class ChainStringTransformBuilder implements StringTransformBuilder{
     }
     
     private List<CharTransformation> cross(CharTransformation a, CharTransformation b) {
+        var original = List.of(a, b);
+        var inverted = List.of(b, a);
         return switch (a){
-            case RaiseCaseCharTransformation r -> switch (b) {
-                case RaiseCaseCharTransformation rr -> List.of(rr);
-                case LowerCaseCharTransformation ll -> List.of(ll);
-                case TrimCharTransformation tt -> List.of(tt, r);
-                case ReplaceCharTransformation pp -> List.of(r, pp);
-                case ReplaceAllCharTransformation pp -> List.of(r, pp);
-            };
+            
             case LowerCaseCharTransformation low -> switch (b) {
                 case RaiseCaseCharTransformation rr -> List.of(rr);
                 case LowerCaseCharTransformation ll -> List.of(ll);
-                case TrimCharTransformation tt -> List.of(tt, low);
-                case ReplaceCharTransformation pp -> List.of(low, pp);
-                case ReplaceAllCharTransformation pp -> List.of(low, pp);
+                case TrimCharTransformation ignored -> inverted;
+                case ReplaceCharTransformation ignored -> original;
+                case ReplaceAllCharTransformation ignored -> original;
+                case RemovePredicateCharTransformation ignored -> original;
+                case RetainPredicateCharTransformation ignored -> original;
+            };
+            case RaiseCaseCharTransformation r -> switch (b) {
+                case RaiseCaseCharTransformation rr -> List.of(rr);
+                case LowerCaseCharTransformation ll -> List.of(ll);
+                case TrimCharTransformation ignored -> inverted;
+                case ReplaceCharTransformation ignored -> original;
+                case ReplaceAllCharTransformation ignored -> original;
+                case RemovePredicateCharTransformation ignored -> original;
+                case RetainPredicateCharTransformation ignored -> original;
             };
             case TrimCharTransformation t -> switch (b) {
-                case RaiseCaseCharTransformation rr -> List.of(t, rr);
-                case LowerCaseCharTransformation ll -> List.of(t, ll);
-                case TrimCharTransformation tt -> List.of(t);
-                case ReplaceCharTransformation pp -> List.of(t, pp);
-                case ReplaceAllCharTransformation pp -> List.of(t, pp);
+                case RaiseCaseCharTransformation ignored -> original;
+                case LowerCaseCharTransformation ignored -> original;
+                case TrimCharTransformation ignored -> List.of(t);
+                case ReplaceCharTransformation ignored -> original;
+                case ReplaceAllCharTransformation ignored -> original;
+                case RemovePredicateCharTransformation ignored -> original;
+                case RetainPredicateCharTransformation ignored -> original;
             };
             case ReplaceCharTransformation p -> switch (b) {
                 case RaiseCaseCharTransformation rr -> List.of(p, rr);
                 case LowerCaseCharTransformation ll -> List.of(p, ll);
                 case TrimCharTransformation tt -> (p.match() != ' ' && p.replace() != ' ') ? List.of(tt, p) : List.of(p, tt);
-                case ReplaceCharTransformation pp -> List.of(p, pp);
-                case ReplaceAllCharTransformation pp -> List.of(p, pp);
+                case ReplaceCharTransformation ignored -> original;
+                case ReplaceAllCharTransformation ignored -> original;
+                case RemovePredicateCharTransformation ignored -> original;
+                case RetainPredicateCharTransformation ignored -> original;
+                
             };
             case ReplaceAllCharTransformation p -> switch (b) {
-                case RaiseCaseCharTransformation rr -> List.of(p, rr);
-                case LowerCaseCharTransformation ll -> List.of(p, ll);
-                case TrimCharTransformation tt -> List.of(p, tt);
-                case ReplaceCharTransformation pp -> List.of(p, pp);
-                case ReplaceAllCharTransformation pp -> List.of(p, pp);
+                case RaiseCaseCharTransformation rr ->original;
+                case LowerCaseCharTransformation ll -> original;
+                case TrimCharTransformation ignored -> original;
+                case ReplaceCharTransformation ignored -> original;
+                case ReplaceAllCharTransformation ignored -> original;
+                case RemovePredicateCharTransformation ignored -> original;
+                case RetainPredicateCharTransformation ignored -> original;
+            };
+            case RetainPredicateCharTransformation(IntPredicate r) -> switch (b) {
+                case RaiseCaseCharTransformation rr ->original;
+                case LowerCaseCharTransformation ll -> original;
+                case TrimCharTransformation ignored -> original;
+                case ReplaceCharTransformation ignored -> original;
+                case ReplaceAllCharTransformation ignored -> original;
+                case RemovePredicateCharTransformation ignored -> original;
+                case RetainPredicateCharTransformation (IntPredicate p) -> List.of(new RetainPredicateCharTransformation(r.or(p)));
+            };
+            case RemovePredicateCharTransformation(IntPredicate r) -> switch (b) {
+                case RaiseCaseCharTransformation rr ->original;
+                case LowerCaseCharTransformation ll -> original;
+                case TrimCharTransformation ignored -> original;
+                case ReplaceCharTransformation ignored -> original;
+                case ReplaceAllCharTransformation ignored -> original;
+                case RetainPredicateCharTransformation ignored -> original;
+                case RemovePredicateCharTransformation (IntPredicate p) -> List.of(new RemovePredicateCharTransformation(r.and(p)));
             };
         };
     }
@@ -100,6 +135,53 @@ class ChainStringTransformBuilder implements StringTransformBuilder{
     }
     
     @Override
+    public StringTransformBuilder thenRemoveAllNumerics() {
+        add(new RemovePredicateCharTransformation(Character::isDigit));
+        return this;
+    }
+    
+    @Override
+    public StringTransformBuilder thenRetainNumericsOnly() {
+        add(new RetainPredicateCharTransformation(Character::isDigit));
+        return this;
+    }
+    
+    @Override
+    public StringTransformBuilder thenRemoveAllAlphabetic() {
+        add(new RemovePredicateCharTransformation(Character::isAlphabetic));
+        return this;
+    }
+    
+    @Override
+    public StringTransformBuilder thenRetainAlphabeticOnly() {
+        add(new RetainPredicateCharTransformation(Character::isAlphabetic));
+        return this;
+    }
+    
+    @Override
+    public StringTransformBuilder thenRemoveAllSymbols() {
+        add(new RemovePredicateCharTransformation(c -> c != ' ' && !Character.isLetterOrDigit(c)));
+        return this;
+    }
+    
+    @Override
+    public StringTransformBuilder thenRemoveAllSymbolsExcept(char... symbols) {
+        Set<Character> set = new HashSet<>();
+        set.add(' ');
+        for (var c : symbols){
+            set.add(c);
+        }
+        add(new RemovePredicateCharTransformation(c -> !set.contains((char)c) &&  !Character.isLetterOrDigit(c)));
+        return this;
+    }
+    
+    @Override
+    public StringTransformBuilder thenRetainSymbolsOnly() {
+        add(new RetainPredicateCharTransformation(c -> !Character.isLetterOrDigit(c)));
+        return this;
+    }
+    
+    @Override
     public String apply(CharSequence text) {
         var current = text.toString();
         for (var t : chain){
@@ -110,11 +192,13 @@ class ChainStringTransformBuilder implements StringTransformBuilder{
 }
 
 sealed interface CharTransformation permits
-    TrimCharTransformation,
-    LowerCaseCharTransformation,
-    RaiseCaseCharTransformation,
-    ReplaceCharTransformation,
-    ReplaceAllCharTransformation
+        LowerCaseCharTransformation,
+        RaiseCaseCharTransformation,
+        RemovePredicateCharTransformation,
+        ReplaceAllCharTransformation,
+        ReplaceCharTransformation,
+        RetainPredicateCharTransformation,
+        TrimCharTransformation
 {
     
     String apply(String original);
@@ -163,5 +247,38 @@ record ReplaceAllCharTransformation(String match, String replace) implements Cha
     @Override
     public String apply(String original) {
         return original.replaceAll(match, replace);
+    }
+}
+
+
+record RetainPredicateCharTransformation(IntPredicate predicate) implements CharTransformation {
+    
+    @Override
+    public String apply(String original) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < original.length(); i++){
+            char c = original.charAt(i);
+            if(predicate.test(c)){
+                builder.append(c);
+            }
+        }
+        
+        return builder.toString();
+    }
+}
+
+record RemovePredicateCharTransformation(IntPredicate predicate) implements CharTransformation {
+    @Override
+    public String apply(String original) {
+        
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < original.length(); i++){
+            char c = original.charAt(i);
+            if(!predicate.test(c)){
+                builder.append(c);
+            }
+        }
+        
+        return builder.toString();
     }
 }

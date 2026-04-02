@@ -5,7 +5,6 @@ import org.midheaven.lang.Maybe;
 import org.midheaven.math.Int;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Spliterator;
@@ -21,7 +20,7 @@ class ImmutableSequenceListWrapper<T> extends AbstractCollectionWrapper<T> imple
     @Override
     public boolean equals(Object other){
         return other instanceof Sequence sequence
-                && SequencesSupport.equals(this , sequence);
+                && AssortmentSupport.equals(this , sequence);
     }
 
     @Override
@@ -103,9 +102,5 @@ class ImmutableSequenceListWrapper<T> extends AbstractCollectionWrapper<T> imple
     public Sequence<T> reversed() {
         return new ReversedImmutableSequenceView<>(this);
     }
-
-    @Override
-    public List<T> asCollection() {
-        return Collections.unmodifiableList(original);
-    }
+    
 }

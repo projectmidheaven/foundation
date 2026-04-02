@@ -23,17 +23,17 @@ final class TransformSequenceView<O, T> implements Sequence<T>{
     @Override
     public boolean equals(Object other){
         return other instanceof Sequence sequence
-                && SequencesSupport.equals(this , sequence);
+                && AssortmentSupport.equals(this , sequence);
     }
 
     @Override
     public int hashCode(){
-        return HashCode.of(asCollection());
+        return HashCode.of(toCollection());
     }
 
     @Override
     public String toString( ){
-        return asCollection().toString();
+        return toCollection().toString();
     }
 
     @Override
@@ -145,8 +145,8 @@ final class TransformSequenceView<O, T> implements Sequence<T>{
 
 
     @Override
-    public List<T> asCollection() {
-        return original.asCollection().stream().map(transformation).toList();
+    public List<T> toCollection() {
+        return original.toCollection().stream().map(transformation).toList();
     }
 
 }

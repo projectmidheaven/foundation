@@ -3,7 +3,7 @@ package org.midheaven.culture;
 import org.midheaven.collections.Array;
 import org.midheaven.collections.Sequence;
 import org.midheaven.lang.Nullable;
-import org.midheaven.lang.Strings;
+import org.midheaven.lang.Parser;
 import org.midheaven.lang.ValueClass;
 
 import java.util.Locale;
@@ -11,12 +11,11 @@ import java.util.Objects;
 
 @ValueClass
 public final class CountryCode {
-
+    
+    private static final Parser<CountryCode> PARSER = Parser.upperCode(CountryCode::new);
+    
     public static CountryCode parse(String code){
-        return Strings.filled(code)
-                .map(String::toUpperCase)
-                .map(CountryCode::new)
-                .orNull();
+        return PARSER.parse(code);
     }
 
     public static Sequence<CountryCode> all(){

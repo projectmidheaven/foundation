@@ -45,6 +45,14 @@ public sealed interface Maybe<T> permits Some, None{
 
     boolean isPresent();
     boolean isAbsent();
+    
+    /**
+     * Transforms the value T to type R. If the value is not of type T return {@link Maybe#none()}
+     * @param type
+     * @return
+     * @param <R>
+     */
+    @NotNullable <R> Maybe<R> ofType(Class<R> type);
 
     @NotNullable Maybe<T> filter(@NotNullable Predicate<T> predicate);
     @NotNullable <R> Maybe<R> map(@NotNullable Function<T, R> transform);
@@ -90,7 +98,15 @@ record Some<T>(T value) implements Maybe<T> {
     public boolean isAbsent() {
         return false;
     }
-
+    
+    @Override
+    public @NotNullable <R> Maybe<R> ofType(Class<R> type) {
+        if (type.isInstance(value)){
+            return new Some<R>(type.cast(value));
+        }
+        return Maybe.none();
+    }
+    
     @Override
     public Maybe<T> filter(Predicate<T> predicate) {
         Objects.requireNonNull(predicate);
@@ -238,7 +254,12 @@ record None<T>() implements Maybe<T> {
     public boolean isAbsent() {
         return true;
     }
-
+    
+    @Override
+    public @NotNullable <R> Maybe<R> ofType(Class<R> type) {
+        return Maybe.none();
+    }
+    
     @Override
     public Maybe<T> filter(Predicate<T> predicate) {
         return Maybe.none();

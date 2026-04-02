@@ -3,6 +3,7 @@ package org.midheaven.collections;
 import org.midheaven.lang.Maybe;
 import org.midheaven.math.Int;
 
+import java.util.Collections;
 import java.util.List;
 
 final class EditableSubsequenceView<T> extends ImmutableSubsequenceView<T> implements EditableSequence<T> {
@@ -27,8 +28,8 @@ final class EditableSubsequenceView<T> extends ImmutableSubsequenceView<T> imple
 	}
 
 	@Override
-	public List<T> asCollection() {
-		return original.asCollection().subList(fromIndex.toInt(), toIndex.toInt());
+	public List<T> toCollection() {
+		return Collections.unmodifiableList(original.toCollection().subList(fromIndex.toInt(), toIndex.toInt()));
 	}
 
 	@Override

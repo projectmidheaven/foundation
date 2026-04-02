@@ -27,9 +27,5 @@ class EditableSequenceListWrapper<T>  extends ImmutableSequenceListWrapper<T> im
 	public EditableSequence<T> reversed() {
 		return new EditableSequenceListWrapper<T>(original.reversed());
 	}
-
-	@Override
-	public List<T> asCollection() {
-		return original;
-	}
+	
 }

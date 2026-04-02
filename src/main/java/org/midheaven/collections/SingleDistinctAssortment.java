@@ -1,12 +1,11 @@
 package org.midheaven.collections;
 
-import org.midheaven.lang.ValueClass;
 import org.midheaven.math.Int;
 
 import java.util.Set;
 
-@ValueClass
- record SingleDistinctAssortment<T>(T value) implements DistinctAssortment<T>{
+
+record SingleDistinctAssortment<T>(T value) implements DistinctAssortment<T>{
     
     @Override
     public boolean contains(Object other) {
@@ -14,7 +13,7 @@ import java.util.Set;
     }
     
     @Override
-    public Set<T> asCollection() {
+    public Set<T> toCollection() {
         return Set.of(value);
     }
     

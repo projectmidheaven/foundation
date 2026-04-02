@@ -7,6 +7,7 @@ import org.midheaven.math.Int;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -127,7 +128,26 @@ public interface Enumerable<T> extends Iterable<T> {
 
         return new ImmutableSequenceListWrapper<>(list);
     }
-
+    
+    
+    default DistinctAssortment<T> toDistinctAssortment(){
+        var enumerator = enumerator();
+        var length = enumerator.length();
+        if (length instanceof Length.Infinite){
+            throw new IllegalStateException("Infinite enumerable cannot be made into a sequence");
+        }
+        
+        if (length instanceof Length.Finite finite && finite.count().isZero()){
+            return EmptyDistinctAssortment.instance();
+        }
+        
+        return AssortmentSupport.<T, HashSet<T>, DistinctAssortment<T>>from(
+            this,
+            HashSet::new,
+            ResizableSetWrapper::new
+        );
+    }
+    
     default <S extends EditableSequence<T>> S toSequence(Supplier<S> supplier) {
         var enumerator = enumerator();
         var length = enumerator.length();
@@ -302,13 +322,36 @@ public interface Enumerable<T> extends Iterable<T> {
         return new GroupingPipe<>(groupSelector).applyTo(this);
     }
 
-    default <R,A> R collect(Collector<T, A, R> collector){
+    default <R,A> R collect(Collector<? super T, A, R> collector){
         A aa = collector.supplier().get();
         var f = collector.accumulator();
         for (var item : this){
             f.accept(aa,item);
         }
         return collector.finisher().apply(aa);
+    }
+    
+    /**
+     * Transforms each item from type T to type R.
+     * An exception will throw if the item is not of type R
+     * @param type
+     * @return
+     * @param <R>
+     */
+    default <R> Enumerable<R> cast(Class<R> type){
+        return this.map(type::cast);
+    }
+    
+    /**
+     * Transforms each item from type T to type R. Only items of type R will be preserved.
+     * No exception will be thrown
+     *
+     * @param type
+     * @return
+     * @param <R>
+     */
+    default <R> Enumerable<R> ofType(Class<R> type){
+        return this.filter(type::isInstance).map(type::cast);
     }
 
 }

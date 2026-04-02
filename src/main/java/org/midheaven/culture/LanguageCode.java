@@ -3,7 +3,7 @@ package org.midheaven.culture;
 import org.midheaven.collections.Array;
 import org.midheaven.collections.Sequence;
 import org.midheaven.lang.Nullable;
-import org.midheaven.lang.Strings;
+import org.midheaven.lang.Parser;
 import org.midheaven.lang.ValueClass;
 
 import java.util.Locale;
@@ -11,6 +11,7 @@ import java.util.Objects;
 
 @ValueClass
 public final class LanguageCode {
+    
     // top 10 most spoke languages
     // according to https://www.babbel.com/en/magazine/the-10-most-spoken-languages-in-the-world
     /**
@@ -54,11 +55,10 @@ public final class LanguageCode {
      */
     public static final LanguageCode ZH = new LanguageCode("zh");
 
+    private static final Parser<LanguageCode> PARSER = Parser.lowerCode(LanguageCode::new);
+    
     public static LanguageCode parse(String code){
-        return Strings.filled(code)
-                .map(String::toLowerCase)
-                .map(LanguageCode::new)
-                .orNull();
+        return PARSER.parse(code);
     }
 
     public static Sequence<LanguageCode> all(){

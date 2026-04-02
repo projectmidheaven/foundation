@@ -53,6 +53,7 @@ public abstract sealed class Length
             }
             return other;
         }
+
     }
 
     public static final class Infinite extends Length {
@@ -67,6 +68,7 @@ public abstract sealed class Length
         public Length minus(Length other) {
             return this;
         }
+        
     }
 
     public static final class Unknown extends Length {
@@ -81,5 +83,6 @@ public abstract sealed class Length
         public Length minus(Length other) {
             return this;
         }
+        
     }
 }

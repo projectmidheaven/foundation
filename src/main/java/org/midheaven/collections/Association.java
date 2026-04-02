@@ -3,8 +3,10 @@ package org.midheaven.collections;
 import org.midheaven.lang.Maybe;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /***
  * An {@link Assortment} of {@link Association.Entry<K,V>} that allows for retrieval of the values associated with the keys.
@@ -31,7 +33,7 @@ public interface Association<K,V> extends Assortment<Association.Entry<K,V>> {
     static AssociationBuilder builder(){
         return new AssociationBuilder();
     }
-
+    
     /**
      * Determines if this {@code Association} contains the given key
      * @param key the key to test
@@ -79,6 +81,11 @@ public interface Association<K,V> extends Assortment<Association.Entry<K,V>> {
     Assortment<V> values();
 
     Maybe<V> getValue(K key);
+    
+    default Set<Entry<K,V>> toCollection(){
+        return collect(Collectors.toUnmodifiableSet());
+    }
+    
 }
 
 record Entry<K,V>(K key, V value) implements Association.Entry<K,V> {

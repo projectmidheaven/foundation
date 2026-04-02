@@ -4,6 +4,7 @@ import org.midheaven.lang.HashCode;
 import org.midheaven.lang.Maybe;
 import org.midheaven.math.Int;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,17 +23,17 @@ class ImmutableSubsequenceView<T> implements Sequence<T> {
 	@Override
 	public boolean equals(Object other){
 		return other instanceof Sequence sequence
-				&& SequencesSupport.equals(this , sequence);
+				&& AssortmentSupport.equals(this , sequence);
 	}
 
 	@Override
 	public int hashCode( ){
-		return HashCode.of(asCollection());
+		return HashCode.of(this.toCollection());
 	}
 
 	@Override
 	public String toString( ){
-		return asCollection().toString();
+		return this.toCollection().toString();
 	}
 
 	@Override
@@ -124,8 +125,8 @@ class ImmutableSubsequenceView<T> implements Sequence<T> {
 	}
 
 	@Override
-	public List<T> asCollection() {
-		return original.asCollection().subList(fromIndex.toInt(), toIndex.toInt());
+	public List<T> toCollection() {
+		return Collections.unmodifiableList(original.toCollection().subList(fromIndex.toInt(), toIndex.toInt()));
 	}
 
 }

@@ -68,13 +68,8 @@ class ReversedImmutableSequenceView<T> implements Sequence<T> {
 	public Iterator<T> iterator() {
 		return original.reverseIterator();
 	}
-
-	@Override
-	public Sequence<T> subSequence(Int fromIndex, Int toIndex) {
-		return new ImmutableSubsequenceView<>(this, fromIndex, toIndex);
-	}
-
-	@Override
+    
+    @Override
 	public Sequence<T> reversed() {
 		return original;
 	}
@@ -85,8 +80,8 @@ class ReversedImmutableSequenceView<T> implements Sequence<T> {
 	}
 
 	@Override
-	public List<T> asCollection() {
-		return Collections.unmodifiableList(original.asCollection().reversed());
+	public List<T> toCollection() {
+		return Collections.unmodifiableList(original.toCollection().reversed());
 	}
 
 }

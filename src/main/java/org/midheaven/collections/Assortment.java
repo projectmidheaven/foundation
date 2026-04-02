@@ -26,9 +26,10 @@ public interface Assortment<T> extends Countable, Enumerable<T> {
 	}
 	
 	/**
-	 * Returns a view of this Assortment for compatibility with JDK collections.
+	 * Returns an immutable Collection with the items in this Assortment for compatibility with JDK collections.
+	 * Further alteration to the assortment do not affect the returned collection
 	 */
-	Collection<T> asCollection();
+	Collection<T> toCollection();
     
     /**
      * The number of elements in the {@code Assortment}
@@ -40,5 +41,5 @@ public interface Assortment<T> extends Countable, Enumerable<T> {
     
 	@Override
 	boolean isEmpty();
-
+	
 }

@@ -24,7 +24,7 @@ public class EmptyDistinctAssortment<T> implements DistinctAssortment<T> {
     }
 
     @Override
-    public Set<T> asCollection() {
+    public Set<T> toCollection() {
         return Collections.emptySet();
     }
 

@@ -17,7 +17,7 @@ class ImmutableCollectionWrapper<T> extends AbstractCollectionWrapper<T> impleme
     }
 
     @Override
-    public Collection<T> asCollection() {
+    public Collection<T> toCollection() {
         return original;
     }
 

@@ -1,11 +1,9 @@
 package org.midheaven.collections;
 
 import org.midheaven.lang.HashCode;
-import org.midheaven.lang.Maybe;
 import org.midheaven.math.Int;
 import org.midheaven.math.IntAccumulator;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -23,17 +21,17 @@ class FilterSequenceView<T> implements Sequence<T> {
     @Override
     public boolean equals(Object other){
         return other instanceof Sequence sequence
-                && SequencesSupport.equals(this , sequence);
+                && AssortmentSupport.equals(this , sequence);
     }
 
     @Override
     public int hashCode(){
-        return HashCode.of(asCollection());
+        return HashCode.of(this.toCollection());
     }
 
     @Override
     public String toString( ){
-        return asCollection().toString();
+        return this.toCollection().toString();
     }
 
     @Override
@@ -63,17 +61,7 @@ class FilterSequenceView<T> implements Sequence<T> {
         }
         return Int.NEGATIVE_ONE;
     }
-
-    @Override
-    public boolean containsAll(Iterable<? extends T> all) {
-        for (var candidate : all) {
-            if (!contains(candidate)){
-                return false;
-            }
-        }
-        return true;
-    }
-
+    
     @Override
     public Int count() {
 
@@ -100,60 +88,11 @@ class FilterSequenceView<T> implements Sequence<T> {
     public Enumerator<T> enumerator() {
         return new PipeEnumerator<>(original.enumerator(), new FilterPipe<>(predicate));
     }
-
+    
+    
     @Override
-    public Maybe<T> getAt(Int index) {
-        var iterator =  iterator();
-        IntAccumulator position = new IntAccumulator(Int.NEGATIVE_ONE);
-        T found = null;
-        while (iterator.hasNext() && position.isLessThan(index)) {
-            found = iterator.next();
-            position.increment();
-        }
-        return Maybe.of(found);
-    }
-
-    @Override
-    public Maybe<T> first() {
-        var iterator =  iterator();
-        if (iterator.hasNext()) {
-            return Maybe.of(iterator.next());
-        }
-        return Maybe.none();
-    }
-
-    @Override
-    public Maybe<T> last() {
-        var reverseIterator =  reverseIterator();
-        if (reverseIterator.hasNext()) {
-            return Maybe.of(reverseIterator.next());
-        }
-        return Maybe.none();
-    }
-
-    @Override
-    public Sequence<T> subSequence(Int fromIndex, Int toIndex) {
-        return new ImmutableSubsequenceView<>(this, fromIndex, toIndex);
-    }
-
-    @Override
-    public Sequence<T> reversed() {
-        return new ReversedImmutableSequenceView<>(this);
-    }
-
-    @Override
-    public Iterator<T> reverseIterator() {
-        return reversed().enumerator().toIterator();
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return this.enumerator().toIterator();
-    }
-
-    @Override
-    public List<T> asCollection() {
-        return original.asCollection().stream().filter(predicate).toList();
+    public List<T> toCollection() {
+        return original.toCollection().stream().filter(predicate).toList();
     }
 
 }

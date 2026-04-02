@@ -2,16 +2,35 @@ package org.midheaven.collections;
 
 import java.util.function.Function;
 
-public interface Page<T> {
+public interface Page<T>{
 
     static <S> Page<S> empty(){
-        return new EmptyPage<>();
+        return  EmptyPage.INSTANCE;
     }
-
-    int number();
+    
+    static <S> Page<S> from(
+        int ordinal,
+        int totalPagesCount,
+        int totalItemsCount,
+        int maximumItemsPerPageCount,
+        Sequence<S> items
+    ){
+        return new ItemsPage<>(
+             ordinal,
+             totalPagesCount,
+             totalItemsCount,
+             maximumItemsPerPageCount,
+             items
+        );
+    }
+    
+    int ordinal();
     int totalPagesCount();
     int totalItemsCount();
-
+    int maximumItemsPerPageCount();
+    
+    Sequence<T> items();
+    
     default <R> Page<R> map(Function<T, R> mapper){
         return new MappedPage<>(this, mapper);
     }
@@ -19,9 +38,13 @@ public interface Page<T> {
 
 
 class EmptyPage<T> implements Page<T>{
-
+    
+    static final EmptyPage INSTANCE = new EmptyPage();
+    
+    private EmptyPage(){}
+    
     @Override
-    public int number() {
+    public int ordinal() {
         return 1;
     }
 
@@ -34,10 +57,20 @@ class EmptyPage<T> implements Page<T>{
     public int totalItemsCount() {
         return 0;
     }
-
+    
+    @Override
+    public int maximumItemsPerPageCount() {
+        return 0;
+    }
+    
+    @Override
+    public Sequence<T> items() {
+        return Sequence.builder().empty();
+    }
+    
     @Override
     public <R> Page<R> map(Function<T, R> mapper) {
-        return new EmptyPage<>();
+        return INSTANCE;
     }
 }
 
@@ -52,8 +85,8 @@ class MappedPage<T,O> implements Page<T> {
     }
 
     @Override
-    public int number() {
-        return original.number();
+    public int ordinal() {
+        return original.ordinal();
     }
 
     @Override
@@ -65,9 +98,23 @@ class MappedPage<T,O> implements Page<T> {
     public int totalItemsCount() {
         return original.totalItemsCount();
     }
-
+    
+    @Override
+    public int maximumItemsPerPageCount() {
+        return original.maximumItemsPerPageCount();
+    }
+    
+    @Override
+    public Sequence<T> items() {
+        return original.items().map(mapper);
+    }
+    
     public <R> Page<R> map(Function<T, R> mapper) {
         return new MappedPage<>(this.original, this.mapper.andThen(mapper));
     }
+
+}
+
+record ItemsPage<T>(int ordinal, int totalPagesCount, int totalItemsCount, int maximumItemsPerPageCount, Sequence<T> items) implements Page<T>{
 
 }

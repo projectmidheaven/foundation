@@ -46,7 +46,7 @@ final class ResizableSetWrapper<T> extends AbstractCollectionWrapper<T> implemen
 	}
 
 	@Override
-	public Set<T> asCollection() {
+	public Set<T> toCollection() {
 		return this.original;
 	}
 

@@ -114,11 +114,15 @@ final class WholeRational implements Rational {
     
     @Override
     public Rational over(long value) {
-        try {
-            var n = Math.divideExact(this.value, value);
-            return new WholeRational(n);
-        }catch (ArithmeticException e){
-            return DynamicRational.from(this).over(value);
+        if (this.value >= value){
+            try {
+                var n = Math.divideExact(this.value, value);
+                return new WholeRational(n);
+            }catch (ArithmeticException e){
+                return DynamicRational.from(this).over(value);
+            }
+        } else {
+            return Rational.of(this.value, value);
         }
     }
 

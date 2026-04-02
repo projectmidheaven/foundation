@@ -87,8 +87,8 @@ public class EnumerableTestCases {
     }
 
     @Test
-    public void enumerableSorted(){
-        var sequence = Sequence.builder().of(2,1,3,7,4,9,2).sorted(Comparator.naturalOrder()).toSequence();
+    public void enumerableSortedSequence(){
+        var sequence = Sequence.builder().of(2,1,3,7,4,9,2).sorted(Comparator.naturalOrder());
 
         assertFalse(sequence.isEmpty());
         assertEquals(7, sequence.count().toInt());
@@ -96,6 +96,20 @@ public class EnumerableTestCases {
         assertEquals(2, sequence.getAt(1).orElse(-1));
         assertEquals(2, sequence.getAt(2).orElse(-1));
         assertEquals(3, sequence.getAt(3).orElse(-1));
+    }
+    
+    @Test
+    public void enumerableSortedDistinctAssortment(){
+        var distinctAssortment = DistinctAssortment.builder().of(2,1,3,7,4,9,2).sorted(Comparator.naturalOrder());
+        
+        assertFalse(distinctAssortment.isEmpty());
+        
+        var list = distinctAssortment.collect(java.util.stream.Collectors.toList());
+        assertEquals(6, list.size());
+        assertEquals(1, list.get(0));
+        assertEquals(2, list.get(1));
+        assertEquals(3, list.get(2));
+        assertEquals(4, list.get(3));
     }
 
     @Test

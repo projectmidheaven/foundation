@@ -3,7 +3,9 @@ package org.midheaven.collections;
 import org.midheaven.lang.Maybe;
 import org.midheaven.math.Int;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Function;
@@ -81,6 +83,7 @@ class EmptyArray<T> extends ImmutableEmptySequence<T> implements Array<T> {
 	public Array<T> reversed(){
 		return this;
 	}
+	
 
 	@Override
 	public Array<T> subSequence(int fromIndex, int toIndex) {
@@ -158,8 +161,10 @@ class ArrayWrapper<T>  extends ImmutableSequenceArrayWrapper<T> implements Array
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<T> asCollection() {
-		return Arrays.asList(this.array);
+	public List<T> toCollection() {
+		var list = new ArrayList<T>(this.array.length);
+        list.addAll(Arrays.asList(array));
+		return Collections.unmodifiableList(list);
 	}
 
 	@Override

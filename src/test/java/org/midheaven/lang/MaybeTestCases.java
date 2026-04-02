@@ -6,9 +6,24 @@ import org.junit.jupiter.api.Test;
 import java.util.function.BiFunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MaybeTestCases {
-
+	
+	@Test
+	public void castIsCorrect() {
+		
+		var a = Maybe.of("hello");
+		Maybe<CharSequence> b = a.ofType(CharSequence.class);
+		
+		assertTrue(b.isPresent());
+		
+		Maybe<Integer> c = a.ofType(Integer.class);
+		
+		assertTrue(c.isAbsent());
+		
+		
+	}
 	@Test
 	public void zipIsCorrect() {
 		

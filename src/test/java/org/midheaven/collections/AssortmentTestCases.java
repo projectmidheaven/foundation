@@ -5,16 +5,43 @@ import org.junit.jupiter.api.Test;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AssortmentTestCases {
-
+	
+	@Test
+	public void transformationsAreOfSameType() {
+		Sequence<Integer> sequence = Sequence.builder().of(1);
+		DistinctAssortment<Integer> set = DistinctAssortment.builder().of(1);
+		Association<String, Integer> map = Association.builder().ofEntries(Association.Entry.entry("a", 1));
+		
+		record Transformation<T, A extends Enumerable<T>>(String name, Class<A> type, A items){}
+		
+		var all = List.of(
+			new Transformation<>("filter",Enumerable.class, ((Assortment<Integer>)sequence).filter(it -> it == 1)),
+			new Transformation<>("filter",Sequence.class, sequence.filter(it -> it == 1)),
+			new Transformation<>("filter",DistinctAssortment.class, set.filter(it -> it == 1)),
+			new Transformation<>("filter",Enumerable.class, map.filter(it -> true)),
+			new Transformation<>("map",Enumerable.class, ((Assortment<Integer>)sequence).map(it -> it == 1)),
+			new Transformation<>("map",Sequence.class, sequence.map(it -> it == 1)),
+			new Transformation<>("map",DistinctAssortment.class, set.map(it -> it == 1)),
+			new Transformation<>("map",Enumerable.class, map.map(it -> null))
+		);
+		
+		for (var it : all){
+			assertInstanceOf(it.type, it.items, it.name + " is not of correct type. Expected " + it.type);
+		}
+	
+	}
+	
 	@Test
 	public void reversed_of_reverse_is_itself() {
 		Sequence<Integer> sequence = Sequence.builder().of(1);
@@ -223,5 +250,10 @@ public class AssortmentTestCases {
 		assertTrue(filter.contains(4));
 		assertEquals(4, filter.getAt(1).orElse(-1));
 
+	}
+	
+	@Test
+	public void joinStringsFromInts() {
+		assertEquals("1,2,3", Sequence.builder().of(1, 2, 3).map(Object::toString).collect(Collectors.joining(",")));
 	}
 }

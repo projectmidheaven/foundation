@@ -19,6 +19,6 @@ public interface ResizableDistinctAssortment<T> extends DistinctAssortment<T> {
 
 	boolean removeIf(Predicate<? super T> filter);
 
-	Set<T> asCollection();
+	Set<T> toCollection();
 	
 }

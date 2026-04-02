@@ -8,4 +8,12 @@ public interface StringTransformBuilder extends Strings.Transform {
     StringTransformBuilder thenTrim();
     StringTransformBuilder thenLowerCase();
     StringTransformBuilder thenRaiseCase();
+    StringTransformBuilder thenRemoveAllNumerics();
+    StringTransformBuilder thenRetainNumericsOnly();
+    StringTransformBuilder thenRemoveAllAlphabetic();
+    StringTransformBuilder thenRetainAlphabeticOnly();
+    StringTransformBuilder thenRemoveAllSymbols();
+    StringTransformBuilder thenRemoveAllSymbolsExcept(char ... symbols);
+    StringTransformBuilder thenRetainSymbolsOnly();
+
 }

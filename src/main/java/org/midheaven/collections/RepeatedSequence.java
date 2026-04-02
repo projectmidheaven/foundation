@@ -144,7 +144,7 @@ final class RepeatedSequence<T> implements Sequence<T> {
     }
 
     @Override
-    public List<T> asCollection() {
+    public List<T> toCollection() {
         return Collections.nCopies(count.toInt(), value);
     }
 }

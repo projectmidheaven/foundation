@@ -3,6 +3,7 @@ package org.midheaven.collections;
 import org.midheaven.lang.Maybe;
 import org.midheaven.math.Int;
 
+import java.util.Collections;
 import java.util.List;
 
 class ReversedEditableSequenceView<T> extends ReversedImmutableSequenceView<T> implements EditableSequence<T>  {
@@ -42,8 +43,8 @@ class ReversedEditableSequenceView<T> extends ReversedImmutableSequenceView<T> i
 	}
 
 	@Override
-	public List<T> asCollection() {
-		return original.asCollection().reversed();
+	public List<T> toCollection() {
+		return Collections.unmodifiableList(original.toCollection().reversed());
 	}
 
 

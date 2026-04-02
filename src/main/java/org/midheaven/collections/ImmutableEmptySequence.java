@@ -4,6 +4,7 @@ import org.midheaven.lang.Maybe;
 import org.midheaven.math.Int;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -99,10 +100,15 @@ class ImmutableEmptySequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public List<T> asCollection() {
+	public List<T> toCollection() {
 		return Collections.emptyList();
 	}
-
+	
+	@Override
+	public Sequence<T> sorted(Comparator<T> comparator) {
+		return this;
+	}
+	
 	@Override
 	public boolean equals(Object other){
 		return other instanceof Sequence<?> sequence

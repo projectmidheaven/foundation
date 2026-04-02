@@ -3,13 +3,14 @@ package org.midheaven.collections;
 import org.midheaven.lang.Maybe;
 import org.midheaven.math.Int;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 class ImmutableAssociationMapWrapper<K, V> implements Association<K,V> {
 
@@ -95,8 +96,8 @@ class ImmutableAssociationMapWrapper<K, V> implements Association<K,V> {
     }
 
     @Override
-    public Collection<Entry<K, V>> asCollection() {
-        return original.entrySet().stream().map(it -> Entry.from(it)).toList();
+    public Set<Entry<K, V>> toCollection() {
+        return original.entrySet().stream().map(Entry::from).collect(Collectors.toUnmodifiableSet());
     }
 
     @Override
