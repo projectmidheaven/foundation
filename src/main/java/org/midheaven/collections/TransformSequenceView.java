@@ -1,6 +1,5 @@
 package org.midheaven.collections;
 
-import org.midheaven.lang.HashCode;
 import org.midheaven.lang.Maybe;
 import org.midheaven.math.Int;
 import org.midheaven.math.IntAccumulator;
@@ -10,7 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-final class TransformSequenceView<O, T> implements Sequence<T>{
+
+final class TransformSequenceView<O, T> extends AbstractSequence<T>{
 
     final Sequence<O> original;
     final Function<O, T> transformation;
@@ -19,23 +19,7 @@ final class TransformSequenceView<O, T> implements Sequence<T>{
         this.original = original;
         this.transformation = transformation;
     }
-
-    @Override
-    public boolean equals(Object other){
-        return other instanceof Sequence sequence
-                && AssortmentSupport.equals(this , sequence);
-    }
-
-    @Override
-    public int hashCode(){
-        return HashCode.of(toCollection());
-    }
-
-    @Override
-    public String toString( ){
-        return toCollection().toString();
-    }
-
+    
     @Override
     public Int indexOf(Object element) {
         IntAccumulator index = new IntAccumulator();

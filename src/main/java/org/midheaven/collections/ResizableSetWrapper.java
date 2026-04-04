@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.Predicate;
 
+
 final class ResizableSetWrapper<T> extends AbstractCollectionWrapper<T> implements ResizableDistinctAssortment<T> {
 
 	private final Set<T> original;
@@ -34,20 +35,26 @@ final class ResizableSetWrapper<T> extends AbstractCollectionWrapper<T> implemen
 	public boolean removeIf(Predicate<? super T> filter) {
 		return original.removeIf(filter);
 	}
-
-	@Override
-	public boolean containsAll(Iterable<? extends T> all) {
-		for (var item : all){
-			if (!this.original.contains(item)){
-				return false;
-			}
-		}
-		return true;
-	}
-
+	
 	@Override
 	public Set<T> toCollection() {
 		return this.original;
+	}
+	
+	@Override
+	public int hashCode (){
+		return this.count().hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object other){
+		return other instanceof DistinctAssortment that
+				   && AssortmentSupport.equals(this, that);
+	}
+	
+	@Override
+	public String toString (){
+		return AssortmentSupport.toString(this, '{', '}');
 	}
 
 }

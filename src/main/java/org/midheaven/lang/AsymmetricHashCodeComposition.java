@@ -2,6 +2,9 @@ package org.midheaven.lang;
 
 import org.midheaven.lang.HashCode.Composition;
 
+/**
+ * Represents Asymmetric Hash Code Composition.
+ */
 final class AsymmetricHashCodeComposition implements Composition {
 	
 	private static final int BASE_PRIME = 7;

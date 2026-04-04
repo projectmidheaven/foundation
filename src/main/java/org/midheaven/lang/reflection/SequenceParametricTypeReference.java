@@ -2,6 +2,9 @@ package org.midheaven.lang.reflection;
 
 import org.midheaven.collections.Sequence;
 
+/**
+ * Represents Sequence Parametric Type Reference.
+ */
 final class SequenceParametricTypeReference<T> extends ParametricTypeReference<T> {
 
     private final Class<T> type;

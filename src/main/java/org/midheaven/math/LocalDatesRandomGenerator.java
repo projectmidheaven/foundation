@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.Random;
 import java.util.function.Supplier;
 
+/**
+ * Generator for Local Dates Random values.
+ */
 public final class LocalDatesRandomGenerator
         extends AbstractDiscreteIntervalRandomGenerator<LocalDate>
         implements IntervalRandomGenerator<LocalDate>

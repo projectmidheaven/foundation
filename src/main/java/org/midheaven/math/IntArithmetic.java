@@ -2,6 +2,9 @@ package org.midheaven.math;
 
 import java.util.function.BiFunction;
 
+/**
+ * Represents Int Arithmetic.
+ */
 final class IntArithmetic implements Arithmetic<Int, Rational> {
 
     static final IntArithmetic INSTANCE = new IntArithmetic();

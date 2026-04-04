@@ -3,6 +3,9 @@ package org.midheaven.math;
 import org.midheaven.lang.Maybe;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
+/**
+ * Represents Empty Interval.
+ */
 final class EmptyInterval<T> implements Interval<T> {
     
     static final Interval INSTANCE = new EmptyInterval();

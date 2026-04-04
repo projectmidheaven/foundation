@@ -1,6 +1,5 @@
 package org.midheaven.collections;
 
-import org.midheaven.lang.HashCode;
 import org.midheaven.lang.Maybe;
 import org.midheaven.math.Int;
 
@@ -8,7 +7,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-class ImmutableSubsequenceView<T> implements Sequence<T> {
+class ImmutableSubsequenceView<T> extends AbstractSequence<T> {
 
 	final Sequence<T> original;
 	final Int fromIndex;
@@ -18,22 +17,6 @@ class ImmutableSubsequenceView<T> implements Sequence<T> {
 		this.original = original;
 		this.fromIndex = fromIndex;
 		this.toIndex = toIndex;
-	}
-
-	@Override
-	public boolean equals(Object other){
-		return other instanceof Sequence sequence
-				&& AssortmentSupport.equals(this , sequence);
-	}
-
-	@Override
-	public int hashCode( ){
-		return HashCode.of(this.toCollection());
-	}
-
-	@Override
-	public String toString( ){
-		return this.toCollection().toString();
 	}
 
 	@Override
@@ -85,8 +68,8 @@ class ImmutableSubsequenceView<T> implements Sequence<T> {
 	}
 
 	@Override
-	public boolean contains(Object any) {
-		var index = indexOf(any);
+	public boolean contains(Object candidate) {
+		var index = indexOf(candidate);
 		return index.isGreaterThanOrEqualTo(fromIndex) &&  index.isLessThanOrEqualTo(toIndex);
 	}
 

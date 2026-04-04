@@ -2,6 +2,9 @@ package org.midheaven.lang;
 
 import org.midheaven.lang.HashCode.Composition;
 
+/**
+ * Represents Symmetric Hash Code Composition.
+ */
 final class SymmetricHashCodeComposition implements Composition {
 
 	int hashCode = 0;

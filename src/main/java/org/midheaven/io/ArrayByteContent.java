@@ -6,6 +6,9 @@ import org.midheaven.lang.ValueClass;
 import java.util.Arrays;
 
 @ValueClass
+/**
+ * Represents Array Byte Content.
+ */
 final class ArrayByteContent extends ByteContent {
     
     private final byte[] content;

@@ -12,6 +12,9 @@ import java.lang.reflect.ParameterizedType;
 import java.time.temporal.Temporal;
 import java.util.Arrays;
 
+/**
+ * Represents Mirror.
+ */
 public class Mirror<T> {
 
     private static final ProxyEngine engine = new CompositeProxyEngine()
@@ -19,14 +22,29 @@ public class Mirror<T> {
             .add(new NativeMirrorEngine())
             ;
 
+    /**
+     * Performs reflect.
+     * @param type the type value
+     * @return the result of reflect
+     */
     public static <X> Mirror<X> reflect(Class<X> type){
         return new Mirror<>(type);
     }
 
+    /**
+     * Performs reflect.
+     * @param type the type value
+     * @return the result of reflect
+     */
     public static <X> Mirror<X> reflect(ParametricTypeReference<X> type){
         return new Mirror<>(type.rootClass());
     }
 
+    /**
+     * Performs reflect.
+     * @param method the method value
+     * @return the result of reflect
+     */
     public static Maybe<Property> reflect(Method method){
         if (method.getName().startsWith("set") && method.getParameterTypes().length == 1){
             return PropertyMirrorSupport.fromModifier(method, method.getDeclaringClass());
@@ -36,14 +54,29 @@ public class Mirror<T> {
         return Maybe.none();
     }
 
+    /**
+     * Performs reflect.
+     * @param field the field value
+     * @return the result of reflect
+     */
     public static Maybe<Property> reflect(Field field){
         return PropertyMirrorSupport.fromField(field, field.getDeclaringClass());
     }
 
+    /**
+     * Checks whether is Possibly ABean.
+     * @param type the type value
+     * @return the result of isPossiblyABean
+     */
     public static boolean isPossiblyABean(Class<?> type){
         return isPossiblyABean(ParametricTypeReference.of(type));
     }
 
+    /**
+     * Checks whether is Possibly ABean.
+     * @param type the type value
+     * @return the result of isPossiblyABean
+     */
     public static boolean isPossiblyABean(ParametricTypeReference<?> type){
         return type.kind().isClass()
                 && !type.isAssignableTo(String.class)
@@ -62,10 +95,19 @@ public class Mirror<T> {
         this.type = type;
     }
 
+    /**
+     * Performs parameterizedType.
+     * @return the result of parameterizedType
+     */
     public Maybe<ParameterizedType> parameterizedType(){
         return extractParameterizedType(this.type);
     }
 
+    /**
+     * Performs extractParameterizedType.
+     * @param type the type value
+     * @return the result of extractParameterizedType
+     */
     private Maybe<ParameterizedType> extractParameterizedType(Class<?> type){
         if (type.getGenericSuperclass() instanceof ParameterizedType parameterizedType){
             return Maybe.some(parameterizedType);
@@ -75,6 +117,10 @@ public class Mirror<T> {
         return extractParameterizedType(type.getSuperclass());
     }
 
+    /**
+     * Performs properties.
+     * @return the result of properties
+     */
     public PropertiesMirror<T> properties(){
         if (properties == null){
             properties = new ReflectionPropertiesMirror<>(this.type);
@@ -82,6 +128,10 @@ public class Mirror<T> {
         return properties;
     }
 
+    /**
+     * Performs methods.
+     * @return the result of methods
+     */
     public MethodsMirror<T> methods(){
         if (methods == null){
             methods = new ReflectionMethodsMirror<T>(this.type);
@@ -89,6 +139,10 @@ public class Mirror<T> {
         return methods;
     }
 
+    /**
+     * Performs constructors.
+     * @return the result of constructors
+     */
     public ConstructorsMirror<T> constructors(){
         if (constructors == null){
             constructors = new ReflectionConstructorsMirror<T>(this.type);
@@ -96,6 +150,10 @@ public class Mirror<T> {
         return constructors;
     }
 
+    /**
+     * Creates new Instance.
+     * @return the result of newInstance
+     */
     public T newInstance(){
         Constructor<T> constructor;
         try {
@@ -116,6 +174,11 @@ public class Mirror<T> {
         }
     }
 
+    /**
+     * Creates new Instance.
+     * @param parameters the parameters value
+     * @return the result of newInstance
+     */
     public T newInstance(Object ... parameters){
         var constructor =  Arrays.stream(type.getDeclaredConstructors())
                 .filter(it -> it.getParameterTypes().length == parameters.length)
@@ -137,6 +200,12 @@ public class Mirror<T> {
         }
     }
 
+    /**
+     * Checks whether can Assign.
+     * @param source the source value
+     * @param target the target value
+     * @return the result of canAssign
+     */
     private static boolean canAssign(Class<?> source, Class<?> target){
         if (target.isAssignableFrom(source)){
             return true;
@@ -147,6 +216,12 @@ public class Mirror<T> {
         return false;
     }
 
+    /**
+     * Performs proxy.
+     * @param handler the handler value
+     * @param otherTypes the otherTypes value
+     * @return the result of proxy
+     */
     public T proxy(InvocationHandler handler, Class<?>...  otherTypes){
         if (!engine.canProxy(this.type)) {
             throw new ReflectionException("Is not possible to proxy " + this.type.getName());

@@ -2,6 +2,7 @@ package org.midheaven.collections;
 
 import java.util.function.Supplier;
 
+
 class GenerationPipe<T> extends Pipe<T, T, Void> {
 
     private final Supplier<T> supplier;

@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
+
 class ResizableSequenceListWrapper<T>  extends EditableSequenceListWrapper<T> implements ResizableSequence<T> {
 
 	ResizableSequenceListWrapper(List<T> original){

@@ -9,8 +9,15 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
+/**
+ * Defines the contract for Traversable.
+ */
 public interface Traversable<T> extends Iterable<T>, AutoCloseable{
 
+    /**
+     * Returns an empty instance.
+     * @return the result of empty
+     */
     static <S> Traversable<S> empty(){
         return new Traversable<>() {
             @Override
@@ -31,11 +38,28 @@ public interface Traversable<T> extends Iterable<T>, AutoCloseable{
         };
     }
     
+    /**
+     * Creates an instance from the provided source.
+     * @param iterable the iterable value
+     * @return the result of from
+     */
     static <S> Traversable<S> from(Iterable<S> iterable){
         return from(Enumerable.from(iterable));
     }
     
+    /**
+     * Creates an instance from the provided source.
+     * @param first the first value
+     * @param others the others value
+     * @return the result of from
+     */
     @SafeVarargs
+    /**
+     * Creates an instance from the provided source.
+     * @param first the first value
+     * @param others the others value
+     * @return the result of from
+     */
     static <S> Traversable<S> from(S first, S ... others){
         if (others.length == 0){
             return new EnumerableTraversable<>(Enumerable.single(first));
@@ -43,30 +67,66 @@ public interface Traversable<T> extends Iterable<T>, AutoCloseable{
         return new EnumerableTraversable<>(Enumerable.single(first).concat(new ArrayWrapper<>(others)));
     }
     
+    /**
+     * Creates an instance from the provided source.
+     * @param enumerable the enumerable value
+     * @return the result of from
+     */
     static <S> Traversable<S> from(Enumerable<S> enumerable){
         return new EnumerableTraversable<>(enumerable);
     }
 
+    /**
+     * Creates an instance from the provided source.
+     * @param stream the stream value
+     * @return the result of from
+     */
     static <S> Traversable<S> from(Stream<S> stream){
         return new StreamTraversable<>(stream);
     }
 
+    /**
+     * Performs map.
+     * @param mapper the mapper value
+     * @return the result of map
+     */
     default <R> Traversable<R> map(Function<T, R> mapper){
         return new MappedTraversable<>(this, mapper);
     }
     
+    /**
+     * Performs flatMap.
+     * @param mapper the mapper value
+     * @return the result of flatMap
+     */
     default <R> Traversable<R> flatMap(Function<T, Traversable<R>> mapper){
         return new FlatMappedTraversable<>(this, mapper);
     }
 
+    /**
+     * Performs concat.
+     * @param other the other value
+     * @return the result of concat
+     */
     default Traversable<T> concat(Traversable<T> other){
         return new ConcatTraversable<>(this, other);
     }
 
+    /**
+     * Performs zip.
+     * @param other the other value
+     * @param zipper the zipper value
+     * @return the result of zip
+     */
     default <O, R> Traversable<R> zip(Traversable<O> other, BiFunction<T, O, R> zipper){
         return new ZipTraversable<>(this, other, zipper);
     }
     
+    /**
+     * Performs collect.
+     * @param collector the collector value
+     * @return the result of collect
+     */
     default <R,A> R collect(Collector<T, A, R> collector){
         A aa = collector.supplier().get();
         var f = collector.accumulator();
@@ -76,7 +136,13 @@ public interface Traversable<T> extends Iterable<T>, AutoCloseable{
         return collector.finisher().apply(aa);
     }
     
+    /**
+     * Performs close.
+     */
     @Override
+    /**
+     * Performs close.
+     */
     void close();
 }
 

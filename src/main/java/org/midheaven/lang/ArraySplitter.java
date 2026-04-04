@@ -2,6 +2,9 @@ package org.midheaven.lang;
 
 import org.midheaven.collections.Sequence;
 
+/**
+ * Represents Array Splitter.
+ */
 final class ArraySplitter extends AbstractIndexedSplitter {
 
     static Strings.Splitter fromArray(String[] array){

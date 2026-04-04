@@ -22,5 +22,6 @@ class PipeAssociatedEnumerable<K,V> implements AssociatedEnumerable<K,V> {
     public Iterator<Association.Entry<K, V>> iterator() {
         return this.enumerator().toIterator();
     }
+    
 
 }

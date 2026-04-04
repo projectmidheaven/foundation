@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.IntPredicate;
 
+/**
+ * Builder for Chain String Transform instances.
+ */
 class ChainStringTransformBuilder implements StringTransformBuilder{
     
     private final List<CharTransformation> chain = new LinkedList<>();

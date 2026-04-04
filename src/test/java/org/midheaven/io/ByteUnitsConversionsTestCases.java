@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.midheaven.math.Rational;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public class ByteUnitsConversionsTestCases {
     
     @Test

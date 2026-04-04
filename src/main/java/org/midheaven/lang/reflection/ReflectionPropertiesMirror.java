@@ -12,6 +12,9 @@ import java.lang.reflect.Modifier;
 import java.util.Objects;
 import java.util.function.Function;
 
+/**
+ * Represents Reflection Properties Mirror.
+ */
 class ReflectionPropertiesMirror<T> implements PropertiesMirror<T> {
 
     private final PropertySelector<T> propertySelector;

@@ -14,6 +14,9 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 @ValueClass
+/**
+ * Defines the contract for Rational.
+ */
 public sealed interface Rational extends Ordered<Rational>, LongOrdered, Signed<Rational>, Field<Rational>
     permits DynamicRational, InvertedRational, RationalNegativeOne, RationalOne, RationalZero, WholeRational {
     

@@ -3,28 +3,63 @@ package org.midheaven.lang;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Represents Base32.
+ */
 public abstract class Base32 {
     
     public interface Encoder {
+        /**
+         * Performs encode.
+         * @param bytes the bytes value
+         * @return the result of encode
+         */
         String encode(byte[] bytes);
+        /**
+         * Performs encode.
+         * @param text the text value
+         * @return the result of encode
+         */
         default String encode(String text){
             return encode(text.getBytes(StandardCharsets.UTF_8));
         }
     }
     
     public interface Decoder {
+        /**
+         * Performs decode.
+         * @param textRepresentation the textRepresentation value
+         * @return the result of decode
+         */
         byte[] decode(String textRepresentation);
+        /**
+         * Performs decodeToString.
+         * @param textRepresentation the textRepresentation value
+         * @return the result of decodeToString
+         */
         default String decodeToString(String textRepresentation){
             return new String(decode(textRepresentation),StandardCharsets.UTF_8);
         }
     }
     
+    /**
+     * Performs crockford.
+     * @return the result of crockford
+     */
     public static Base32 crockford() {
         return new CrockfordBase32();
     }
     
+    /**
+     * Performs encoder.
+     * @return the result of encoder
+     */
     public  abstract  Encoder encoder();
     
+    /**
+     * Performs decoder.
+     * @return the result of decoder
+     */
     public abstract Decoder decoder();
     
  

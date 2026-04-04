@@ -5,6 +5,9 @@ import org.midheaven.lang.ValueClass;
 import java.util.UUID;
 
 @ValueClass
+/**
+ * Represents Uuid Key.
+ */
 final class UuidKey<C extends Concept> extends Key<C> {
 
     private final String conceptName;

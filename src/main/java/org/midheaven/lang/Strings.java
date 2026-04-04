@@ -8,14 +8,26 @@ import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+/**
+ * Represents Strings.
+ */
 public class Strings {
 	
     public interface Transform {
         
+        /**
+         * Performs create.
+         * @return the result of create
+         */
         static @NotNullable StringTransformBuilder create(){
             return new ChainStringTransformBuilder();
         }
         
+        /**
+         * Performs apply.
+         * @param text the text value
+         * @return the result of apply
+         */
         String apply(CharSequence text);
     }
     
@@ -28,6 +40,11 @@ public class Strings {
 			@NotNullable Splitter byEachChar();
 		}
 		
+		/**
+		 * Performs split.
+		 * @param text the text value
+		 * @return the result of split
+		 */
 		static @NotNullable Condition split(@NotNullable CharSequence text) {
 			return Maybe.of(text)
 					   .filter(it -> !it.isEmpty())
@@ -47,10 +64,20 @@ public class Strings {
 		@NotNullable  Splitter withoutFirst();
 		@NotNullable Splitter withoutLast();
         
+        /**
+         * Performs join.
+         * @param delimiter the delimiter value
+         * @return the result of join
+         */
         default @NotNullable String join(char delimiter){
             return collect(Collectors.joining(Character.toString(delimiter)));
         }
         
+        /**
+         * Performs join.
+         * @param delimiter the delimiter value
+         * @return the result of join
+         */
         default @NotNullable String join(@NotNullable String delimiter){
             return collect(Collectors.joining(delimiter));
         }
@@ -93,6 +120,11 @@ public class Strings {
 			this.separation = separation;
 		}
 		
+		/**
+		 * Performs splitWords.
+		 * @param text the text value
+		 * @return the result of splitWords
+		 */
 		public Splitter splitWords(CharSequence text){
 			var str = text.toString();
 			return switch (this){
@@ -130,12 +162,22 @@ public class Strings {
             };
 		}
 		
+		/**
+		 * Performs joinWords.
+		 * @param splitter the splitter value
+		 * @return the result of joinWords
+		 */
 		public String joinWords(Splitter splitter){
 			return splitter.sequence().limit(1).map(it -> operateFirstWord(it))
 					   .concat(splitter.sequence().skip(1).map(it -> operateOtherWords(it)))
 					   .collect(Collectors.joining(this.separation));
 		}
 		
+		/**
+		 * Performs operateOtherWords.
+		 * @param word the word value
+		 * @return the result of operateOtherWords
+		 */
 		private CharSequence operateOtherWords(String word) {
 			return switch (this){
                 case UNKNOWN, PLAIN -> word;
@@ -145,6 +187,11 @@ public class Strings {
             };
 		}
 		
+		/**
+		 * Performs operateFirstWord.
+		 * @param word the word value
+		 * @return the result of operateFirstWord
+		 */
 		private CharSequence operateFirstWord(String word) {
 			return switch (this){
 				case UNKNOWN, PLAIN -> word;
@@ -156,6 +203,11 @@ public class Strings {
 		}
 	}
 	
+	/**
+	 * Checks whether is Blank.
+	 * @param text the text value
+	 * @return the result of isBlank
+	 */
 	public static boolean isBlank(@Nullable CharSequence text) {
         return switch (text){
             case null -> false;
@@ -164,6 +216,11 @@ public class Strings {
         };
 	}
 
+	/**
+	 * Checks whether is Filled.
+	 * @param text the text value
+	 * @return the result of isFilled
+	 */
 	public static boolean isFilled(@Nullable CharSequence text) {
         return switch (text){
             case null -> false;
@@ -172,14 +229,32 @@ public class Strings {
         };
 	}
 
+	/**
+	 * Checks whether is Blank.
+	 * @param text the text value
+	 * @return the result of isBlank
+	 */
 	public static boolean isBlank(@Nullable String text) {
 		return text == null || text.isBlank();
 	}
     
+    /**
+     * Performs areBlank.
+     * @param a the a value
+     * @param b the b value
+     * @return the result of areBlank
+     */
     public static boolean areBlank(@Nullable CharSequence a, @Nullable CharSequence b) {
         return isBlank(a) && isBlank(b);
     }
     
+    /**
+     * Performs areBlank.
+     * @param a the a value
+     * @param b the b value
+     * @param others the others value
+     * @return the result of areBlank
+     */
     public static boolean areBlank(@Nullable CharSequence a, @Nullable CharSequence b, @Nullable CharSequence ... others) {
         var blank = isBlank(a) && isBlank(b);
         
@@ -193,14 +268,32 @@ public class Strings {
         return blank;
     }
     
+	/**
+	 * Checks whether is Filled.
+	 * @param text the text value
+	 * @return the result of isFilled
+	 */
 	public static boolean isFilled(@Nullable String text) {
 		return text != null && !text.isBlank();
 	}
     
+    /**
+     * Performs areFilled.
+     * @param a the a value
+     * @param b the b value
+     * @return the result of areFilled
+     */
     public static boolean areFilled(@Nullable CharSequence a, @Nullable CharSequence b) {
         return isFilled(a) && isFilled(b);
     }
     
+    /**
+     * Performs areFilled.
+     * @param a the a value
+     * @param b the b value
+     * @param others the others value
+     * @return the result of areFilled
+     */
     public static boolean areFilled(@Nullable CharSequence a, @Nullable CharSequence b,@Nullable CharSequence ... others) {
         var filled = isFilled(a) && isFilled(b);
         
@@ -214,10 +307,22 @@ public class Strings {
         return filled;
     }
     
+	/**
+	 * Performs filled.
+	 * @param text the text value
+	 * @return the result of filled
+	 */
 	public static @NotNullable Maybe<String> filled(@Nullable String text) {
 		return Maybe.of(text).filter(it -> !it.isBlank());
 	}
  
+	/**
+	 * Performs transform.
+	 * @param text the text value
+	 * @param original the original value
+	 * @param target the target value
+	 * @return the result of transform
+	 */
 	public static @Nullable String transform(@Nullable String text,@NotNullable Casing original, @NotNullable Casing target){
 		if (text == null){
 			return null;
@@ -225,6 +330,10 @@ public class Strings {
 		return target.joinWords(original.splitWords(text));
 	}
 	
+	/**
+	 * Performs Strings.
+	 * @return the result of Strings
+	 */
 	private Strings() {}
 }
 

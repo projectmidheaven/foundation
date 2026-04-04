@@ -4,6 +4,9 @@ import org.midheaven.lang.HashCode;
 import org.midheaven.lang.Maybe;
 import org.midheaven.lang.Ordered;
 
+/**
+ * Represents Boundary Interval.
+ */
 class BoundaryInterval<T> implements Interval<T> {
 
     private final Domain<T, ?> order;

@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 @ValueClass
+/**
+ * Represents Whole Rational.
+ */
 final class WholeRational implements Rational {
 
     private final long value;

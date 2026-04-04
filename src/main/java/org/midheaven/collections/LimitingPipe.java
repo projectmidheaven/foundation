@@ -2,10 +2,14 @@ package org.midheaven.collections;
 
 import org.midheaven.math.Int;
 
-public final class LimitingPipe<T> extends Pipe<T,T, long[]> {
+final class LimitingPipe<T> extends Pipe<T,T, long[]> {
 
     private final long maxCount;
 
+    /**
+     * Creates a new LimitingPipe.
+     * @param maxCount the maxCount value
+     */
     public LimitingPipe(long maxCount) {
         this.maxCount = maxCount;
     }
@@ -15,11 +19,13 @@ public final class LimitingPipe<T> extends Pipe<T,T, long[]> {
         return Length.finite(Int.of(maxCount));
     }
 
+
     @Override
     long[] newState(Enumerator<T> original, Length finalLength) {
         return new long[]{0};
     }
 
+ 
     @Override
     PipeMoveResult<T> move(Enumerator<T> original, long[] state) {
         if (state[0] < maxCount && original.moveNext()){

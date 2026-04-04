@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @ValueClass
+/**
+ * Represents Input Stream Byte Content.
+ */
 final class InputStreamByteContent extends AbstractReadOnceByteContent{
     
     private final InputStream stream;

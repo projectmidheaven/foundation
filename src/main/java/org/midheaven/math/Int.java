@@ -11,6 +11,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
 
+/**
+ * Defines the contract for Int.
+ */
 public sealed interface Int extends Ordered<Int> , LongOrdered, Signed<Int>, AdditionGroup<Int>, MultiplicationMonoid<Int>
     permits Int32, Int64, IntZero, IntOne, IntNegativeOne, BigInt{
 

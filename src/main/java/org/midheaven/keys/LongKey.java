@@ -5,6 +5,9 @@ import org.midheaven.lang.ValueClass;
 import java.util.UUID;
 
 @ValueClass
+/**
+ * Represents Long Key.
+ */
 final class LongKey<C extends Concept> extends Key<C> {
 
     private final String conceptName;

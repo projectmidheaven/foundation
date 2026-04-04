@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collector;
 
+/**
+ * Represents List Splitter.
+ */
 final class ListSplitter extends AbstractIndexedSplitter {
     
     private final List<String> list = new ArrayList<>(); // can be empty

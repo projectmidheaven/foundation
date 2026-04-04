@@ -8,6 +8,9 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 @ValueClass
+/**
+ * Represents Int One.
+ */
 final class IntOne implements Int {
     
     @Override

@@ -6,6 +6,9 @@ import org.midheaven.math.Int;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
+/**
+ * Represents Empty Splitter.
+ */
 final class EmptySplitter implements Strings.Splitter{
 
 	private static final EmptySplitter ME = new EmptySplitter();

@@ -7,6 +7,9 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * Represents Type Reference.
+ */
 public abstract sealed class TypeReference permits ParametricTypeReference, TypeReferenceTypeAdapter{
 
     public static <X> ParametricTypeReference<X> of(Class<X> type){

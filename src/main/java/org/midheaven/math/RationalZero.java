@@ -5,6 +5,9 @@ import org.midheaven.lang.ValueClass;
 import java.math.BigDecimal;
 
 @ValueClass
+/**
+ * Represents Rational Zero.
+ */
 final class RationalZero implements Rational{
     
     @Override

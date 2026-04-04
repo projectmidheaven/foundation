@@ -4,6 +4,9 @@ import org.midheaven.collections.Sequence;
 
 import java.util.function.Function;
 
+/**
+ * Represents Mapped Indexed Splitter.
+ */
 final class MappedIndexedSplitter extends AbstractIndexedSplitter {
     
     private final Function<String, String> transform;

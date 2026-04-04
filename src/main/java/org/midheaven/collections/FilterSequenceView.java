@@ -1,6 +1,5 @@
 package org.midheaven.collections;
 
-import org.midheaven.lang.HashCode;
 import org.midheaven.math.Int;
 import org.midheaven.math.IntAccumulator;
 
@@ -8,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-class FilterSequenceView<T> implements Sequence<T> {
+class FilterSequenceView<T> extends AbstractSequence<T> {
 
     private final Sequence<T> original;
     private final Predicate<T> predicate;
@@ -17,23 +16,7 @@ class FilterSequenceView<T> implements Sequence<T> {
         this.original = original;
         this.predicate = predicate;
     }
-
-    @Override
-    public boolean equals(Object other){
-        return other instanceof Sequence sequence
-                && AssortmentSupport.equals(this , sequence);
-    }
-
-    @Override
-    public int hashCode(){
-        return HashCode.of(this.toCollection());
-    }
-
-    @Override
-    public String toString( ){
-        return this.toCollection().toString();
-    }
-
+    
     @Override
     public Int indexOf(Object element) {
         IntAccumulator index = new IntAccumulator();

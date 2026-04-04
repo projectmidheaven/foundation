@@ -5,27 +5,38 @@ import org.midheaven.lang.Maybe;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * Defines and resizable {@link Association} that accepts adding a removing entries
+ */
 public interface ResizableAssociation<K, V> extends EditableAssociation<K,V>{
 
+    /**
+     * add a new entry with the gven key and value
+     * @param key the key
+     * @param value the value
+     */
     void putValue(K key, V value);
 
+    /**
+     * Removes all entries
+     */
     void clear();
 
     /**
      * Removes the key and the associated value.
      * If the key or the value are not present {@code Maybe.none} is returned.
-     * @param key
-     * @return
+     * @param key the key of the entry to remove
+     * @return the corresponding value present before removing
      */
     Maybe<V> removeKey(K key);
 
     /***
-     * If the value is found return it. If not, compute a value from the key.
+     * If the value is found return it. If not, compute a value from the given key.
      * The computed value is permanently associated with the key.
      * The next call will find the value associated with the key.
-     * @param key
-     * @param computation
-     * @return
+     * @param key the key to find
+     * @param computation the computations to define the value for the key
+     * @return the associated value
      */
     V computeValueIfAbsent(K key, Function<K,V> computation);
 

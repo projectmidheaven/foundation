@@ -3,6 +3,7 @@ package org.midheaven.collections;
 import java.util.Iterator;
 import java.util.function.Function;
 
+
 class TransformIterator<O, T> implements Iterator<T> {
 
     private final Iterator<O> original;

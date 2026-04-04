@@ -9,6 +9,9 @@ import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.function.Function;
 
+/**
+ * Defines the contract for Interval.
+ */
 public interface Interval<T> {
     
     interface Domain<T, U> {
@@ -68,14 +71,29 @@ public interface Interval<T> {
         Maybe<T> value();
     }
     
+    /**
+     * Performs ranging.
+     * @param type the type value
+     * @return the result of ranging
+     */
     static <C extends Comparable<C>> IntervalBuilder<C, C> ranging(Class<C> type){
         return new IntervalBuilder<C, C>(Domain.natural());
     }
     
+    /**
+     * Performs ranging.
+     * @param order the order value
+     * @return the result of ranging
+     */
     static <C, S> IntervalBuilder<C, S> ranging(Domain<C, S> order){
         return new IntervalBuilder<>(order);
     }
     
+    /**
+     * Performs ranging.
+     * @param comparator the comparator value
+     * @return the result of ranging
+     */
     static <C> IntervalBuilder<C, C> ranging(Comparator<C> comparator){
         return new IntervalBuilder<>(new IdentityDomain<C>(comparator::compare));
     }
@@ -89,16 +107,48 @@ public interface Interval<T> {
         return EmptyInterval.INSTANCE;
     }
     
+    /**
+     * Performs minimum.
+     * @return the result of minimum
+     */
     Boundary<T> minimum();
 
+    /**
+     * Performs maximum.
+     * @return the result of maximum
+     */
     Boundary<T> maximum();
 
+    /**
+     * Checks whether is Empty.
+     * @return the result of isEmpty
+     */
     boolean isEmpty();
+    /**
+     * Performs contains.
+     * @param other the other value
+     * @return the result of contains
+     */
     boolean contains(T other);
 
+    /**
+     * Performs intersects.
+     * @param other the other value
+     * @return the result of intersects
+     */
     boolean intersects(Interval<T> other);
+    /**
+     * Performs contains.
+     * @param other the other value
+     * @return the result of contains
+     */
     boolean contains(Interval<T> other);
     
+    /**
+     * Performs apply.
+     * @param calculation the calculation value
+     * @return the result of apply
+     */
     default <R> R apply(Function<Interval<T> , R> calculation){
         return calculation.apply(this);
     }

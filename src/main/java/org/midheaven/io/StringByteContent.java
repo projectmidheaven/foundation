@@ -7,6 +7,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Represents String Byte Content.
+ */
 final class StringByteContent extends ByteContent {
     
     private final String text;

@@ -2,8 +2,18 @@ package org.midheaven.math;
 
 import java.util.function.BiFunction;
 
+/**
+ * Defines the contract for Arithmetic.
+ */
 public interface Arithmetic<T, S> {
 
+    /**
+     * Creates an instance from the provided value.
+     * @param zero the zero value
+     * @param sum the sum value
+     * @param over the over value
+     * @return the result of of
+     */
     static <V,R> Arithmetic<V, R> of(V zero, BiFunction<V,V,V> sum, BiFunction<V, Long, R> over){
         return new Arithmetic<V, R>() {
             @Override
@@ -24,16 +34,40 @@ public interface Arithmetic<T, S> {
         };
     }
 
+    /**
+     * Performs zero.
+     * @return the result of zero
+     */
     T zero();
 
+    /**
+     * Performs sum.
+     * @param a the a value
+     * @param b the b value
+     * @return the result of sum
+     */
     T sum(T a, T b);
 
+    /**
+     * Performs over.
+     * @param a the a value
+     * @param b the b value
+     * @return the result of over
+     */
     S over(T a, long b);
 
+    /**
+     * Performs sumCollector.
+     * @return the result of sumCollector
+     */
     default ArithmeticAccumulatorCollector<T, T> sumCollector(){
         return new ArithmeticAccumulatorCollector<>(new SumArithmeticAccumulator<T>(this));
     }
 
+    /**
+     * Performs averageCollector.
+     * @return the result of averageCollector
+     */
     default ArithmeticAccumulatorCollector<T, S> averageCollector(){
         return new ArithmeticAccumulatorCollector<>(new AvgArithmeticAccumulator<T,S>(this));
     }

@@ -2,6 +2,9 @@ package org.midheaven.lang;
 
 import org.midheaven.collections.Sequence;
 
+/**
+ * Represents Char Splitter.
+ */
 final class CharSplitter extends  AbstractIndexedSplitter {
 
 	private final char[] text; // ech char is an item in the splitter

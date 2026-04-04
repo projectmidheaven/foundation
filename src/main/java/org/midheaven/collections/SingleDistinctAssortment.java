@@ -1,15 +1,30 @@
 package org.midheaven.collections;
 
+import org.midheaven.lang.Nullable;
+import org.midheaven.lang.ValueClass;
 import org.midheaven.math.Int;
 
+import java.util.Objects;
 import java.util.Set;
 
 
-record SingleDistinctAssortment<T>(T value) implements DistinctAssortment<T>{
+@ValueClass
+final class SingleDistinctAssortment<T> extends AbstractDistinctAssortment<T>{
+    
+    private final T value;
+    
+    public SingleDistinctAssortment(@Nullable T value){
+        this.value = value;
+    }
     
     @Override
-    public boolean contains(Object other) {
-        return value.equals(other);
+    public String toString(){
+        return "{" + value + "}";
+    }
+    
+    @Override
+    public boolean contains(Object candidate) {
+        return Objects.equals(value, candidate);
     }
     
     @Override

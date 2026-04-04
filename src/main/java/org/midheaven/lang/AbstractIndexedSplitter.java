@@ -5,6 +5,9 @@ import org.midheaven.math.Int;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
+/**
+ * Base implementation for Indexed Splitter.
+ */
 abstract sealed class AbstractIndexedSplitter implements Strings.Splitter
     permits ArraySplitter, BackwardsShiftSplitter, CharSplitter, ForwardShiftSplitter, ListSplitter, MappedIndexedSplitter {
     

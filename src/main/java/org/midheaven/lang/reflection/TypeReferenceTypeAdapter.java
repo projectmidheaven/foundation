@@ -5,6 +5,9 @@ import org.midheaven.collections.Sequence;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+/**
+ * Represents Type Reference Type Adapter.
+ */
 final class TypeReferenceTypeAdapter extends TypeReference {
 
     final Type type;
@@ -13,7 +16,7 @@ final class TypeReferenceTypeAdapter extends TypeReference {
     TypeReferenceTypeAdapter(Type type) {
         this.type = type;
         if (type instanceof ParameterizedType parameterizedType){
-            parameterTypes = Sequence.builder().of(parameterizedType.getActualTypeArguments()).map(it -> TypeReference.of(it));
+            parameterTypes = Sequence.builder().of(parameterizedType.getActualTypeArguments()).map(TypeReference::of);
         } else {
             parameterTypes = Sequence.builder().empty();
         }

@@ -2,6 +2,9 @@ package org.midheaven.lang;
 
 import org.midheaven.collections.Sequence;
 
+/**
+ * Represents Backwards Shift Splitter.
+ */
 final class BackwardsShiftSplitter extends AbstractIndexedSplitter {
     
     private final AbstractIndexedSplitter original;

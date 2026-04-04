@@ -5,6 +5,9 @@ import org.midheaven.lang.NotNullable;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * Represents Empty Byte Content.
+ */
 class EmptyByteContent extends ByteContent {
     
     public EmptyByteContent(ByteContentFormat format) {

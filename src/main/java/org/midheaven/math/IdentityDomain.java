@@ -4,6 +4,9 @@ import org.midheaven.lang.Nullable;
 
 import java.util.function.BiFunction;
 
+/**
+ * Immutable record for Identity Domain.
+ */
 record IdentityDomain<T>(BiFunction<T, T, Integer> comparator) implements Interval.Domain<T, T> {
     
     @Override

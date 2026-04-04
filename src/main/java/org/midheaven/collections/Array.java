@@ -1,6 +1,9 @@
 package org.midheaven.collections;
 
+import org.midheaven.lang.Check;
 import org.midheaven.lang.Maybe;
+import org.midheaven.lang.NotNullable;
+import org.midheaven.lang.Nullable;
 import org.midheaven.math.Int;
 
 import java.util.ArrayList;
@@ -12,37 +15,68 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
+/**
+ * An {@link EditableSequence} that behaves like an array.
+ */
 public interface Array<T> extends EditableSequence<T> {
 
+	/**
+	 * Returns an empty instance.
+	 * @return an empty instance.
+	 */
 	static <X> Array<X> empty(){
 		return EmptyArray.emptyArray();
 	}
 
+	/**
+	 * Creates a new {@link Array} of the given type and size.
+	 * All positions are set to {@code null}. Primitive types are not allowed.
+	 *
+	 * @param type the type of the {@link Array}
+	 * @param size the size of the {@link Array}
+	 * @return the created array
+	 */
 	@SuppressWarnings("unchecked")
-	static <X> Array<X> newArray(Class<X> type, int size){
-		if (size < 0) {
+	static <X> @NotNullable Array<X> newArray(@NotNullable Class<X> type, int size){
+		Check.argumentIsNotNull(type, "type");
+		if (type.isPrimitive()) {
+			throw new IllegalArgumentException("Type cannot be a primitive");
+		} else if (size < 0) {
 			throw new IllegalArgumentException("Size must be zero ou positive");
 		} else if (size == 0) {
 			return EmptyArray.emptyArray();
 		}
 		return new ArrayWrapper<>((X[])java.lang.reflect.Array.newInstance(type, size));
 	}
-		
+	
+	/**
+	 * Creates a new {@link Array} with the given values
+	 *
+	 * @param values the values of the array
+	 * @return the created array
+	 */
 	@SuppressWarnings("unchecked")
-	static <X> Array<X> of(X ... array){
-		if (array.length == 0) {
+	static <X> @NotNullable Array<X> of(X ... values){
+		if (values == null || values.length == 0) {
 			return EmptyArray.emptyArray();
 		}
-		return new ArrayWrapper<>(array);
+		return new ArrayWrapper<>(values);
 	}
-
-	static <X> Array<X> repeat(X value, int size) {
+	
+	 /**
+	 * Creates a new {@link Array} of the given size where all values are the same as the given non-null value
+	 *
+	 * @param value the given value
+	 * @param size the size of the array
+	 * @return the created array
+	 */
+	static <X> @NotNullable Array<X> repeat(@Nullable X value, int size) {
 		if (size == 0) {
 			return EmptyArray.emptyArray();
-		} else if (value == null){
-			throw new IllegalArgumentException("Value cannot be null");
 		}
-		var array = (X[])java.lang.reflect.Array.newInstance(value.getClass(), size);
+		var array = value == null
+		 ? (X[])java.lang.reflect.Array.newInstance(Object.class, size)
+		 : (X[])java.lang.reflect.Array.newInstance(value.getClass(), size);
 		Arrays.fill(array, value);
 		return new ArrayWrapper<>(array);
 	}

@@ -3,6 +3,9 @@ package org.midheaven.math;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+/**
+ * Generator for Random values.
+ */
 public interface RandomGenerator<T>  {
 
     /**

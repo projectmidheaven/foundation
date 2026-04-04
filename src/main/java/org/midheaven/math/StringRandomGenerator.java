@@ -3,6 +3,9 @@ package org.midheaven.math;
 import java.util.Random;
 import java.util.function.Supplier;
 
+/**
+ * Generator for String Random values.
+ */
 public class StringRandomGenerator implements RandomGenerator<String> {
 
     private final Supplier<Random> source;
@@ -17,7 +20,15 @@ public class StringRandomGenerator implements RandomGenerator<String> {
         this.type = type;
     }
 
+    /**
+     * Performs next.
+     * @return the result of next
+     */
     @Override
+    /**
+     * Performs next.
+     * @return the result of next
+     */
     public String next() {
         var base = source.get();
         var length = base.nextInt(minLength, maxLength + 1);

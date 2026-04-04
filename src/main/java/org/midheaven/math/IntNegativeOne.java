@@ -8,6 +8,9 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 @ValueClass
+/**
+ * Represents Int Negative One.
+ */
 final class IntNegativeOne implements Int {
     
     @Override

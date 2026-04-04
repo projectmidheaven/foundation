@@ -7,6 +7,9 @@ import org.midheaven.lang.ValueClass;
 import java.math.BigDecimal;
 
 @ValueClass
+/**
+ * Represents Dynamic Rational.
+ */
 final class DynamicRational implements Rational{
 
     static @NotNullable DynamicRational from(@NotNullable Rational other){

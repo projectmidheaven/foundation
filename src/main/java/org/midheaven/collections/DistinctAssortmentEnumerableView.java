@@ -7,7 +7,22 @@ package org.midheaven.collections;
      }
      
      @Override
-     public boolean contains(T any) {
-         return original.anyMatch(it -> it.equals(any));
+     public boolean contains(T candidate) {
+         return original.anyMatch(it -> it.equals(candidate));
+     }
+     @Override
+     public boolean equals(Object other){
+         return other instanceof DistinctAssortment that
+                    && AssortmentSupport.equals(this, that);
+     }
+     
+     @Override
+     public int hashCode (){
+         return this.count().hashCode();
+     }
+     
+     @Override
+     public String toString (){
+         return AssortmentSupport.toString(this, '{', '}');
      }
  }

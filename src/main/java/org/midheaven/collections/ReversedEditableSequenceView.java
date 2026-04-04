@@ -6,6 +6,7 @@ import org.midheaven.math.Int;
 import java.util.Collections;
 import java.util.List;
 
+
 class ReversedEditableSequenceView<T> extends ReversedImmutableSequenceView<T> implements EditableSequence<T>  {
 
 	public ReversedEditableSequenceView(EditableSequence<T> original) {

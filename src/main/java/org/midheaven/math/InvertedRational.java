@@ -6,6 +6,9 @@ import org.midheaven.lang.ValueClass;
 import java.math.BigDecimal;
 
 @ValueClass
+/**
+ * Represents Inverted Rational.
+ */
 final class InvertedRational implements Rational {
     
     private final long denominator;

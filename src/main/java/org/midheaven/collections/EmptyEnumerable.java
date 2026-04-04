@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.Iterator;
 
 @SuppressWarnings("rawtypes")
+/**
+ * Represents Empty Enumerable.
+ */
 final class EmptyEnumerable<T> implements Enumerable<T> {
 
     private static final EmptyEnumerable ME = new EmptyEnumerable();

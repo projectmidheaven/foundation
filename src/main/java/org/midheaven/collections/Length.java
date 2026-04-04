@@ -3,20 +3,53 @@ package org.midheaven.collections;
 import org.midheaven.lang.Ordered;
 import org.midheaven.math.Int;
 
+/**
+ * Represents the Length of an {@link Enumerator}. It can be infinite, finite or unknown
+ */
 public abstract sealed class Length
         permits Length.Finite , Length.Infinite , Length.Unknown
 {
-
-    public static Length finite(Int count) {
-        return new Finite(count);
+    
+    /**
+     * Creates a finite {@code Length} with the given length
+     * @param length the length value
+     * @return
+     */
+    public static Length finite(Int length) {
+        return new Finite(length);
     }
-
-    public Length filter() {
-        return this;
-    }
-
+  
+    abstract Length filter();
+    
+    /**
+     * Returns a new Length that is the minimum between {@code this} and the given Length
+     *
+     * min(finite(x), finite(y)) ->  finite(x <= y ? x : y)
+     * min(finite(x), infinite) ->  finite(x)
+     * min(finite(x), unknown) ->  unknown
+     * min(infinite, unknown) ->  unknown
+     *
+     * @param other the other value
+     * @return the minimum Length
+     */
     public abstract Length min(Length other);
     
+    /**
+     * Subtracts the given value from this value.
+     *
+     * finite(x) - finite(y) ->  x - y
+     * finite(x) - infinite ->  infinite
+     * infinite - finite(x) ->  infinite
+     * finite(x) - unknown ->  unknown
+     * unknown - finite(x) ->  unknown
+     * infinite - infinite -> infinite
+     * infinite - unknown ->  infinite
+     * unknown - infinite ->  unknown
+     * unknown - unknown -> unknown
+     *
+     * @param other the value to subtract
+     * @return {@code this} - {@code other}
+     */
     public abstract Length minus(Length other);
     
     public static final class Finite extends Length {
@@ -58,7 +91,12 @@ public abstract sealed class Length
 
     public static final class Infinite extends Length {
         static final Infinite INSTANCE = new Infinite();
-
+        
+        @Override
+        Length filter() {
+            return this;
+        }
+        
         @Override
         public Length min(Length other) {
             return other;
@@ -73,7 +111,12 @@ public abstract sealed class Length
 
     public static final class Unknown extends Length {
         static final Unknown INSTANCE = new Unknown();
-
+        
+        @Override
+        Length filter() {
+            return this;
+        }
+        
         @Override
         public Length min(Length other) {
             return this;

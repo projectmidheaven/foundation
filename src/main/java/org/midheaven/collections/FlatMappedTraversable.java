@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 
+
 final class FlatMappedTraversable<T, R> implements Traversable<R> {
     
     private final Traversable<T> original;

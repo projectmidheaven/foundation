@@ -1,5 +1,6 @@
 package org.midheaven.collections;
 
+
 public class PipeEnumerator<Original, Final, State> implements Enumerator<Final> {
 
     private final Enumerator<Original> original;
@@ -29,6 +30,7 @@ public class PipeEnumerator<Original, Final, State> implements Enumerator<Final>
         return false;
     }
 
+
     @Override
     public Final current() {
         if (!moved){
@@ -37,6 +39,7 @@ public class PipeEnumerator<Original, Final, State> implements Enumerator<Final>
         return current;
     }
 
+  
     @Override
     public Length length() {
         return length;

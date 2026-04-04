@@ -9,6 +9,9 @@ import org.midheaven.lang.ValueClass;
 import java.util.Locale;
 import java.util.Objects;
 
+/**
+ * Represents Language Code.
+ */
 @ValueClass
 public final class LanguageCode {
     
@@ -57,10 +60,19 @@ public final class LanguageCode {
 
     private static final Parser<LanguageCode> PARSER = Parser.lowerCode(LanguageCode::new);
     
+    /**
+     * Parses the provided value.
+     * @param code the code value
+     * @return the result of parse
+     */
     public static LanguageCode parse(String code){
         return PARSER.parse(code);
     }
 
+    /**
+     * Performs all.
+     * @return the result of all
+     */
     public static Sequence<LanguageCode> all(){
         return Array.of(Locale.getISOLanguages()).map(LanguageCode::new);
     }
@@ -71,32 +83,75 @@ public final class LanguageCode {
         this.isoCode = isoCode;
     }
 
+    /**
+     * Checks whether iso Code.
+     * @return the result of isoCode
+     */
     @Nullable
+    /**
+     * Checks whether iso Code.
+     * @return the result of isoCode
+     */
     public String isoCode(){
         return isoCode;
     }
 
+    /**
+     * Returns to String.
+     * @return the result of toString
+     */
     @Nullable
+    /**
+     * Returns to String.
+     * @return the result of toString
+     */
     public String toString(){
         return isoCode;
     }
 
+    /**
+     * Performs equals.
+     * @param other the other value
+     * @return the result of equals
+     */
     @Override
+    /**
+     * Performs equals.
+     * @param other the other value
+     * @return the result of equals
+     */
     public boolean equals(Object other){
         return other instanceof LanguageCode that
            && this.isoCode.equals(that.isoCode);
     }
 
+    /**
+     * Checks whether hash Code.
+     * @return the result of hashCode
+     */
     @Override
+    /**
+     * Checks whether hash Code.
+     * @return the result of hashCode
+     */
     public int hashCode( ){
         return this.isoCode.hashCode();
     }
 
+    /**
+     * Performs in.
+     * @param countryCode the countryCode value
+     * @return the result of in
+     */
     public @Nullable Culture in(CountryCode countryCode){
         Objects.requireNonNull(countryCode);
         return new Culture(this.isoCode, countryCode.isoCode());
     }
 
+    /**
+     * Performs culture.
+     * @return the result of culture
+     */
     public @Nullable Culture culture() {
         return new Culture(this.isoCode, null);
     }

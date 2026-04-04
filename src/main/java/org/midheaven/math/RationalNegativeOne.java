@@ -5,6 +5,9 @@ import org.midheaven.lang.ValueClass;
 import java.math.BigDecimal;
 
 @ValueClass
+/**
+ * Represents Rational Negative One.
+ */
 final class RationalNegativeOne implements Rational{
     
     @Override

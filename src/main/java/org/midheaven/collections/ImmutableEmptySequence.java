@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 
-class ImmutableEmptySequence<T> implements Sequence<T> {
+class ImmutableEmptySequence<T> extends AbstractSequence<T> {
 
 
 	@SuppressWarnings("rawtypes")
@@ -70,7 +70,7 @@ class ImmutableEmptySequence<T> implements Sequence<T> {
 	}
 
 	@Override
-	public boolean contains(T any) {
+	public boolean contains(T candidate) {
 		return false;
 	}
 
@@ -109,12 +109,6 @@ class ImmutableEmptySequence<T> implements Sequence<T> {
 		return this;
 	}
 	
-	@Override
-	public boolean equals(Object other){
-		return other instanceof Sequence<?> sequence
-				&& sequence.isEmpty();
-	}
-
 	@Override
 	public int hashCode( ){
 		return 0;

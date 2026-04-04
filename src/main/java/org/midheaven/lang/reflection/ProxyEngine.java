@@ -1,6 +1,9 @@
 package org.midheaven.lang.reflection;
 
 
+/**
+ * Defines the contract for Proxy Engine.
+ */
 public interface ProxyEngine {
 
     <T> boolean canProxy(Class<T> type);

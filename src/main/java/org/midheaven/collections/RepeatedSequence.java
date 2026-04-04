@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
-final class RepeatedSequence<T> implements Sequence<T> {
+final class RepeatedSequence<T> extends AbstractSequence<T> {
 
     private final Int count;
     private final T value;

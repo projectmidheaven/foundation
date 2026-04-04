@@ -97,15 +97,7 @@ abstract class AbstractCollectionWrapper<T> {
 	public void clear() {
 		original().clear();
 	}
-
-	public boolean equals(Object o) {
-		return original().equals(o);
-	}
-
-	public int hashCode() {
-		return original().hashCode();
-	}
-
+	
 	public boolean removeIf(Predicate<? super T> filter) {
 		return original().removeIf(filter);
 	}

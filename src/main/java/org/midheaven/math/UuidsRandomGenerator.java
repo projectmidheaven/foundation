@@ -4,13 +4,24 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+/**
+ * Generator for Uuids Random values.
+ */
 public final class UuidsRandomGenerator extends DelegatingRandomGenerator<UUID> implements RandomGenerator<UUID>{
 
     UuidsRandomGenerator(Supplier<Random> base) {
         super(base);
     }
 
+    /**
+     * Performs next.
+     * @return the result of next
+     */
     @Override
+    /**
+     * Performs next.
+     * @return the result of next
+     */
     public UUID next() {
 
         byte[] data = new byte[16];

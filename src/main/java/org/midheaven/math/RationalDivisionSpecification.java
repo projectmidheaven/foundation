@@ -3,6 +3,9 @@ package org.midheaven.math;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+/**
+ * Represents Rational Division Specification.
+ */
 class RationalDivisionSpecification {
     
     static BigDecimal reduceToBigDecimal(Rational value){

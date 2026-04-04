@@ -5,10 +5,23 @@ import org.midheaven.lang.Maybe;
 
 import java.util.function.Function;
 
+/**
+ * Defines the contract for Properties Mirror.
+ */
 public interface PropertiesMirror<T> extends Enumerable<Property> {
 
+    /**
+     * Performs get.
+     * @param name the name value
+     * @return the result of get
+     */
     Maybe<Property> get(String name);
 
+    /**
+     * Performs get.
+     * @param property the property value
+     * @return the result of get
+     */
     default Maybe<Property> get(Property property){
         return Maybe.of(property)
                 .map(p -> p.name())

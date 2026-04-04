@@ -2,6 +2,9 @@ package org.midheaven.io;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Base implementation for Read Once Byte Content.
+ */
 abstract class AbstractReadOnceByteContent extends ByteContent{
     
     protected AbstractReadOnceByteContent(ByteContentFormat format) {

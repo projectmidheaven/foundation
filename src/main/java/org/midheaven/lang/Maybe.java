@@ -12,13 +12,29 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+/**
+ * Defines the contract for Maybe.
+ */
 public sealed interface Maybe<T> permits Some, None{
 
+    /**
+     * Performs none.
+     * @return the result of none
+     */
     @SuppressWarnings("unchecked")
+    /**
+     * Performs none.
+     * @return the result of none
+     */
     static <X> @NotNullable Maybe<X> none(){
         return None.INSTANCE;
     }
 
+    /**
+     * Creates an instance from the provided value.
+     * @param value the value value
+     * @return the result of of
+     */
     static <X> @NotNullable Maybe<X> of(X value){
         if (value == null){
             return none();
@@ -26,12 +42,27 @@ public sealed interface Maybe<T> permits Some, None{
         return new Some<>(value);
     }
 
+    /**
+     * Performs some.
+     * @param value the value value
+     * @return the result of some
+     */
     static <X> @NotNullable Maybe<X> some(X value){
         Objects.requireNonNull(value);
         return new Some<>(value);
     }
 
+    /**
+     * Creates an instance from the provided source.
+     * @param optional the optional value
+     * @return the result of from
+     */
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    /**
+     * Creates an instance from the provided source.
+     * @param optional the optional value
+     * @return the result of from
+     */
     static <X> @NotNullable Maybe<X> from(Optional<X> optional){
         if (optional.isPresent()){
             return some(optional.orElseThrow());
@@ -43,7 +74,15 @@ public sealed interface Maybe<T> permits Some, None{
 
     @NotNullable T get();
 
+    /**
+     * Checks whether is Present.
+     * @return the result of isPresent
+     */
     boolean isPresent();
+    /**
+     * Checks whether is Absent.
+     * @return the result of isAbsent
+     */
     boolean isAbsent();
     
     /**
@@ -71,8 +110,21 @@ public sealed interface Maybe<T> permits Some, None{
     @NotNullable Maybe<T> merge(@NotNullable Maybe<T> other, @NotNullable BiFunction<T, T, T> calculation);
     @NotNullable Maybe<T> flatMerge(@NotNullable Maybe<T> other, @NotNullable BiFunction<T, T, Maybe<T>> calculation);
 
+    /**
+     * Performs ifPresent.
+     * @param consumer the consumer value
+     */
     @NotNullable Optional<T> toOptional();
+    /**
+     * Performs ifPresent.
+     * @param consumer the consumer value
+     */
     void ifPresent(@NotNullable Consumer<T> consumer);
+    /**
+     * Performs ifPresentOrElse.
+     * @param consumer the consumer value
+     * @param action the action value
+     */
     void ifPresentOrElse(@NotNullable Consumer<T> consumer, @NotNullable Runnable action);
 }
 

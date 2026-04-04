@@ -5,6 +5,9 @@ import org.midheaven.math.Int;
 
 import java.util.List;
 
+/**
+ * Wrapper for Editable Sequence List.
+ */
 class EditableSequenceListWrapper<T>  extends ImmutableSequenceListWrapper<T> implements EditableSequence<T> {
 
 	EditableSequenceListWrapper(List<T> original){

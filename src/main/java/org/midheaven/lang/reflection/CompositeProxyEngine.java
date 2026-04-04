@@ -5,6 +5,9 @@ import org.midheaven.lang.Maybe;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents Composite Proxy Engine.
+ */
 class CompositeProxyEngine implements ProxyEngine {
 
     private final List<ProxyEngine> engines = new ArrayList<>(2);

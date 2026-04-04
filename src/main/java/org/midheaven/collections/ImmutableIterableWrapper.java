@@ -2,6 +2,7 @@ package org.midheaven.collections;
 
 import java.util.Iterator;
 
+
 class ImmutableIterableWrapper<T> implements Enumerable<T>{
 
     private final Iterable<T> original;

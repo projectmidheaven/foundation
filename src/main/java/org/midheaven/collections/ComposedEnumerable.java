@@ -5,6 +5,7 @@ import org.midheaven.lang.Maybe;
 import java.util.ArrayList;
 import java.util.List;
 
+
 final class ComposedEnumerable<T> implements Enumerable<T> {
     
     private final List<Enumerable<T>> enumerables = new ArrayList<>(2);

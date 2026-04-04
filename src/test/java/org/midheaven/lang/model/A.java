@@ -1,5 +1,4 @@
 package org.midheaven.lang.model;
-
 public class A {
 
     // TODO test as public

@@ -2,11 +2,15 @@ package org.midheaven.collections;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -255,5 +259,107 @@ public class AssortmentTestCases {
 	@Test
 	public void joinStringsFromInts() {
 		assertEquals("1,2,3", Sequence.builder().of(1, 2, 3).map(Object::toString).collect(Collectors.joining(",")));
+	}
+	
+	@Test
+	public void equalityOfDistinctAssortmentVariants(){
+		var all = List.of(
+			DistinctAssortment.builder().of(1 , 1),
+			DistinctAssortment.builder().of(1 ),
+			DistinctAssortment.builder().of(new Integer[]{1}),
+			DistinctAssortment.builder().from(Arrays.asList(1)),
+			DistinctAssortment.builder().from(Arrays.asList(1)).map(it -> it),
+			DistinctAssortment.builder().from(Arrays.asList(1)).filter(it -> true),
+			DistinctAssortment.builder().from(Arrays.asList(1)).ofType(Integer.class),
+			DistinctAssortment.builder().from(Arrays.asList(1)).cast(Integer.class),
+			DistinctAssortment.builder().from(Arrays.asList(1)).sorted(Comparator.naturalOrder())
+		);
+		
+		for (int i = 0 ; i < all.size(); i++){
+			for (int j = 0 ; j < all.size(); j++){
+				assertEquals(all.get(i), all.get(j), "DistinctAssortment at " + i  + " is not equals to DistinctAssortment at " + j);
+			}
+		}
+		
+	}
+	
+	@Test
+	public void equalityOfSequenceVariants(){
+		var all = List.of(
+			Sequence.builder().of(1 ),
+			Sequence.builder().of(new Integer[]{1}),
+			Sequence.builder().from(Arrays.asList(1)),
+			Sequence.builder().from(Arrays.asList(1)).map(it -> it),
+			Sequence.builder().from(Arrays.asList(1)).filter(it -> true),
+			Sequence.builder().from(Arrays.asList(1)).ofType(Integer.class),
+			Sequence.builder().from(Arrays.asList(1)).cast(Integer.class),
+			Sequence.builder().from(Arrays.asList(1)).sorted(Comparator.naturalOrder()),
+			Sequence.builder().from(Arrays.asList(1)).reversed(),
+			Array.of(1)
+		);
+		
+		for (int i = 0 ; i < all.size(); i++){
+			for (int j = 0 ; j < all.size(); j++){
+				assertEquals(all.get(i), all.get(j), "Sequence at " + i  + " is not equals to Sequence at " + j);
+			}
+		}
+		
+	}
+	
+	@Test
+	public void equalityOfAssociationVariants(){
+		var all = List.of(
+			Association.builder().of("a", 1 ),
+			Association.builder().ofEntries(Association.Entry.entry("a", 1)),
+			Association.builder().from(Collections.singletonMap("a", 1)),
+			Association.builder().of("a", 1 ).map(it -> it)
+				.associate(Association.Entry::key, Association.Entry::value)
+				.toAssociation(),
+			Association.builder().of("a", 1 ).filter(it -> true)
+				.associate(Association.Entry::key, Association.Entry::value)
+				.toAssociation()
+		);
+		
+		for (int i = 0 ; i < all.size(); i++){
+			for (int j = 0 ; j < all.size(); j++){
+				assertEquals(all.get(i), all.get(j), "Association at " + i  + " is not equals to Association at " + j);
+			}
+		}
+		
+	}
+	
+	@Test
+	public void toArray(){
+		Integer[] expected = {1, 2, 3};
+		
+		Assortment<Integer> assortment = Sequence.builder().of(1, 2, 3);
+		assertArrayEquals(expected, assortment.toArray());
+		assertArrayEquals(expected, assortment.toArray(new Integer[3]));
+		assertArrayEquals(expected, assortment.toArray(new Integer[0]));
+		assertArrayEquals(expected, assortment.toArray(Integer[]::new));
+		
+		assortment = DistinctAssortment.builder().of(1, 3, 2);
+		assertArrayEquals(expected, assortment.toArray());
+		assertArrayEquals(expected, assortment.toArray(new Integer[3]));
+		assertArrayEquals(expected, assortment.toArray(new Integer[0]));
+		assertArrayEquals(expected, assortment.toArray(Integer[]::new));
+		
+	}
+	
+	@Test
+	public void arrayOfPrimitiveIsNotAllowed() {
+		
+		assertThrows(IllegalArgumentException.class, () -> Array.newArray(Integer.TYPE, 0));
+		
+	}
+	
+	@Test
+	public void repeatedArrayOfNull() {
+		
+		 Array<String> array = Array.repeat(null, 3);
+		
+		 assertNotNull(array);
+		 assertTrue(array.getAt(0).isAbsent());
+		 assertTrue(array.contains(null));
 	}
 }

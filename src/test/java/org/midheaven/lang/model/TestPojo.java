@@ -3,7 +3,6 @@ package org.midheaven.lang.model;
 import org.midheaven.lang.Maybe;
 
 import java.util.Optional;
-
 public class TestPojo {
 
     private String name;

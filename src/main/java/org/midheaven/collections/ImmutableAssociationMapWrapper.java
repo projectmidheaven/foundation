@@ -6,13 +6,12 @@ import org.midheaven.math.Int;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-class ImmutableAssociationMapWrapper<K, V> implements Association<K,V> {
+class ImmutableAssociationMapWrapper<K, V> extends AbstractAssociation<K,V> {
 
     protected final Map<K, V> original;
 
@@ -50,12 +49,12 @@ class ImmutableAssociationMapWrapper<K, V> implements Association<K,V> {
     }
 
     @Override
-    public boolean containsKey(K key) {
+    public boolean containsKey(Object key) {
         return original.containsKey(key);
     }
 
     @Override
-    public boolean containsValue(V value) {
+    public boolean containsValue(Object value) {
         return original.containsValue(value);
     }
 
@@ -75,7 +74,7 @@ class ImmutableAssociationMapWrapper<K, V> implements Association<K,V> {
     }
 
     @Override
-    public Maybe<V> getValue(K key) {
+    public Maybe<V> getValue(Object key) {
         return Maybe.of(this.original.get(key));
     }
 
@@ -85,14 +84,14 @@ class ImmutableAssociationMapWrapper<K, V> implements Association<K,V> {
     }
 
     @Override
-    public boolean contains(Entry<K, V> any) {
-        if (!this.original.containsKey(any.key())){
+    public boolean contains(Entry<K, V> candidate) {
+        if (!this.original.containsKey(candidate.key())){
             return false;
         }
-        var value = any.value();
+        var value = candidate.value();
         return value == null
-              	? this.original.get(any.key()) == null
-                : value.equals(this.original.get(any.key()));
+              	? this.original.get(candidate.key()) == null
+                : value.equals(this.original.get(candidate.key()));
     }
 
     @Override
@@ -125,33 +124,5 @@ class ImmutableAssociationMapWrapper<K, V> implements Association<K,V> {
                 return Entry.from(iterator.next());
             }
         };
-    }
-
-    @Override
-    public boolean equals(Object other){
-        if(other instanceof Association association){
-            if (this.original.size() != association.count().toInt()){
-                return false;
-            }
-            for (var entry : this.original.entrySet()) {
-                if (!association.containsKey(entry.getKey()) || !Objects.equals(association.getValue(entry.getKey()).orNull(), entry.getValue())){
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public String toString(){
-        StringBuilder builder = new StringBuilder("{");
-        for (var entry : this){
-            builder.append(entry.key()).append("->").append(entry.value()).append(",");
-        }
-        builder.deleteCharAt(builder.length() -1);
-        builder.append("}");
-
-        return builder.toString();
     }
 }

@@ -1,6 +1,5 @@
 package org.midheaven.collections;
 
-import org.midheaven.lang.HashCode;
 import org.midheaven.lang.Maybe;
 import org.midheaven.math.Int;
 
@@ -16,21 +15,21 @@ class ImmutableSequenceListWrapper<T> extends AbstractCollectionWrapper<T> imple
     ImmutableSequenceListWrapper(List<T> original){
         this.original = original;
     }
-
+    
     @Override
-    public boolean equals(Object other){
-        return other instanceof Sequence sequence
-                && AssortmentSupport.equals(this , sequence);
+    public final boolean equals(Object other){
+        return other instanceof Sequence that
+                   && AssortmentSupport.equals(this, that);
     }
-
+    
     @Override
-    public int hashCode( ){
-        return HashCode.of(original);
+    public int hashCode (){
+        return this.count().hashCode();
     }
-
+    
     @Override
-    public String toString( ){
-        return original.toString();
+    public String toString (){
+        return AssortmentSupport.toString(this, '[', ']');
     }
 
     public Spliterator<T> spliterator() {

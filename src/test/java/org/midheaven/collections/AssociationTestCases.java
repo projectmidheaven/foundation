@@ -92,4 +92,6 @@ public class AssociationTestCases {
 		assertEquals(Maybe.of(3), association.getValue("C"));
 
 	}
+	
+
 }

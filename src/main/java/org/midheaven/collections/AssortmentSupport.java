@@ -35,7 +35,28 @@ class AssortmentSupport {
             return set.containsAll(b);
         } else  if (b instanceof DistinctAssortment<T> set){
             return set.containsAll(a);
+        } else if (a instanceof Association<?,?> associationA){
+            if(b instanceof Association<?,?> associationB){
+           
+                return associationA.allMatch(entry -> associationB.containsKey(entry.key())
+                      && associationB.getValue(entry.key()).equals(associationA.getValue(entry.key()))
+                );
+                
+            }
+            return false;
         }
         return a.zip(b, Objects::equals).allMatch(it -> it);
+    }
+    
+    public static <T> String toString(Enumerable<T> items, char start, char end) {
+        var builder = new StringBuilder().append(start);
+        for (var item : items){
+            if (builder.length() > 1){
+                builder.append(",");
+            }
+            builder.append(item);
+        }
+        builder.append(end);
+        return builder.toString();
     }
 }

@@ -1,5 +1,8 @@
 package org.midheaven.math;
 
+/**
+ * Enumerates String Type values.
+ */
 enum StringType {
 
     SYMBOLIC(BLocks.SYMBOLIC),

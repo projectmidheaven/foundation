@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-class ReversedImmutableSequenceView<T> implements Sequence<T> {
+class ReversedImmutableSequenceView<T> extends AbstractSequence<T> {
 
 	Sequence<T> original;
 
@@ -50,8 +50,8 @@ class ReversedImmutableSequenceView<T> implements Sequence<T> {
 	}
 
 	@Override
-	public boolean contains(T any) {
-		return original.contains(any);
+	public boolean contains(T candidate) {
+		return original.contains(candidate);
 	}
 
 	@Override

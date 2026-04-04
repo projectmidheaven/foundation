@@ -8,6 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * Represents Property Mirror Support.
+ */
 class PropertyMirrorSupport {
 
     static Maybe<Property>  fromAccessor(Method accessor, Class<?> declaringClass) {
