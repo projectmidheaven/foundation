@@ -10,10 +10,9 @@ The codebase is organized into focused packages such as
 - `org.midheaven.lang` for utilities that augment Java SDK own classes
 - `org.midheaven.math` for numeric types (such as rational numbers) , intervals, and random generators, 
 - `org.midheaven.io` for handling binary content without specifying origin or storage
-- 'org.midheaven.time' for `java.time.Clock` providers
+- `org.midheaven.time` for `java.time.Clock` providers
 - with supporting modules for byte content, culture codes, and clock providers. 
--
-- 
+
 It also includes a solid JUnit and ArchUnit test suite, plus published  [JavaDoc](https://projectmidheaven.github.io/foundation/javadoc/).
 
 
