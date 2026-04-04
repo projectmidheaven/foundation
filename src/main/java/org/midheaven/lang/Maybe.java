@@ -112,7 +112,6 @@ public sealed interface Maybe<T> permits Some, None{
 
     /**
      * Performs ifPresent.
-     * @param consumer the consumer value
      */
     @NotNullable Optional<T> toOptional();
     /**

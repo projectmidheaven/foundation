@@ -2,6 +2,7 @@ package org.midheaven.lang;
 
 /**
  * Defines the contract for Ordered.
+ * @param <T> the ordered type
  */
 public interface Ordered<T> extends Comparable<T> {
 

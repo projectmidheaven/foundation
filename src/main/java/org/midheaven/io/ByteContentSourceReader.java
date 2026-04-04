@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 /**
  * Represents Byte Content Source Reader.
+ * @param <T> type of {@link ByteContent} this reader will read
  */
 public class ByteContentSourceReader<T extends ByteContent> {
     

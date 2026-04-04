@@ -2,6 +2,8 @@ package org.midheaven.math;
 
 /**
  * Defines the contract for Arithmetic Accumulator.
+ * @param <T> type of the element in the Arithmetic
+ * @param <R> type of the resulting element
  */
 public interface ArithmeticAccumulator<T, R> {
 

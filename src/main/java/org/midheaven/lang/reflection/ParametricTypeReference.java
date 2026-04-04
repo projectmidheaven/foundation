@@ -4,6 +4,7 @@ import org.midheaven.collections.Sequence;
 
 /**
  * Represents Parametric Type Reference.
+ * @param <T> the base type
  */
 public abstract sealed class ParametricTypeReference<T>
         extends TypeReference

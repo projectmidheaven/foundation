@@ -7,6 +7,8 @@ import java.util.function.Function;
 
 /**
  * Defines and resizable {@link Association} that accepts adding a removing entries
+ * @param <K> type of the keys in the ResizableAssociation
+ * @param <V> type of the values in the ResizableAssociation
  */
 public interface ResizableAssociation<K, V> extends EditableAssociation<K,V>{
 

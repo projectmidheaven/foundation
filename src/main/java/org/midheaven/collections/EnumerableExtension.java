@@ -2,6 +2,8 @@ package org.midheaven.collections;
 
 /**
  * Defines the contract for Enumerable Extension.
+ * @param <T> the type of Elements in the Enumerable
+ * @param <E> the type of the decorating Enumerable
  */
 public interface EnumerableExtension<T, E extends Enumerable<T>>{
 

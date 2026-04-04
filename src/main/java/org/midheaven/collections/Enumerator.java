@@ -12,6 +12,7 @@ import java.util.Iterator;
  * Otherwise, trying to read {@link Enumerator#moveNext} will throw a {@code IllegalStateException}.
  *
  * Also, the Enumerator has a {@link Enumerator#length()} attribute that can be infinite, finite or unknown.
+ * @param <T> type of the elements in the Enumerator
  */
 public interface Enumerator<T> {
 

@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 /**
  * Represents Parser.
+ * @param <T> the type being parsed
  */
 public abstract class Parser<T> {
     

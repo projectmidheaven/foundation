@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 /**
  * Defines the contract for Sequence.
+ * @param <T> type of the elements in the Sequence
  */
 public interface Sequence<T> extends Assortment<T> {
  

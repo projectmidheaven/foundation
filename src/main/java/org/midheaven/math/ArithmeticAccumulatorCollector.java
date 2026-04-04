@@ -7,10 +7,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-/**
- * Collector for Arithmetic Accumulator values.
- */
-public final class ArithmeticAccumulatorCollector<T, S> implements Collector<T, ArithmeticAccumulator<T, S>, S> {
+
+final class ArithmeticAccumulatorCollector<T, S> implements Collector<T, ArithmeticAccumulator<T, S>, S> {
 
     private final ArithmeticAccumulator<T, S> accumulator;
 

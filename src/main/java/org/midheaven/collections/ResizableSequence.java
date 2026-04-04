@@ -8,7 +8,8 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 /**
- * Defines the contract for resizable {@link Sequence}.
+ * Defines the contract for resizable {@link Sequence}. This a {@link Sequence} where elements can be added and removed.
+ * @param <T> type of the elements in the ResizableSequence
  */
 public interface ResizableSequence<T> extends EditableSequence<T>  {
 

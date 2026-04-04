@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 /**
  * Defines the contract for Traversable.
+ * @param <T> type of the elements in the Traversable
  */
 public interface Traversable<T> extends Iterable<T>, AutoCloseable{
 

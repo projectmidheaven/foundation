@@ -127,11 +127,7 @@ public abstract class Key<C extends Concept> {
         }
         return (Key<C>) this;
     }
-
-    /**
-     * Performs Key.
-     * @return the result of Key
-     */
+    
     protected Key(){}
 
     /**

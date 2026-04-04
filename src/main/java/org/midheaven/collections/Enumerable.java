@@ -20,7 +20,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
- * Defines the contract for Enumerable.
+ * An {@code Iterable} with fluent stream like transformation methods
+ * @param <T> type of element in the Enumerable
  */
 public interface Enumerable<T> extends Iterable<T> {
 

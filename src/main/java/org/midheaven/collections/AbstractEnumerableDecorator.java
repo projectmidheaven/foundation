@@ -5,6 +5,7 @@ import java.util.Iterator;
 /**
  * Base implementation for a decorator of Enumerable.
  * See {@link org.midheaven.math.ArithmeticalEnumerable} for an example
+ * @param <T> type of element in the Enumerable
  */
 public abstract class AbstractEnumerableDecorator<T> implements Enumerable<T> {
 

@@ -11,7 +11,7 @@ import java.util.function.IntFunction;
  * An assortment has no specific properties other than aggregating the elements.
  * There is no operations to obtain the element individually.
  *
- * @param <T>
+ * @param <T> type of element in the Assortment
  */
 public interface Assortment<T> extends Countable, Enumerable<T> {
 
@@ -79,7 +79,7 @@ public interface Assortment<T> extends Countable, Enumerable<T> {
 	
     /**
      * The number of elements in the {@code Assortment}
-     * This overrides {@link Enumerable::count } and an exception will never occur, since {@code Assortment}s always have a finite number of elements.
+     * This overrides {@link Enumerable#count } and an exception will never occur, since {@code Assortment}s always have a finite number of elements.
      * @return the number of elements in the {@code Assortment}
      */
     @Override

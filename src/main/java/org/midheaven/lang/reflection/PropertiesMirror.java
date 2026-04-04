@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 /**
  * Defines the contract for Properties Mirror.
+ * @param <T> the type with properties
  */
 public interface PropertiesMirror<T> extends Enumerable<Property> {
 

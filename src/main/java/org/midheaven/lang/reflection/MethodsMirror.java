@@ -2,6 +2,7 @@ package org.midheaven.lang.reflection;
 
 /**
  * Defines the contract for Methods Mirror.
+ * @param <T> type with methods
  */
 public interface MethodsMirror<T> {
 

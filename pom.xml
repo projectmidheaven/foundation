@@ -6,6 +6,8 @@
 
   <properties>
     <java.version>21</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
   <build>
@@ -17,6 +19,43 @@
         <configuration>
           <source>21</source>
           <release>21</release>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.12.0</version>
+        <configuration>
+          <show>protected</show>
+          <doclint>all,-missing</doclint>
+          <sourcepath>src/main/java</sourcepath>
+          <groups>
+            <group>
+              <title>Language Extentions</title>
+              <packages>org.midheaven.lang*</packages>
+            </group>
+            <group>
+              <title>Collections</title>
+              <packages>org.midheaven.collections</packages>
+            </group>
+            <group>
+              <title>Math</title>
+              <packages>org.midheaven.math</packages>
+            </group>
+            <group>
+              <title>I/O</title>
+              <packages>org.midheaven.io</packages>
+            </group>
+            <group>
+              <title>Time Extentions</title>
+              <packages>org.midheaven.time</packages>
+            </group>
+            <group>
+              <title>Other</title>
+              <packages>org.midheaven.keys:org.midheaven.culture</packages>
+            </group>
+          </groups>
         </configuration>
       </plugin>
 

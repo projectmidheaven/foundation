@@ -4,15 +4,17 @@ import java.util.function.BiFunction;
 
 /**
  * Defines the contract for Arithmetic.
+ * @param <T> type of the element in the Arithmetic
+ * @param <D> type of the element resulting from dividing {@code T} by a whole number
  */
-public interface Arithmetic<T, S> {
+public interface Arithmetic<T, D> {
 
     /**
      * Creates an instance from the provided value.
      * @param zero the zero value
      * @param sum the sum value
      * @param over the over value
-     * @return the result of of
+     * @return the result of applying th operation
      */
     static <V,R> Arithmetic<V, R> of(V zero, BiFunction<V,V,V> sum, BiFunction<V, Long, R> over){
         return new Arithmetic<V, R>() {
@@ -54,7 +56,7 @@ public interface Arithmetic<T, S> {
      * @param b the b value
      * @return the result of over
      */
-    S over(T a, long b);
+    D over(T a, long b);
 
     /**
      * Performs sumCollector.
@@ -68,8 +70,8 @@ public interface Arithmetic<T, S> {
      * Performs averageCollector.
      * @return the result of averageCollector
      */
-    default ArithmeticAccumulatorCollector<T, S> averageCollector(){
-        return new ArithmeticAccumulatorCollector<>(new AvgArithmeticAccumulator<T,S>(this));
+    default ArithmeticAccumulatorCollector<T, D> averageCollector(){
+        return new ArithmeticAccumulatorCollector<>(new AvgArithmeticAccumulator<T, D>(this));
     }
 }
 

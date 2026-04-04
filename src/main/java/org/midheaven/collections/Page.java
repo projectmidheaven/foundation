@@ -3,7 +3,9 @@ package org.midheaven.collections;
 import java.util.function.Function;
 
 /**
- * Defines the contract for Page.
+ * Represents a Page. A Page is a subset of a larget elements set.
+ *
+ * @param <T> type of the elements in the Page
  */
 public interface Page<T>{
 

@@ -4,6 +4,8 @@ import java.util.Objects;
 
 /**
  * Builder for Interval instances.
+ * @param <T> the type of element in the Interval
+ * @param <U> the type of value in the Interval
  */
 public class IntervalBuilder<T, U> {
 

@@ -2,6 +2,7 @@ package org.midheaven.math;
 
 /**
  * Generator for Interval Random values.
+ * @param <T> type being generated
  */
 public interface IntervalRandomGenerator<T> extends RandomGenerator<T>{
 

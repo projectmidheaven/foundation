@@ -4,10 +4,8 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.function.Supplier;
 
-/**
- * Base implementation for Discrete Interval Random Generator.
- */
-public abstract class AbstractDiscreteIntervalRandomGenerator<T>
+
+abstract class AbstractDiscreteIntervalRandomGenerator<T>
         extends AbstractIntervalRandomGenerator<T>
         implements DiscreteIntervalRandomGenerator<T>
 {

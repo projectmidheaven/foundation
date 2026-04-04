@@ -4,6 +4,7 @@ import org.midheaven.lang.NotNullable;
 
 /**
  * Defines the contract for Multiplication Monoid.
+ * @param <T> the type of element in the MultiplicationMonoid
  */
 public interface MultiplicationMonoid<T extends MultiplicationMonoid<T>> {
 

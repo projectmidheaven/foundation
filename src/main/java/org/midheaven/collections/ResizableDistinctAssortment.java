@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 
 /**
  * Defines the contract for resizable {@link DistinctAssortment}
+ * @param <T> type of the elements in the ResizableDistinctAssortment
  */
 public interface ResizableDistinctAssortment<T> extends DistinctAssortment<T> {
 

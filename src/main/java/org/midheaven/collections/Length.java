@@ -23,11 +23,12 @@ public abstract sealed class Length
     
     /**
      * Returns a new Length that is the minimum between {@code this} and the given Length
-     *
+     * {@code
      * min(finite(x), finite(y)) ->  finite(x <= y ? x : y)
      * min(finite(x), infinite) ->  finite(x)
      * min(finite(x), unknown) ->  unknown
      * min(infinite, unknown) ->  unknown
+     * }
      *
      * @param other the other value
      * @return the minimum Length
@@ -36,7 +37,7 @@ public abstract sealed class Length
     
     /**
      * Subtracts the given value from this value.
-     *
+     * {@code
      * finite(x) - finite(y) ->  x - y
      * finite(x) - infinite ->  infinite
      * infinite - finite(x) ->  infinite
@@ -46,6 +47,7 @@ public abstract sealed class Length
      * infinite - unknown ->  infinite
      * unknown - infinite ->  unknown
      * unknown - unknown -> unknown
+     * }
      *
      * @param other the value to subtract
      * @return {@code this} - {@code other}

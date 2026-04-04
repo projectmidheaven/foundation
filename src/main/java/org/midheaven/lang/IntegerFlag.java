@@ -2,6 +2,7 @@ package org.midheaven.lang;
 
 /**
  * Represents Integer Flag.
+ * @param <E> the corresponding FlagElement
  */
 public class IntegerFlag<E extends FlagElement<E>> implements Flag<E> {
 

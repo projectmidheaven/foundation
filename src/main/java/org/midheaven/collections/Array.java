@@ -17,6 +17,7 @@ import java.util.function.Predicate;
 
 /**
  * An {@link EditableSequence} that behaves like an array.
+ *  @param <T> type of element in the Array
  */
 public interface Array<T> extends EditableSequence<T> {
 

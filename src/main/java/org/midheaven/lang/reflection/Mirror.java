@@ -14,6 +14,7 @@ import java.util.Arrays;
 
 /**
  * Represents Mirror.
+ * @param <T> type being mirrored
  */
 public class Mirror<T> {
 

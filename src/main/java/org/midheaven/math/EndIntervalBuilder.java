@@ -2,6 +2,8 @@ package org.midheaven.math;
 
 /**
  * Builder for End Interval instances.
+ * @param <T> type of the elements in the {@link Interval}
+ * @param <U> type of the value in the {@link Interval}
  */
 public class EndIntervalBuilder<T, U> {
 

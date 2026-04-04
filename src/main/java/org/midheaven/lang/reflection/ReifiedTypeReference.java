@@ -4,10 +4,8 @@ import org.midheaven.collections.Sequence;
 
 import java.lang.reflect.ParameterizedType;
 
-/**
- * Represents Reified Type Reference.
- */
-public abstract non-sealed class ReifiedTypeReference<T> extends ParametricTypeReference<T> implements Comparable<ReifiedTypeReference<T>> {
+
+abstract non-sealed class ReifiedTypeReference<T> extends ParametricTypeReference<T> implements Comparable<ReifiedTypeReference<T>> {
 
     private final TypeReference typeReference;
 

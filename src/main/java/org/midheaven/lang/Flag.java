@@ -1,7 +1,8 @@
 package org.midheaven.lang;
 
 /**
- * Defines the contract for Flag.
+ * Defines the contract for an object that acts as a flag
+ * @param <E> the corresponding FlagElement
  */
 public interface Flag<E extends FlagElement<E>> {
 

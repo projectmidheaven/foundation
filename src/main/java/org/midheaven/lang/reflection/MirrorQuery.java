@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 
 /**
  * Defines the contract for Mirror Query.
+ * @param <T> type being mirrored
  */
 public interface MirrorQuery<T> {
 

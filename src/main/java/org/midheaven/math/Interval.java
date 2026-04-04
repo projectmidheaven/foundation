@@ -11,6 +11,7 @@ import java.util.function.Function;
 
 /**
  * Defines the contract for Interval.
+ * @param <T> the type of element in the Interval
  */
 public interface Interval<T> {
     

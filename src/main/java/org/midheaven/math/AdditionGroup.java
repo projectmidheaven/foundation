@@ -4,6 +4,7 @@ import org.midheaven.lang.NotNullable;
 
 /**
  * Defines the contract for Addition Group.
+ * @param <T> the type of element in the group
  */
 public interface AdditionGroup<T extends AdditionGroup<T>> extends AdditionMonoid<T>{
 

@@ -2,6 +2,8 @@ package org.midheaven.math;
 
 /**
  * Builder for Start Inclusion instances.
+ * @param <T> type of the elements in the {@link Interval}
+ * @param <U> type of the value in the {@link Interval}
  */
 public class StartInclusionBuilder<T, U> {
 

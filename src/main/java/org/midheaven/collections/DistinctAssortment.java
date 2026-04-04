@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 /**
  * Defines the contract for and {@link Assortment} where elements are distinct by {@link Object#equals(Object)}.
+ * @param <T> type of element in the DistinctAssortment
  */
 public interface DistinctAssortment<T> extends Assortment<T> {
 

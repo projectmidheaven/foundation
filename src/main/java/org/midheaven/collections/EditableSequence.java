@@ -8,7 +8,7 @@ import org.midheaven.math.Int;
  * Editable {@link Sequence}s are {@link Sequence}s with fixed length that allow
  * for replacement of the element at each index, nut not adding new elements
  * A classic example is {@link Array}.
- *
+ * @param <T> type of element in the EditableSequence
  */
 public interface EditableSequence<T> extends Sequence<T> {
 

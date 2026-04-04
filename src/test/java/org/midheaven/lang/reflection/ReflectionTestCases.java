@@ -1,11 +1,8 @@
-package org.midheaven.lang;
+package org.midheaven.lang.reflection;
 
 import org.junit.jupiter.api.Test;
+import org.midheaven.lang.Maybe;
 import org.midheaven.lang.model.TestPojo;
-import org.midheaven.lang.reflection.Mirror;
-import org.midheaven.lang.reflection.ParametricTypeReference;
-import org.midheaven.lang.reflection.ReifiedTypeReference;
-import org.midheaven.lang.reflection.TypeReference;
 
 import java.util.List;
 import java.util.Map;

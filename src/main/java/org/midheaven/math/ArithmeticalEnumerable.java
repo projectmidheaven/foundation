@@ -5,17 +5,19 @@ import org.midheaven.collections.Enumerable;
 
 /**
  * Represents Arithmetical Enumerable.
+ * @param <N> type of the element being enumerated
+ * @param <D> type of the element resulting from dividing {@code T} by a whole number
  */
-public class ArithmeticalEnumerable<N,S> extends AbstractEnumerableDecorator<N> {
+public class ArithmeticalEnumerable<N, D> extends AbstractEnumerableDecorator<N> {
 
-    private final Arithmetic<N, S> arithmetic;
+    private final Arithmetic<N, D> arithmetic;
 
     /**
      * Creates a new ArithmeticalEnumerable.
      * @param arithmetic the arithmetic value
      * @param original the original value
      */
-    public ArithmeticalEnumerable(Arithmetic<N, S> arithmetic, Enumerable<N> original) {
+    public ArithmeticalEnumerable(Arithmetic<N, D> arithmetic, Enumerable<N> original) {
         super(original);
         this.arithmetic = arithmetic;
     }
@@ -32,7 +34,7 @@ public class ArithmeticalEnumerable<N,S> extends AbstractEnumerableDecorator<N> 
      * Performs average.
      * @return the result of average
      */
-    public S average(){
+    public D average(){
         return this.collect(arithmetic.averageCollector());
     }
 }
