@@ -1,2 +1,3 @@
+[![Javadoc](https://img.shields.io/badge/JavaDoc-Online-green)](https://projectmidheaven.github.io/foundation/javadoc/)
 
-Consul the [JavaDoc](https://projectmidheaven.github.io/foundation/)
+Consult the [JavaDoc](https://projectmidheaven.github.io/foundation/)
