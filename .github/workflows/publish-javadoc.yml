@@ -21,3 +21,5 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           javadoc-branch: gh-pages
+          java-version: 21
+          project: maven
