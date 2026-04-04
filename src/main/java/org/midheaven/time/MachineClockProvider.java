@@ -3,19 +3,14 @@ package org.midheaven.time;
 import java.time.Clock;
 
 /**
- * Provider for Machine Clock instances.
+ * Provides a {@link Clock} matching the system's clock and time zone
  */
 public final class MachineClockProvider implements ClockProvider{
 
     /**
-     * Performs clock.
-     * @return the result of clock
+     * {@inheritDoc}
      */
     @Override
-    /**
-     * Performs clock.
-     * @return the result of clock
-     */
     public Clock clock() {
         return Clock.systemDefaultZone();
     }
