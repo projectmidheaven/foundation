@@ -9,7 +9,15 @@ import java.util.function.BiFunction;
  * @param <V> the type of the value
  */
 public interface EditableAssociation<K, V> extends Association<K,V>{
-
+    
+    /**
+     * Returns an unmodifiable view of this {@link EditableAssociation}
+     * @return an unmodifiable view of this {@link EditableAssociation}
+     */
+    default Association<K,V> toUnmodifiable(){
+        return new UnmodifiableAssociation<>(this);
+    }
+    
     /**
      * Changes the value associated with the key. If the key is not present, nothing happens.
      * @param key

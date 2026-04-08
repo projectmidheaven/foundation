@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Represents Editable Subsequence View.
  */
-final class EditableSubsequenceView<T> extends ImmutableSubsequenceView<T> implements EditableSequence<T> {
+final class EditableSubsequenceView<T> extends ReadOnlySubsequenceView<T> implements EditableSequence<T> {
 
 	EditableSubsequenceView(EditableSequence<T> original, Int fromIndex, Int toIndex){
 		super(original, fromIndex, toIndex);

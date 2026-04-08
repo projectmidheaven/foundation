@@ -28,7 +28,7 @@ public interface AssociatedEnumerable<K,V> extends Enumerable<Association.Entry<
             map.put(item.key(), item.value());
         };
 
-        return new ImmutableAssociationMapWrapper<>(map);
+        return new ReadonlyMapAssociation<>(map);
     }
     
     /**

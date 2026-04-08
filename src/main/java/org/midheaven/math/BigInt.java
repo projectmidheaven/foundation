@@ -6,11 +6,11 @@ import org.midheaven.lang.ValueClass;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-@ValueClass
 /**
- * Represents Big Int.
+ * Represents any {@link Int} using a {@link BigInteger}
  */
-public final class BigInt implements Int {
+@ValueClass
+final class BigInt implements Int {
 
     final BigInteger value;
 

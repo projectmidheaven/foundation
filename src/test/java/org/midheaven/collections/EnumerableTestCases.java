@@ -113,9 +113,9 @@ public class EnumerableTestCases {
 
     @Test
     public void enumerableUnboundLimitShouldThrow() {
-        assertThrows(IllegalStateException.class, () -> Enumerable.iterate(0, it -> it + 1 ).toSequence());
-        assertThrows(IllegalStateException.class, () -> Enumerable.iterate(0, it -> it + 1 ).allMatch(it -> it > -1));
-        assertThrows(IllegalStateException.class, () -> Enumerable.iterate(0, it -> it + 1 ).anyMatch(it -> it == -1));
+        assertThrows(InfiniteEnumerableException.class, () -> Enumerable.iterate(0, it -> it + 1 ).toSequence());
+        assertThrows(InfiniteEnumerableException.class, () -> Enumerable.iterate(0, it -> it + 1 ).allMatch(it -> it > -1));
+        assertThrows(InfiniteEnumerableException.class, () -> Enumerable.iterate(0, it -> it + 1 ).anyMatch(it -> it == -1));
     }
 
     @Test
@@ -232,7 +232,7 @@ public class EnumerableTestCases {
 
         var infinite = Enumerable.iterate(0, it -> it + 1);
 
-        assertThrows(IllegalStateException.class, () -> infinite.count().toInt());
+        assertThrows(InfiniteEnumerableException.class, () -> infinite.count().toInt());
         assertFalse(infinite.isEmpty());
         assertTrue(infinite.any());
     }

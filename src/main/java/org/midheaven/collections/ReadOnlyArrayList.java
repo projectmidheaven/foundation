@@ -1,18 +1,22 @@
 package org.midheaven.collections;
 
+import org.midheaven.lang.Check;
 import org.midheaven.lang.Maybe;
 import org.midheaven.math.Int;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
+import java.util.function.IntFunction;
 
-class ImmutableSequenceArrayWrapper<T> extends AbstractSequence<T> {
+class ReadOnlyArrayList<T> extends AbstractSequence<T> {
     
     final T[] array;
     
-    ImmutableSequenceArrayWrapper(T a, T b, T... others) {
+    ReadOnlyArrayList(T a, T b, T... others) {
         var values = Arrays.copyOf(others, others.length + 2);
         System.arraycopy(others, 0, values, 2, others.length);
         values[0] = a;
@@ -20,27 +24,40 @@ class ImmutableSequenceArrayWrapper<T> extends AbstractSequence<T> {
         this.array = values; // non-empty array
     }
     
-    ImmutableSequenceArrayWrapper(T[] array) {
+    ReadOnlyArrayList(T[] array) {
         this.array = array; // non-empty array
     }
     
+    @SuppressWarnings("unchecked")
     @Override
-    public Object[] toArray() {
-        Object[] result = new Object[array.length];
-        System.arraycopy(array, 0, result, 0, array.length);
+    public List<T> toCollection() {
+        var list = new ArrayList<T>(this.array.length);
+        for (var element : this.array) {
+            list.add(element);
+        }
+        return Collections.unmodifiableList(list);
+    }
+    
+    @Override
+    public final Object[] toArray() {
+        return Arrays.copyOf(this.array, this.array.length);
+    }
+    
+    @Override
+    public final T[] toArray(T[] candidate) {
+        Check.argumentIsNotNull(candidate, "candidate");
+        T[] result = EnumerableSupport.correctLengthArray(candidate, () ->  this.array.length );
+      
+        System.arraycopy(this.array, 0, result, 0, this.array.length);
         return result;
     }
     
     @Override
-    public T[] toArray(T[] templateArray) {
-        T[] result;
-        if (templateArray.length == array.length) {
-            result = templateArray;
-        } else {
-            result = (T[]) java.lang.reflect.Array.newInstance(templateArray.getClass().componentType(), array.length);
-        }
+    public final T[] toArray(IntFunction<T[]> generator) {
+        Check.argumentIsNotNull(generator, "generator");
+        T[] result = generator.apply(array.length);
         
-        System.arraycopy(array, 0, result, 0, array.length);
+        System.arraycopy(this.array, 0, result, 0, this.array.length);
         return result;
     }
     
@@ -101,7 +118,7 @@ class ImmutableSequenceArrayWrapper<T> extends AbstractSequence<T> {
     @Override
     public Sequence<T> subSequence(int fromIndex, int toIndex) {
         if (fromIndex >= 0 && fromIndex <= toIndex && toIndex >= 0 && toIndex < array.length) {
-            return new ImmutableSubsequenceView<>(this, Int.of(fromIndex), Int.of(toIndex));
+            return new ReadOnlySubsequenceView<>(this, Int.of(fromIndex), Int.of(toIndex));
         }
         throw new IndexOutOfBoundsException();
     }
@@ -109,7 +126,7 @@ class ImmutableSequenceArrayWrapper<T> extends AbstractSequence<T> {
     @Override
     public Sequence<T> subSequence(Int fromIndex, Int toIndex) {
         if (fromIndex.isGreaterThanOrEqualTo(0) && fromIndex.isLessThanOrEqualTo(toIndex) && toIndex.isGreaterThanOrEqualTo(0) && toIndex.isLessThan(array.length)) {
-            return new ImmutableSubsequenceView<>(this, fromIndex, toIndex);
+            return new ReadOnlySubsequenceView<>(this, fromIndex, toIndex);
         }
         throw new IndexOutOfBoundsException();
     }

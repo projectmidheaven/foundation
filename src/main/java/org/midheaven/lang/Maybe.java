@@ -1,6 +1,5 @@
 package org.midheaven.lang;
 
-import org.midheaven.collections.DistinctAssortment;
 import org.midheaven.collections.Enumerable;
 
 import java.util.NoSuchElementException;
@@ -132,7 +131,7 @@ record Some<T>(T value) implements Maybe<T> {
 
     @Override
     public Enumerable<T> enumerable() {
-        return DistinctAssortment.builder().of(value);
+        return Enumerable.single(this.value);
     }
 
     @Override

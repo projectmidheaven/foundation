@@ -4,6 +4,7 @@ import org.midheaven.math.Int;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.IntFunction;
 
 
 class EmptyDistinctAssortment<T> extends AbstractDistinctAssortment<T> {
@@ -55,5 +56,17 @@ class EmptyDistinctAssortment<T> extends AbstractDistinctAssortment<T> {
     @Override
     public String toString (){
         return "{}";
+    }
+    
+    public Object[] toArray(){
+        return new Object[0];
+    }
+    
+    public T[] toArray(T[] templateArray){
+        return templateArray;
+    }
+    
+    public T[] toArray(IntFunction<T[]> generator){
+        return generator.apply(0);
     }
 }

@@ -3,7 +3,7 @@ package org.midheaven.collections;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-class EditableAssociationMapWrapper<K, V> extends ImmutableAssociationMapWrapper<K,V> implements EditableAssociation<K,V> {
+class EditableAssociationMapWrapper<K, V> extends ReadonlyMapAssociation<K,V> implements EditableAssociation<K,V> {
 
     EditableAssociationMapWrapper(Map<K,V> original){
         super(original);

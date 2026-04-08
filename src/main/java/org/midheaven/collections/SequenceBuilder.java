@@ -45,7 +45,7 @@ public class SequenceBuilder {
 	 * @return the result of empty
 	 */
 	public <U> Sequence<U> empty(){
-		return ImmutableEmptySequence.instance();
+		return EmptySequence.instance();
 	}
 	
 	/**
@@ -54,7 +54,7 @@ public class SequenceBuilder {
 	 * @return the result of of
 	 */
 	public <U> Sequence<U> of(U value){
-		return new ImmutableSingleSequence<>(value);
+		return new ReadOnlySingleSequence<>(value);
 	}
 	
 	/**
@@ -74,7 +74,7 @@ public class SequenceBuilder {
 	 */
 	public <U> Sequence<U> of(U a, U b, U ... others){
 		Check.argumentIsNotNull(others);
-		return new ImmutableSequenceArrayWrapper<>(a, b, others);
+		return new ReadOnlyArrayList<>(a, b, others);
 	}
 	
 	/**
@@ -86,9 +86,9 @@ public class SequenceBuilder {
 		if (values == null || values.length == 0){
 			return empty();
 		} else if (values.length == 1){
-			return new ImmutableSingleSequence<>(values[0]);
+			return new ReadOnlySingleSequence<>(values[0]);
 		}
-		return new ImmutableSequenceArrayWrapper<>(values);
+		return new ReadOnlyArrayList<>(values);
 	}
 	
 	
@@ -100,7 +100,7 @@ public class SequenceBuilder {
 	public <U> Sequence<U> repeat(U value){
 		// no size means 0 size not editable
 		if (size == null) {
-			return ImmutableEmptySequence.instance();
+			return EmptySequence.instance();
 		}
 		return new RepeatedSequence<>(value, Int.of(size));
 	}
@@ -114,10 +114,10 @@ public class SequenceBuilder {
 	public <T> Sequence<T> immutable(EditableSequence<T> origin){
 		if (origin == null || origin.isEmpty()){
 			return empty();
-		} else if (origin instanceof EditableSequenceListWrapper<T> editableSequenceListWrapper){
-			return new ImmutableSequenceListWrapper<>(editableSequenceListWrapper.original);
+		} else if (origin instanceof EditableListSequence<T> editableSequenceListWrapper){
+			return new ReadOnlyListSequence<>(editableSequenceListWrapper.original);
 		} else if (origin instanceof ArrayWrapper<T> array){
-			return new ImmutableSequenceArrayWrapper<>(array.array);
+			return new ReadOnlyArrayList<>(array.array);
 		}
 		return from(origin);
 	}
@@ -131,10 +131,10 @@ public class SequenceBuilder {
 	public <T> Sequence<T> from(Iterable<T> origin){
 		if (origin == null || !origin.iterator().hasNext() ) {
 			return empty();
-		} else if (origin instanceof ImmutableSequenceListWrapper<T> immutableSequenceListWrapper){
-			return new ImmutableSequenceListWrapper<>(immutableSequenceListWrapper.original);
+		} else if (origin instanceof ReadOnlyListSequence<T> immutableSequenceListWrapper){
+			return new ReadOnlyListSequence<>(immutableSequenceListWrapper.original);
 		} else if (origin instanceof ArrayWrapper<T> array){
-			return new ImmutableSequenceArrayWrapper<>(array.array);
+			return new ReadOnlyArrayList<>(array.array);
 		} else if (origin instanceof Sequence<T> sequence && sequence.isEmpty()){
 			return empty();
 		}

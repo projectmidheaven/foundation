@@ -10,7 +10,7 @@ abstract class AbstractSequence <T> implements Sequence<T>{
     
     @Override
     public int hashCode (){
-        return this.count().hashCode();
+        return count().hashCode();
     }
     
     @Override

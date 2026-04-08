@@ -8,9 +8,9 @@ import java.util.List;
 /**
  * Wrapper for Editable Sequence List.
  */
-class EditableSequenceListWrapper<T>  extends ImmutableSequenceListWrapper<T> implements EditableSequence<T> {
+class EditableListSequence<T>  extends ReadOnlyListSequence<T> implements EditableSequence<T> {
 
-	EditableSequenceListWrapper(List<T> original){
+	EditableListSequence(List<T> original){
 		super (original);
 	}
 
@@ -24,11 +24,11 @@ class EditableSequenceListWrapper<T>  extends ImmutableSequenceListWrapper<T> im
 
 	@Override
 	public EditableSequence<T> subSequence(int fromIndex, int toIndex) {
-		return new EditableSequenceListWrapper<T>(original.subList(fromIndex, toIndex));
+		return new EditableListSequence<T>(original.subList(fromIndex, toIndex));
 	}
 
 	public EditableSequence<T> reversed() {
-		return new EditableSequenceListWrapper<T>(original.reversed());
+		return new EditableListSequence<T>(original.reversed());
 	}
 	
 }

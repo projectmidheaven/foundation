@@ -7,13 +7,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-class ImmutableSubsequenceView<T> extends AbstractSequence<T> {
+class ReadOnlySubsequenceView<T> extends AbstractSequence<T> {
 
 	final Sequence<T> original;
 	final Int fromIndex;
 	final Int toIndex;
 
-	ImmutableSubsequenceView(Sequence<T> original, Int fromIndex, Int toIndex){
+	ReadOnlySubsequenceView(Sequence<T> original, Int fromIndex, Int toIndex){
 		this.original = original;
 		this.fromIndex = fromIndex;
 		this.toIndex = toIndex;
@@ -53,7 +53,7 @@ class ImmutableSubsequenceView<T> extends AbstractSequence<T> {
 
 	@Override
 	public Maybe<T> last() {
-		return getAt(toIndex.minus(1));
+		return getAt(toIndex.minus(fromIndex));
 	}
 
 
@@ -69,8 +69,7 @@ class ImmutableSubsequenceView<T> extends AbstractSequence<T> {
 
 	@Override
 	public boolean contains(Object candidate) {
-		var index = indexOf(candidate);
-		return index.isGreaterThanOrEqualTo(fromIndex) &&  index.isLessThanOrEqualTo(toIndex);
+		return !indexOf(candidate).isNegative();
 	}
 
 	@Override
@@ -99,7 +98,7 @@ class ImmutableSubsequenceView<T> extends AbstractSequence<T> {
 
 	@Override
 	public Sequence<T> subSequence(Int fromIndex, Int toIndex) {
-		return new ImmutableSubsequenceView<>(this, fromIndex, toIndex);
+		return new ReadOnlySubsequenceView<>(this, fromIndex, toIndex);
 	}
 
 	@Override

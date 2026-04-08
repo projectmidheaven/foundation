@@ -55,14 +55,14 @@ public interface ResizableSequence<T> extends EditableSequence<T>  {
 	 * @param c the c value
 	 * @return the result of removeAll
 	 */
-	boolean removeAll(Iterable<?> c);
+	boolean removeAll(Iterable<? extends T> c);
 
 	/**
 	 * Performs retainAll.
 	 * @param c the c value
 	 * @return the result of retainAll
 	 */
-	boolean retainAll(Iterable<?> c);
+	boolean retainAll(Iterable<? extends T> c);
 
 	/**
 	 * Performs replaceAll.

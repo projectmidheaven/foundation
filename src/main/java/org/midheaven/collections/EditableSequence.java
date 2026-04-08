@@ -11,7 +11,15 @@ import org.midheaven.math.Int;
  * @param <T> type of element in the EditableSequence
  */
 public interface EditableSequence<T> extends Sequence<T> {
-
+	
+	/**
+	 * Returns an unmodifiable view of this {@link EditableSequence}
+	 * @return an unmodifiable view of this {@link EditableSequence}
+	 */
+	default Sequence<T> toUnmodifiable(){
+		return new UnmodifiableSequence<>(this);
+	}
+	
 	/**
 	 * Replaces the element at the given index, with the given element
 	 * @param index the index to replace

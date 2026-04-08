@@ -4,7 +4,6 @@ import org.midheaven.lang.Countable;
 import org.midheaven.math.Int;
 
 import java.util.Collection;
-import java.util.function.IntFunction;
 
 /***
  * Represent a finite aggregation of elements of a single type.
@@ -45,37 +44,6 @@ public interface Assortment<T> extends Countable, Enumerable<T> {
 	 * Further alteration to the assortment do not affect the returned collection
 	 */
 	Collection<T> toCollection();
-	
-	/**
-	 * @return an array containing all items in @{code this}
-	 */
-	default Object[] toArray(){
-		return toCollection().toArray();
-	}
-	
-	/**
-	 * Returns a typed array containing all items in @{code this}.
-	 * If the given array is of the correct size, it is filled with the values in @{code this} and returned.
-	 * Otherwise, a new array of the correct size if create from it,  with the values in @{code this} and returned.
-	 *
-	 * @param templateArray the template array
-	 * @return an array containing all items in @{code this}
-	 */
-	default T[] toArray(T[] templateArray){
-		return toCollection().toArray(templateArray);
-	}
-	
-	/**
-	 * Returns a typed array containing all items in @{code this}.
-	 * The given generator is called to produce an array of the correct size.
-	 * Then, it is filled with the values in @{code this} and returned.
-	 *
-	 * @param generator the template array
-	 * @return an array containing all items in @{code this}
-	 */
-	default T[] toArray(IntFunction<T[]> generator){
-		return toArray(generator.apply(this.count().toInt()));
-	}
 	
     /**
      * The number of elements in the {@code Assortment}

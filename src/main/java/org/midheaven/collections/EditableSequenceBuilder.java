@@ -68,7 +68,7 @@ public class EditableSequenceBuilder {
         return (EditableSequence<T>)AssortmentSupport.<T, List<T>, Sequence<T>>from(
                 origin,
                 c -> c.isEmpty() ? new LinkedList<>() : new ArrayList<>(c),
-                EditableSequenceListWrapper::new
+                EditableListSequence::new
         );
 
     }

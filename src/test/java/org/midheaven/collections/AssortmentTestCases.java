@@ -332,18 +332,48 @@ public class AssortmentTestCases {
 	public void toArray(){
 		Integer[] expected = {1, 2, 3};
 		
-		Assortment<Integer> assortment = Sequence.builder().of(1, 2, 3);
-		assertArrayEquals(expected, assortment.toArray());
-		assertArrayEquals(expected, assortment.toArray(new Integer[3]));
-		assertArrayEquals(expected, assortment.toArray(new Integer[0]));
-		assertArrayEquals(expected, assortment.toArray(Integer[]::new));
+		var assortments = Array.of(
+			Sequence.builder().of(1, 2, 3),
+			Array.of(1, 2, 3),
+			DistinctAssortment.builder().of(1, 3, 2)
+		);
 		
-		assortment = DistinctAssortment.builder().of(1, 3, 2);
-		assertArrayEquals(expected, assortment.toArray());
-		assertArrayEquals(expected, assortment.toArray(new Integer[3]));
-		assertArrayEquals(expected, assortment.toArray(new Integer[0]));
-		assertArrayEquals(expected, assortment.toArray(Integer[]::new));
+		for (var assortment : assortments){
+			assertArrayEquals(expected, assortment.toArray());
+			assertArrayEquals(expected, assortment.toArray(new Integer[3]));
+			assertArrayEquals(expected, assortment.toArray(new Integer[0]));
+			assertArrayEquals(expected, assortment.toArray(Integer[]::new));
+			
+			var collection = assortment.toCollection();
+			
+			assertArrayEquals(expected, collection.toArray());
+			assertArrayEquals(expected, collection.toArray(new Integer[3]));
+			assertArrayEquals(expected, collection.toArray(new Integer[0]));
+			assertArrayEquals(expected, collection.toArray(Integer[]::new));
+			
+		}
 		
+		var infinite = Enumerable.iterate(1 , i -> i+ 1);
+		assertThrows(InfiniteEnumerableException.class , infinite::toArray);
+		
+		var unknownInfinite = Enumerable.iterate(1 , i -> i+ 1).filter(it -> it % 2 == 0);
+		assertThrows(InfiniteEnumerableException.class , unknownInfinite::toArray);
+		
+		var unknownFinite = Enumerable.iterate(1 , i -> i+ 1).limit(10).filter(it -> it % 2 == 0);
+		assertArrayEquals(new Integer[]{2, 4, 6, 8, 10}, unknownFinite.toArray());
+		
+		Integer[] expectedSingle = {1};
+		var single = Array.of(
+			Sequence.builder().of(1),
+			Array.of(1),
+			Sequence.builder().withSize(1).repeat(1),
+			DistinctAssortment.builder().of(1),
+			Sequence.builder().of(0, 0, 1, 0 , 0).subSequence(2,2)
+		);
+		
+		for (var assortment : single){
+			assertArrayEquals(expectedSingle, assortment.toArray());
+		}
 	}
 	
 	@Test
@@ -361,5 +391,87 @@ public class AssortmentTestCases {
 		 assertNotNull(array);
 		 assertTrue(array.getAt(0).isAbsent());
 		 assertTrue(array.contains(null));
+	}
+	
+	@Test
+	public void editableSequenceChangesWhenSet() {
+		var all = List.<EditableSequence<Integer>>of(
+			Array.of( 1 , 2 , 3),
+			Array.repeat(1 , 3),
+			Sequence.builder().editable().of(1, 2, 3),
+			Sequence.builder().editable().of(0, 0, 1, 2, 3, 0, 0, 0).subSequence(2, 4)
+		);
+		
+		for (var sequence : all) {
+			assertEquals(1, sequence.setAt(0, 4).orElseThrow());
+			sequence.setAt(1, 5);
+			sequence.setAt(2, 6);
+			
+			assertEquals(4, sequence.getAt(0).orElseThrow());
+			assertEquals(5, sequence.getAt(1).orElseThrow());
+			assertEquals(6, sequence.getAt(2).orElseThrow());
+			
+			
+			sequence.setFirst(7);
+			sequence.setLast(8);
+			
+			assertEquals(7, sequence.first().orElseThrow());
+			assertEquals(8, sequence.last().orElseThrow());
+			
+		}
+		
+
+	}
+	
+	@Test
+	public void emptyEditableSequenceEditionThrowsIndexOutOfBoundsException() {
+		var all = List.<EditableSequence<Integer>>of(
+			Array.empty(),
+			Array.newArray(Integer.class, 0),
+			Array.of(new Integer[0]),
+			Sequence.builder().editable().empty()
+		);
+		
+		for (var sequence : all) {
+			assertTrue(sequence.count().isZero());
+			assertThrows(IndexOutOfBoundsException.class, () -> sequence.setAt(0, 4));
+		}
+		
+	}
+	
+	@Test
+	public void contains() {
+		var all = Array.<Assortment<Integer>>of(
+			Array.of( 1 , 2 , 3),
+			Sequence.builder().editable().of(1, 2, 3),
+			Sequence.builder().editable().of(0, 0, 1, 2, 3, 0, 0, 0).subSequence(2, 4),
+			Sequence.builder().of(0, 0, 1, 2, 3, 0, 0, 0),
+			DistinctAssortment.builder().of(1, 2, 3)
+		);
+		
+		var candidates = Array.of(2,3);
+		for (var sequence : all) {
+			assertTrue(sequence.contains(2), "Type " + sequence.getClass() + " does not contain 2. Elements are " + sequence);
+			assertTrue(sequence.containsAll(candidates), "Type " + sequence.getClass() + " does not contain " + candidates + ". Elements are " + sequence);
+			assertFalse(sequence.contains(90));
+		}
+		
+		var repeating = Array.<Assortment<Integer>>of(
+			Array.repeat(2 , 3),
+			Sequence.builder().withSize(3).repeat(2)
+		);
+		
+		for (var sequence : repeating) {
+			assertTrue(sequence.contains(2));
+			assertFalse(sequence.contains(3));
+			assertTrue(sequence.containsAll(Array.of(2,2)));
+			assertTrue(sequence.containsAll(Array.repeat(2,2)));
+			assertTrue(sequence.containsAll(Sequence.builder().withSize(3).repeat(2)));
+			assertTrue(sequence.containsAll(Sequence.builder().of(2)));
+			assertTrue(sequence.containsAll(DistinctAssortment.builder().of(2)));
+			assertFalse(sequence.containsAll(Array.of(3, 4)));
+
+		}
+		
 	}
 }

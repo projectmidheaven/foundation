@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -129,11 +130,10 @@ public interface Enumerable<T> extends Iterable<T> {
      */
     default Int count() {
         var enumerator = enumerator();
-        var length = enumerator.length();
+        var length = EnumerableSupport.resolveNonInfiniteLength(enumerator, "Infinite enumerable cannot be counted");
+        
         if (length instanceof Length.Finite finite){
             return finite.count();
-        } else if (length instanceof Length.Infinite){
-            throw new IllegalStateException("Infinite enumerable cannot be counted");
         }
 
         return this.map(it -> Int.ONE).with(Int.arithmetic()).sum();
@@ -144,12 +144,6 @@ public interface Enumerable<T> extends Iterable<T> {
      * @return the result of isEmpty
      */
     default boolean isEmpty(){
-        var enumerator = enumerator();
-        var length = enumerator.length();
-        if (length instanceof Length.Finite finite){
-            return finite.count().isZero();
-        }
-
         return !enumerator().moveNext();
     }
 
@@ -157,14 +151,7 @@ public interface Enumerable<T> extends Iterable<T> {
      * Performs any.
      * @return the result of any
      */
-    default boolean any(){
-        var enumerator = enumerator();
-        var length = enumerator.length();
-
-        if (length instanceof Length.Finite finite){
-            return finite.count().isPositive();
-        }
-
+    default boolean any(){;
         return enumerator().moveNext();
     }
 
@@ -174,17 +161,14 @@ public interface Enumerable<T> extends Iterable<T> {
      * @return the result of toSequence
      * @throws IllegalStateException if the {@link Enumerable} is infinite
      */
-    default Sequence<T> toSequence() throws IllegalStateException {
+    default Sequence<T> toSequence() throws InfiniteEnumerableException {
         var enumerator = enumerator();
-        var length = enumerator.length();
-        if (length instanceof Length.Infinite){
-            throw new IllegalStateException("Infinite enumerable cannot be made into a sequence");
-        }
-
+        var length = EnumerableSupport.resolveNonInfiniteLength(enumerator, "Infinite enumerable cannot be copied into a sequence");
+        
         List<T> list;
         if (length instanceof Length.Finite finite){
             if (finite.count().isZero()){
-                return ImmutableEmptySequence.instance();
+                return EmptySequence.instance();
             }
             list = new ArrayList<T>((int)finite.count().toLong());
         } else {
@@ -195,51 +179,26 @@ public interface Enumerable<T> extends Iterable<T> {
             list.add(enumerator.current());
         }
 
-        return new ImmutableSequenceListWrapper<>(list);
+        return new ReadOnlyListSequence<>(list);
     }
     
-    
-    /**
-     * Returns to Distinct Assortment.
-     * @return the result of toDistinctAssortment
-     */
-    default DistinctAssortment<T> toDistinctAssortment(){
-        var enumerator = enumerator();
-        var length = enumerator.length();
-        if (length instanceof Length.Infinite){
-            throw new IllegalStateException("Infinite enumerable cannot be made into a sequence");
-        }
-        
-        if (length instanceof Length.Finite finite && finite.count().isZero()){
-            return EmptyDistinctAssortment.instance();
-        }
-        
-        return AssortmentSupport.<T, HashSet<T>, DistinctAssortment<T>>from(
-            this,
-            HashSet::new,
-            ResizableSetWrapper::new
-        );
-    }
     
     /**
      * Returns to Sequence.
      * @param supplier the supplier value
      * @return the result of toSequence
+     * @throws InfiniteEnumerableException if the {@link Enumerable} is infinite
      */
-    default <S extends EditableSequence<T>> S toSequence(Supplier<S> supplier) {
+    default <S extends EditableSequence<T>> S toSequence(Supplier<S> supplier) throws InfiniteEnumerableException {
         var enumerator = enumerator();
-        var length = enumerator.length();
-
-        if (length instanceof Length.Infinite){
-            throw new IllegalStateException("Infinite enumerable cannot be made into a sequence");
-        }
-
+        var length = EnumerableSupport.resolveNonInfiniteLength(enumerator, "Infinite enumerable cannot be copied into a sequence");
+        
         var sequence = supplier.get();
-
+        
         if (length instanceof Length.Finite finite && finite.count().isZero()){
             return sequence;
         }
-
+        
         if (sequence instanceof ResizableSequence resizableSequence){
             while(enumerator.moveNext()){
                 resizableSequence.add(enumerator.current());
@@ -251,10 +210,72 @@ public interface Enumerable<T> extends Iterable<T> {
                 index++;
             }
         }
-
+        
         return sequence;
     }
+    
+    /**
+     * Returns to Distinct Assortment.
+     * @return the result of toDistinctAssortment
+     * @throws InfiniteEnumerableException if the {@link Enumerable} is infinite
+     */
+    default DistinctAssortment<T> toDistinctAssortment() throws InfiniteEnumerableException{
+        var enumerator = enumerator();
+        var length = EnumerableSupport.resolveNonInfiniteLength(enumerator, "Infinite enumerable cannot be copied into a distinct assortment");
+        
+        if (length instanceof Length.Finite finite && finite.count().isZero()){
+            return EmptyDistinctAssortment.instance();
+        }
+        
+        return AssortmentSupport.<T, HashSet<T>, DistinctAssortment<T>>from(
+            this,
+            HashSet::new,
+            ResizableSetAssortment::new
+        );
+    }
 
+    /**
+     * Creates an array on {@link Object} and copies all elements in this to that array.
+     * This operation is only possible if the {@code Enumerable} is not infinite and its length is less than
+     * {@code Integer.MAX_VALUE}.
+     *
+     * @return an array containing all elements in {@code this}
+     * @throws InfiniteEnumerableException if the {@link Enumerable} is infinite
+     */
+    default Object[] toArray() throws InfiniteEnumerableException{
+       return EnumerableSupport.toArray(this, () -> EnumerableSupport.resolveArrayLength(this));
+    }
+    
+    /**
+     * Returns a typed array containing all elements in @{code this}.
+     * This operation is only possible if the {@code Enumerable} is not infinite and its length is less than
+     * {@code Integer.MAX_VALUE}.
+     *
+     * If the given array is of the same size, or larger, as the enumerable, it is filled with the values in @{code this} and returned.
+     * Otherwise, a new array of the correct size if create from it, with the values in @{code this} copied and returned.
+     *
+     * @param templateArray the template array
+     * @return an array containing all elements in @{code this}
+     * @throws InfiniteEnumerableException if the {@link Enumerable} is infinite
+     */
+    default T[] toArray(T[] templateArray) throws InfiniteEnumerableException{
+        return EnumerableSupport.toArray(this,  () -> EnumerableSupport.resolveArrayLength(this), templateArray);
+    }
+    
+    
+    /**
+     * Returns a typed array containing all elements in @{code this}.
+     * The given generator is called to produce an array of the correct size.
+     * Then, it is filled with the values in @{code this} and returned.
+     *
+     * @param generator the template array
+     * @return an array containing all elements in @{code this}
+     * @throws InfiniteEnumerableException if the {@link Enumerable} is infinite
+     */
+    default T[] toArray(IntFunction<T[]> generator) throws InfiniteEnumerableException {
+        return EnumerableSupport.toArray(this,  () -> EnumerableSupport.resolveArrayLength(this), generator);
+    }
+    
     /**
      * Performs anyMatch.
      * @param predicate the predicate value
@@ -262,12 +283,10 @@ public interface Enumerable<T> extends Iterable<T> {
      */
     default boolean anyMatch(Predicate<T> predicate){
         var enumerator = enumerator();
-        var length = enumerator.length();
-
+        var length = EnumerableSupport.resolveNonInfiniteLength(enumerator, "Infinite enumerable cannot be match for all elements");
+        
         if (length instanceof Length.Finite finite && finite.count().isZero()){
             return false;
-        } else if (length instanceof Length.Infinite){
-            throw new IllegalStateException("Infinite enumerable cannot be match for all elements");
         }
 
         while(enumerator.moveNext()){
@@ -283,15 +302,15 @@ public interface Enumerable<T> extends Iterable<T> {
      * Performs allMatch.
      * @param predicate the predicate value
      * @return the result of allMatch
+     * @throws InfiniteEnumerableException if the {@link Enumerable} is infinite
      */
-    default boolean allMatch(Predicate<T> predicate){
+    default boolean allMatch(Predicate<T> predicate) throws InfiniteEnumerableException{
         var enumerator = enumerator();
-        var length = enumerator.length();
-
+       
+        var length = EnumerableSupport.resolveNonInfiniteLength(enumerator, "Infinite enumerable cannot be match for all elements");
+        
         if (length instanceof Length.Finite finite && finite.count().isZero()){
             return true;
-        } else if (length instanceof Length.Infinite){
-            throw new IllegalStateException("Infinite enumerable cannot be match for all elements");
         }
 
         while(enumerator.moveNext()){
@@ -304,21 +323,21 @@ public interface Enumerable<T> extends Iterable<T> {
     }
 
     /**
-     * Performs reduce.
+     * Reduce the {@link Enumerable} to a single value by operating between a seed value and each element.
+     *
      * @param seed the seed value
      * @param accumulator the accumulator value
      * @return the result of reduce
+     * @throws InfiniteEnumerableException if the {@link Enumerable} is infinite
      */
-    default <A> A reduce (A seed, BiFunction<A,T,A> accumulator){
-        var enumerator = enumerator();
-        var length = enumerator.length();
-
+    default <A> A reduce (A seed, BiFunction<A,T,A> accumulator) throws InfiniteEnumerableException {
+        var enumerator = this.enumerator();
+        var length = EnumerableSupport.resolveNonInfiniteLength(enumerator, "Infinite enumerable cannot be reduced");
+        
         if (length instanceof Length.Finite finite && finite.count().isZero()){
             return seed;
-        } else if (length instanceof Length.Infinite){
-            throw new IllegalStateException("Infinite enumerable cannot be reduced");
         }
-
+        
         var previous = seed;
         while (enumerator.moveNext()){
             previous = accumulator.apply(previous, enumerator.current());
@@ -327,18 +346,15 @@ public interface Enumerable<T> extends Iterable<T> {
     }
 
     /**
-     * Performs reduce.
+     * Reduce the {@link Enumerable} to a single value by operating between each element.
+     *
      * @param accumulator the accumulator value
      * @return the result of reduce
      */
-    default Maybe<T> reduce (BiFunction<T,T,T> accumulator){
+    default Maybe<T> reduce (BiFunction<T,T,T> accumulator) throws InfiniteEnumerableException {
         var enumerator = enumerator();
-        var length = enumerator.length();
-
-        if (length instanceof Length.Infinite){
-            throw new IllegalStateException("Infinite enumerable cannot be reduced");
-        }
-
+        EnumerableSupport.resolveNonInfiniteLength(enumerator, "Infinite enumerable cannot be reduced");
+        
         if (enumerator.moveNext()){
             var previous = enumerator.current();
             while (enumerator.moveNext()){
@@ -489,7 +505,8 @@ public interface Enumerable<T> extends Iterable<T> {
     }
 
     /**
-     * Returns associate.
+     * Creates an association that groups element in this {@link Enumerable} according to a given key and value selectors.
+     *
      * @param keySelector the keySelector value
      * @param valueSelector the valueSelector value
      * @return the result of associate
@@ -499,7 +516,8 @@ public interface Enumerable<T> extends Iterable<T> {
     }
 
     /**
-     * Performs groupBy.
+     * Creates an association that groups element in this {@link Enumerable} according to a given group selector.
+     *
      * @param groupSelector the groupSelector value
      * @return the result of groupBy
      */
@@ -508,16 +526,22 @@ public interface Enumerable<T> extends Iterable<T> {
     }
 
     /**
-     * Performs collect.
+     * Applies a {@link Collector} to the {@link Enumerable}
+     *
      * @param collector the collector value
      * @return the result of collect
+     * @throws InfiniteEnumerableException if the {@link Enumerable} is infinite
      */
-    default <R,A> R collect(Collector<? super T, A, R> collector){
+    default <R,A> R collect(Collector<? super T, A, R> collector) throws InfiniteEnumerableException{
+        var enumerator = enumerator();
+        EnumerableSupport.resolveNonInfiniteLength(enumerator, "Infinite enumerable cannot be collected");
         A aa = collector.supplier().get();
         var f = collector.accumulator();
-        for (var item : this){
-            f.accept(aa,item);
+        
+        while (enumerator.moveNext()){
+            f.accept(aa,enumerator.current());
         }
+    
         return collector.finisher().apply(aa);
     }
     

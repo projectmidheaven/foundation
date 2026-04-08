@@ -1,36 +1,23 @@
 package org.midheaven.collections;
 
-import org.midheaven.lang.Nullable;
-import org.midheaven.lang.ValueClass;
 import org.midheaven.math.Int;
 
-import java.util.Objects;
-import java.util.Set;
 import java.util.function.IntFunction;
 
-
-@ValueClass
-final class SingleDistinctAssortment<T> extends AbstractDistinctAssortment<T>{
+class ReadOnlySingleSequence<T> extends AbstractSequence<T>{
     
     final T element;
     
-    SingleDistinctAssortment(@Nullable T element){
+    ReadOnlySingleSequence(T element){
         this.element = element;
     }
     
     @Override
-    public String toString(){
-        return "{" + element + "}";
-    }
-    
-    @Override
-    public boolean contains(Object candidate) {
-        return Objects.equals(element, candidate);
-    }
-    
-    @Override
-    public Set<T> toCollection() {
-        return Set.of(element);
+    public Int indexOf(Object o) {
+        if (element.equals(o)){
+            return Int.ZERO;
+        }
+        return Int.NEGATIVE_ONE;
     }
     
     @Override
@@ -43,9 +30,19 @@ final class SingleDistinctAssortment<T> extends AbstractDistinctAssortment<T>{
         return Int.ONE;
     }
     
+    protected int size(){
+        return 1;
+    }
+    
     @Override
     public boolean isEmpty() {
         return false;
+    }
+    
+
+    @Override
+    public String toString (){
+        return "[" + element + "]";
     }
     
     public Object[] toArray(){

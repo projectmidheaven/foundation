@@ -6,19 +6,16 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 
-class ResizableSequenceListWrapper<T>  extends EditableSequenceListWrapper<T> implements ResizableSequence<T> {
+class ResizableSequenceListWrapper<T>  extends EditableListSequence<T> implements ResizableSequence<T> {
 
 	ResizableSequenceListWrapper(List<T> original){
 		super(original);
 	}
-
-	public boolean addAll(int index, Collection<? extends T> c) {
-		return original.addAll(index, c);
-	}
-
+	
 	public void replaceAll(UnaryOperator<T> operator) {
 		original.replaceAll(operator);
 	}
@@ -26,11 +23,7 @@ class ResizableSequenceListWrapper<T>  extends EditableSequenceListWrapper<T> im
 	public void sort(Comparator<? super T> c) {
 		original.sort(c);
 	}
-
-	public void add(int index, T element) {
-		original.add(index, element);
-	}
-
+	
 	public void addFirst(T e) {
 		original.addFirst(e);
 	}
@@ -53,7 +46,7 @@ class ResizableSequenceListWrapper<T>  extends EditableSequenceListWrapper<T> im
 			while (iterator.hasNext()) {
 				list.add(iterator.next());
 			}
-			return original().retainAll(list);
+			return original.retainAll(list);
 		}
 	}
 
@@ -71,6 +64,36 @@ class ResizableSequenceListWrapper<T>  extends EditableSequenceListWrapper<T> im
 	public ResizableSequence<T> subSequence(int fromIndex, int toIndex) {
 		return new ResizableSequenceListWrapper<T>(original.subList(fromIndex, toIndex));
 	}
-
+	
+	@Override
+	public boolean remove(Object other) {
+		return original.remove(other);
+	}
+	
+	@Override
+	public boolean addAll(Iterable<? extends T> c) {
+		return JavaCollectionsSupport.addAll(original, c);
+	}
+	
+	@Override
+	public boolean retainAll(Iterable<? extends T> c) {
+		return JavaCollectionsSupport.retainAll(original, c);
+	}
+	
+	@Override
+	public boolean removeAll(Iterable<? extends T> c) {
+		return JavaCollectionsSupport.removeAll(original, c);
+	}
+	
+	@Override
+	public void clear() {
+		original.clear();
+	}
+	
+	@Override
+	public boolean removeIf(Predicate<? super T> filter) {
+		return original.removeIf(filter);
+	}
+	
 	
 }

@@ -83,7 +83,7 @@ public class DistinctAssortmentBuilder {
         return AssortmentSupport.<T, HashSet<T> , DistinctAssortment<T>>from(
                 origin,
                 HashSet::new,
-                ResizableSetWrapper::new
+                ResizableSetAssortment::new
         );
     }
 }

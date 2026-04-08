@@ -11,11 +11,11 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-class ImmutableAssociationMapWrapper<K, V> extends AbstractAssociation<K,V> {
+class ReadonlyMapAssociation<K, V> extends AbstractAssociation<K,V> {
 
     protected final Map<K, V> original;
 
-    ImmutableAssociationMapWrapper(Map<K,V> original){
+    ReadonlyMapAssociation(Map<K,V> original){
         this.original = original;
     }
 
@@ -32,7 +32,7 @@ class ImmutableAssociationMapWrapper<K, V> extends AbstractAssociation<K,V> {
            }
         }
 
-        return new ImmutableAssociationMapWrapper<>(union);
+        return new ReadonlyMapAssociation<>(union);
     }
 
     @Override
@@ -45,7 +45,7 @@ class ImmutableAssociationMapWrapper<K, V> extends AbstractAssociation<K,V> {
             }
         }
 
-        return new ImmutableAssociationMapWrapper<>(union);
+        return new ReadonlyMapAssociation<>(union);
     }
 
     @Override
@@ -65,12 +65,12 @@ class ImmutableAssociationMapWrapper<K, V> extends AbstractAssociation<K,V> {
 
     @Override
     public DistinctAssortment<K> keys() {
-        return new ResizableSetWrapper<>(this.original.keySet());
+        return new ResizableSetAssortment<>(this.original.keySet());
     }
 
     @Override
     public Assortment<V> values() {
-        return new ImmutableCollectionWrapper<>(this.original.values());
+        return new ReadOnlyCollectionAssortment<>(this.original.values());
     }
 
     @Override

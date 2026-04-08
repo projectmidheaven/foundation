@@ -24,7 +24,7 @@ public class AssociationBuilder {
        
         var map = new HashMap<K,V>();
         map.put(key, value);
-        return new ImmutableAssociationMapWrapper<>(map);
+        return new ReadonlyMapAssociation<>(map);
     }
     
     /**
@@ -41,7 +41,7 @@ public class AssociationBuilder {
         for (var entry : entries){
             map.put(entry.key(), entry.value());
         }
-        return new ImmutableAssociationMapWrapper<>(map);
+        return new ReadonlyMapAssociation<>(map);
     }
 
     /**
@@ -53,7 +53,7 @@ public class AssociationBuilder {
         if (association == null || association.isEmpty()){
             return empty();
         } else if (association instanceof EditableAssociationMapWrapper<K,V> editable){
-            return new ImmutableAssociationMapWrapper<>(editable.original);
+            return new ReadonlyMapAssociation<>(editable.original);
         }
 
         return from(association);
@@ -70,9 +70,9 @@ public class AssociationBuilder {
         }
         // copy the original map
         if (map instanceof ConcurrentMap<K,V>){
-            return new ImmutableAssociationMapWrapper<>(new ConcurrentHashMap<>(map));
+            return new ReadonlyMapAssociation<>(new ConcurrentHashMap<>(map));
         }
-        return new ImmutableAssociationMapWrapper<>(new HashMap<>(map));
+        return new ReadonlyMapAssociation<>(new HashMap<>(map));
     }
 
     /**
@@ -84,13 +84,13 @@ public class AssociationBuilder {
         if (association == null || association.isEmpty()){
             return empty();
         } else if (association instanceof EditableAssociationMapWrapper<K,V> editable){
-            return new ImmutableAssociationMapWrapper<>(new HashMap<>(editable.original));
+            return new ReadonlyMapAssociation<>(new HashMap<>(editable.original));
         }
         var map = new HashMap<K,V>();
         for (var entry : association){
             map.put(entry.key(), entry.value());
         }
-        return new ImmutableAssociationMapWrapper<>(map);
+        return new ReadonlyMapAssociation<>(map);
     }
 
     /**

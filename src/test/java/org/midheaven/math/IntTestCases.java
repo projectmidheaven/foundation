@@ -1,15 +1,19 @@
 package org.midheaven.math;
 
 import org.junit.jupiter.api.Test;
+import org.midheaven.collections.Array;
 import org.midheaven.collections.Enumerable;
 import org.midheaven.collections.Sequence;
 
 import java.math.BigInteger;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class IntTestCases {
 
     @Test
@@ -170,6 +174,52 @@ public class IntTestCases {
         var intSequence = Enumerable.iterate(0, it -> it).limit(100).map(Int::of).with(Int.arithmetic());
         
         assertEquals(Int.ZERO ,  intSequence.sum());
+        
+    }
+    
+    @Test
+    public void promoteOnOperations(){
+        
+        record Pair(Int value, Function<Int, Int> operation , Supplier<Int> expected){}
+        
+        var values = Array.of(
+            new Pair(Int.of(Integer.MAX_VALUE), it -> it.times(2), () ->
+                Int.of(Integer.MAX_VALUE * 2L)
+            ),
+            new Pair(Int.of(Long.MAX_VALUE), it -> it.times(2), () ->
+               Int.of(BigInteger.valueOf(Long.MAX_VALUE).multiply(BigInteger.TWO))
+            ),
+            new Pair(Int.of(Integer.MAX_VALUE), it -> it.plus(2), () ->
+                                                                       Int.of(Integer.MAX_VALUE + 2L)
+            ),
+            new Pair(Int.of(Long.MAX_VALUE), it -> it.plus(2), () ->
+                                                                    Int.of(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.TWO))
+            ),
+            new Pair(Int.of(Integer.MAX_VALUE), Int::square, () ->
+                                                                       Int.of(BigInteger.valueOf(Integer.MAX_VALUE)
+                                                                            .multiply(BigInteger.valueOf(Integer.MAX_VALUE)))
+            ),
+            new Pair(Int.of(Integer.MAX_VALUE),  Int::cube, () ->
+                                                                Int.of(BigInteger.valueOf(Integer.MAX_VALUE)
+                                                                           .multiply(BigInteger.valueOf(Integer.MAX_VALUE)
+                                                                           .multiply(BigInteger.valueOf(Integer.MAX_VALUE)))
+                                                                )
+            ),
+            new Pair(Int.of(Long.MAX_VALUE), Int::square, () ->
+                                                                 Int.of(BigInteger.valueOf(Long.MAX_VALUE)
+                                                                            .multiply(BigInteger.valueOf(Long.MAX_VALUE)))
+            ),
+            new Pair(Int.of(Long.MAX_VALUE),  Int::cube, () ->
+                                                                Int.of(BigInteger.valueOf(Long.MAX_VALUE)
+                                                                           .multiply(BigInteger.valueOf(Long.MAX_VALUE)
+                                                                           .multiply(BigInteger.valueOf(Long.MAX_VALUE)))
+                                                                )
+            )
+        );
+        
+        for (var value : values) {
+            assertEquals(value.expected().get(), value.operation.apply(value.value));
+        }
         
     }
 

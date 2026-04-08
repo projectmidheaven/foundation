@@ -129,7 +129,7 @@ public interface Sequence<T> extends Assortment<T> {
 	 * @return the result of subSequence
 	 */
 	default Sequence<T> subSequence(Int fromIndex, Int toIndex){
-		return new ImmutableSubsequenceView<>(this, fromIndex, toIndex);
+		return new ReadOnlySubsequenceView<>(this, fromIndex, toIndex);
 	}
 	
 	/**

@@ -13,7 +13,7 @@ public class ResizableDistinctAssortmentBuilder {
      * @return the result of empty
      */
     public <T> ResizableDistinctAssortment<T> empty() {
-        return new ResizableSetWrapper<>(new HashSet<>());
+        return new ResizableSetAssortment<>(new HashSet<>());
     }
 
     /**
@@ -44,7 +44,7 @@ public class ResizableDistinctAssortmentBuilder {
         return AssortmentSupport.<T, HashSet<T> , ResizableDistinctAssortment<T>>from(
                 origin,
                 HashSet::new,
-                ResizableSetWrapper::new
+                ResizableSetAssortment::new
         );
     }
 }

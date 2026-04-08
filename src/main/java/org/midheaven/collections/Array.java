@@ -6,11 +6,9 @@ import org.midheaven.lang.NotNullable;
 import org.midheaven.lang.Nullable;
 import org.midheaven.math.Int;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.ListIterator;
+import java.util.RandomAccess;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -19,7 +17,7 @@ import java.util.function.Predicate;
  * An {@link EditableSequence} that behaves like an array.
  *  @param <T> type of element in the Array
  */
-public interface Array<T> extends EditableSequence<T> {
+public interface Array<T> extends EditableSequence<T> , RandomAccess {
 
 	/**
 	 * Returns an empty instance.
@@ -85,7 +83,7 @@ public interface Array<T> extends EditableSequence<T> {
 
 }
 
-class EmptyArray<T> extends ImmutableEmptySequence<T> implements Array<T> {
+class EmptyArray<T> extends EmptySequence<T> implements Array<T> {
 
 	@SuppressWarnings("rawtypes")
 	private static final EmptyArray ME = new EmptyArray();
@@ -119,10 +117,9 @@ class EmptyArray<T> extends ImmutableEmptySequence<T> implements Array<T> {
 		return this;
 	}
 	
-
 	@Override
 	public Array<T> subSequence(int fromIndex, int toIndex) {
-		return this;
+		throw new IndexOutOfBoundsException(fromIndex);
 	}
 
 	@Override
@@ -148,12 +145,13 @@ class EmptyArray<T> extends ImmutableEmptySequence<T> implements Array<T> {
 }
 
 
-class ArrayWrapper<T>  extends ImmutableSequenceArrayWrapper<T> implements Array<T> {
+final class ArrayWrapper<T>  extends ReadOnlyArrayList<T> implements Array<T> {
  
 	ArrayWrapper(T[] array){
 		super(array); // non-empty array
 	}
-
+	
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public Maybe<T> setAt(int index, T element) {
@@ -183,31 +181,21 @@ class ArrayWrapper<T>  extends ImmutableSequenceArrayWrapper<T> implements Array
 		array[array.length - 1] = element;
 		return Maybe.of(previous);
 	}
-
+	
 	@Override
 	public ListIterator<T> iterator() {
 		return Arrays.asList(this.array).listIterator();
 	}
-
+	
 	@Override
 	public ListIterator<T> reverseIterator() {
 		return Arrays.asList(this.array).listIterator(this.array.length);
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<T> toCollection() {
-		var list = new ArrayList<T>(this.array.length);
-        list.addAll(Arrays.asList(array));
-		return Collections.unmodifiableList(list);
-	}
-
+	
+	
 	@Override
 	public EditableSequence<T> subSequence(int fromIndex, int toIndex) {
-		if (fromIndex >=0 && fromIndex <= toIndex && toIndex >=0 && toIndex < array.length) {
-			return new EditableSubsequenceView<>(this, Int.of(fromIndex), Int.of(toIndex));
-		}
-		throw new IndexOutOfBoundsException();
+		return subSequence( Int.of(fromIndex), Int.of(toIndex));
 	}
 
 	@Override

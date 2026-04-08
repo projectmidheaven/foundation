@@ -5,27 +5,17 @@ import org.midheaven.lang.ValueClass;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-@ValueClass
 /**
- * Represents Int64.
+ * Represents a {@link long} as an {@link Int}
  */
-public final class Int64 implements Int {
-    
-    /**
-     * Returns from Int.
-     * @param value the value value
-     * @return the result of fromInt
-     */
-    static Int64 fromInt(int value) {
-        return new Int64(value);
-    }
+@ValueClass
+final class Int64 implements Int {
     
     final long value;
 
     Int64(long value) {
         this.value = value;
     }
-
     
     /**
      * Performs over.

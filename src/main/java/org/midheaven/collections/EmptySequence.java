@@ -7,15 +7,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.function.IntFunction;
 
-class ImmutableEmptySequence<T> extends AbstractSequence<T> {
+class EmptySequence<T> extends AbstractSequence<T> {
 
 
 	@SuppressWarnings("rawtypes")
-	private static final ImmutableEmptySequence ME = new ImmutableEmptySequence();
+	private static final EmptySequence ME = new EmptySequence();
 	
 	@SuppressWarnings("unchecked")
-	public static <X> ImmutableEmptySequence<X> instance() {
+	public static <X> EmptySequence<X> instance() {
 		return ME;
 	}
 
@@ -117,5 +118,17 @@ class ImmutableEmptySequence<T> extends AbstractSequence<T> {
 	@Override
 	public String toString( ){
 		return "[]";
+	}
+	
+	public Object[] toArray(){
+		return new Object[0];
+	}
+	
+	public T[] toArray(T[] templateArray){
+		return templateArray;
+	}
+	
+	public T[] toArray(IntFunction<T[]> generator){
+		return generator.apply(0);
 	}
 }
