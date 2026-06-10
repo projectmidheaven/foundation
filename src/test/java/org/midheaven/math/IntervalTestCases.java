@@ -30,6 +30,27 @@ public class IntervalTestCases {
         assertTrue(major.isGreaterThan(max));
         assertTrue(max.isLessThan(major), "Max is no less than major");
     }
+    
+    @Test
+    public void optionalBoundariesAreConsistent(){
+        Interval<Integer> interval = Interval.ranging(Integer.class)
+                                         .from(Maybe.of(2)).inclusive()
+                                         .to(Maybe.of(4)).exclusive();
+        
+        assertFalse(interval.contains(1));
+        assertFalse(interval.contains(4));
+        assertTrue(interval.contains(2));
+        assertTrue(interval.contains(3));
+        
+        Interval<Integer> all = Interval.ranging(Integer.class)
+                                         .from(Maybe.none()).inclusive()
+                                         .to(Maybe.none()).inclusive();
+        
+        assertTrue(all.contains(1));
+        assertTrue(all.contains(2));
+        assertTrue(all.contains(3));
+        assertTrue(all.contains(4));
+    }
 
     @Test
     public void emptyIsConsistent(){

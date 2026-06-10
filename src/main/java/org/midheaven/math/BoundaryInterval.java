@@ -97,7 +97,7 @@ class BoundaryInterval<T> implements Interval<T> {
        if (b instanceof ActualBoundary<T> actualBoundary){
            return a.compareTo(actualBoundary);
        }
-        return compare(order, a.value().orElse(null), b.value().orElse(null));
+        return compare(order, a.value().orNull(), b.value().orNull());
     }
 
     @Override

@@ -269,6 +269,15 @@ public class EnumerableTestCases {
         assertFalse(sequence.anyMatch(it -> it == -1));
 
     }
+    
+    @Test
+    public void enumerableNoneMatch(){
+        var sequence = Sequence.builder().of(1,2,3,4,5,6,7); //Enumerable.iterate(0, it -> it + 1);
+        
+        assertTrue(sequence.noneMatch(it -> it == 21));
+        assertFalse(sequence.noneMatch(it -> it == 3));
+        
+    }
 
     @Test
     public void enumerableAllMatch(){

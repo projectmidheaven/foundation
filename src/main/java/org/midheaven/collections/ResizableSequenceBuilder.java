@@ -64,7 +64,7 @@ public class ResizableSequenceBuilder{
 	 * @param origin the origin value
 	 * @return the result of from
 	 */
-	public <T> ResizableSequence<T> from(Iterable<T> origin){
+	public <T> ResizableSequence<T> from(Iterable<? extends T> origin){
 		if (!origin.iterator().hasNext() ) {
 			return empty();
 		}

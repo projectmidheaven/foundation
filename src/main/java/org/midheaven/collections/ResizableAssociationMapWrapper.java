@@ -47,7 +47,7 @@ class ResizableAssociationMapWrapper<K, V> extends EditableAssociationMapWrapper
 //        var set = DistinctAssortment.builder().resizable().<K>empty();
 //        for (var entry : this){
 //            if (other.containsKey(entry.key())){
-//                putValue(entry.key(), valueSelector.apply(this.getValue(entry.key()).orElse(null), entry.value()));
+//                putValue(entry.key(), valueSelector.apply(this.getValue(entry.key()).orNull(), entry.value()));
 //            } else {
 //                set.add(entry.key());
 //            }

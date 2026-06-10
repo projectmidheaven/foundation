@@ -19,7 +19,7 @@ class EditableListSequence<T>  extends ReadOnlyListSequence<T> implements Editab
 		if (index.isNegative() || index.isGreaterThan(this.count().minus(1))){
 			throw new IndexOutOfBoundsException();
 		}
-		return Maybe.of(original.set(index.toInt(), element));
+		return Maybe.of((T)original.set(index.toInt(), element));
 	}
 
 	@Override

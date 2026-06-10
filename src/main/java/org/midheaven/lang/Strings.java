@@ -331,6 +331,62 @@ public class Strings {
 	}
 	
 	/**
+	 * Ensures the resulting text starts with the prefix.
+	 * The prefix will be prepended if it is not present already
+	 * @param text the text to prefix
+	 * @param prefix the prefix to add
+	 * @return the text with the prefix
+	 */
+	public static @Nullable String ensureStartsWith(@Nullable String text,@Nullable String prefix){
+		if (isBlank(text) || isBlank(prefix) || text.startsWith(prefix)){
+			return text;
+		}
+		return prefix.concat(text);
+	}
+	
+	/**
+	 * Ensures the resulting text ends with the suffix.
+	 * The suffix will be appended if it is not present already
+	 * @param text the text to suffix
+	 * @param suffix the suffix to add
+	 * @return the text with the suffix
+	 */
+	public static @Nullable String ensureEndsWith(@Nullable String text,@Nullable String suffix){
+		if (isBlank(text) || isBlank(suffix) || text.endsWith(suffix)){
+			return text;
+		}
+		return text.concat(suffix);
+	}
+	
+	/**
+	 * Ensures the resulting text does not start with the prefix.
+	 * If the text starts with the prefix, it will be removed
+	 * @param text the text to analyze
+	 * @param prefix the prefix to remove
+	 * @return the text without the prefix
+	 */
+	public static @Nullable String ensureStartDiffersFrom(@Nullable String text,@Nullable String prefix){
+		if (isBlank(text) || isBlank(prefix) || !text.startsWith(prefix)){
+			return text;
+		}
+		return text.substring(prefix.length());
+	}
+	
+	/**
+	 * Ensures the resulting text does not end with the suffix.
+	 * If the text ends with the suffix, it will be removed
+	 * @param text the text to analyze
+	 * @param suffix the suffix to remove
+	 * @return the text without the suffix
+	 */
+	public static @Nullable String ensureEndDiffersFrom(@Nullable String text,@Nullable String suffix){
+		if (isBlank(text) || isBlank(suffix) || !text.endsWith(suffix)){
+			return text;
+		}
+		return text.substring(0, text.length() - suffix.length());
+	}
+	
+	/**
 	 * Performs Strings.
 	 * @return the result of Strings
 	 */

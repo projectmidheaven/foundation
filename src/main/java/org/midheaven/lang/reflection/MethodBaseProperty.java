@@ -24,7 +24,7 @@ final class MethodBaseProperty implements Property {
         this.getter = info.accessor;
         this.setter =  info.modifier;
         this.field =   info.field;
-        this.valueType = valueType;
+        this.valueType = valueType == null ? readType : valueType;
         this.readType = readType;
     }
 

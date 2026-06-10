@@ -138,4 +138,41 @@ public class StringsTestCases {
         
     }
     
+    @Test
+    public void prefixIsCorrect(){
+        
+        assertEquals(null, Strings.ensureStartsWith(null, "he"));
+        assertEquals("llo", Strings.ensureStartsWith("llo", null));
+        assertEquals(null, Strings.ensureStartsWith(null, null));
+        
+        assertEquals("hello", Strings.ensureStartsWith("llo", "he"));
+        assertEquals("hello", Strings.ensureStartsWith("hello", "he"));
+        
+        
+        assertEquals(null, Strings.ensureStartDiffersFrom(null, "he"));
+        assertEquals("llo", Strings.ensureStartDiffersFrom("llo", null));
+        assertEquals(null, Strings.ensureStartDiffersFrom(null, null));
+        
+        assertEquals("llo", Strings.ensureStartDiffersFrom("llo", "he"));
+        assertEquals("llo", Strings.ensureStartDiffersFrom("hello", "he"));
+    }
+    
+    @Test
+    public void suffixIsCorrect(){
+        
+        assertEquals(null, Strings.ensureEndsWith(null, "he"));
+        assertEquals("llo", Strings.ensureEndsWith("llo", null));
+        assertEquals(null, Strings.ensureEndsWith(null, null));
+        
+        assertEquals("hello", Strings.ensureEndsWith("he", "llo"));
+        assertEquals("hello", Strings.ensureEndsWith("hello", "llo"));
+        
+        
+        assertEquals(null, Strings.ensureEndDiffersFrom(null, "he"));
+        assertEquals("llo", Strings.ensureEndDiffersFrom("llo", null));
+        assertEquals(null, Strings.ensureEndDiffersFrom(null, null));
+        
+        assertEquals("he", Strings.ensureEndDiffersFrom("he", "llo"));
+        assertEquals("he", Strings.ensureEndDiffersFrom("hello", "llo"));
+    }
 }

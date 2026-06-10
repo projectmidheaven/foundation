@@ -11,9 +11,9 @@ import java.util.function.IntFunction;
 
 class ReadOnlyListSequence<T> extends AbstractSequence<T> {
 
-    protected final List<T> original;
+    protected final List original;
 
-    ReadOnlyListSequence(List<T> original){
+    ReadOnlyListSequence(List<? extends T> original){
         this.original = original;
     }
     
@@ -80,7 +80,7 @@ class ReadOnlyListSequence<T> extends AbstractSequence<T> {
     @Override
     public final Maybe<T> getAt(int index) {
         try {
-            return Maybe.of(original.get(index));
+            return Maybe.of((T) original.get(index));
         } catch (IndexOutOfBoundsException e){
             return Maybe.none();
         }
@@ -89,7 +89,7 @@ class ReadOnlyListSequence<T> extends AbstractSequence<T> {
     @Override
     public final Maybe<T> getAt(Int index) {
         try {
-            return Maybe.of(original.get(index.toInt()));
+            return Maybe.of((T)original.get(index.toInt()));
         } catch (ArithmeticException | IndexOutOfBoundsException e){
             return Maybe.none();
         }
@@ -97,12 +97,12 @@ class ReadOnlyListSequence<T> extends AbstractSequence<T> {
 
     @Override
     public final Maybe<T> first() {
-        return Maybe.of(original.getFirst());
+        return Maybe.of((T)original.getFirst());
     }
 
     @Override
     public final Maybe<T> last() {
-        return Maybe.of(original.getLast());
+        return Maybe.of((T)original.getLast());
     }
 
   

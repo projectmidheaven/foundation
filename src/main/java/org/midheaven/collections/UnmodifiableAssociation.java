@@ -146,6 +146,11 @@ final class UnmodifiableAssociation<K, V> implements Association<K, V> {
     }
     
     @Override
+    public boolean noneMatch(Predicate<Entry<K, V>> predicate) {
+        return original.noneMatch(predicate);
+    }
+    
+    @Override
     public boolean allMatch(Predicate<Entry<K, V>> predicate) {
         return original.allMatch(predicate);
     }

@@ -44,7 +44,7 @@ public interface Traversable<T> extends Iterable<T>, AutoCloseable{
      * @param iterable the iterable value
      * @return the result of from
      */
-    static <S> Traversable<S> from(Iterable<S> iterable){
+    static <S> Traversable<S> from(Iterable<? extends S> iterable){
         return from(Enumerable.from(iterable));
     }
     

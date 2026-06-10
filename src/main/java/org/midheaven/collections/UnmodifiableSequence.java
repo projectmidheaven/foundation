@@ -80,6 +80,12 @@ final class UnmodifiableSequence<T> extends AbstractSequence<T> {
         return original.anyMatch(predicate);
     }
     
+    
+    @Override
+    public boolean noneMatch(Predicate<T> predicate) {
+        return original.noneMatch(predicate);
+    }
+    
     @Override
     public boolean allMatch(Predicate<T> predicate) {
         return original.allMatch(predicate);

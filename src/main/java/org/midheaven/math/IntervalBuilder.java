@@ -1,5 +1,7 @@
 package org.midheaven.math;
 
+import org.midheaven.lang.Maybe;
+
 import java.util.Objects;
 
 /**
@@ -39,12 +41,22 @@ public class IntervalBuilder<T, U> {
 
     /**
      * Creates an instance from the provided source.
-     * @param value the value value
+     * @param value the value
      * @return the result of from
      */
     public StartInclusionBuilder<T, U> from(U value){
         Objects.requireNonNull(value);
         return new StartInclusionBuilder<>(this, value);
+    }
+    
+    /**
+     * Creates an instance from the provided source.
+     * @param value the value
+     * @return the result of from
+     */
+    public StartInclusionBuilder<T, U> from(Maybe<U> value){
+        Objects.requireNonNull(value);
+        return new StartInclusionBuilder<>(this, value.orNull());
     }
 
     /**

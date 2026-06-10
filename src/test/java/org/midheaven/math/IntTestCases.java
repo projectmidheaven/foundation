@@ -166,7 +166,7 @@ public class IntTestCases {
         assertEquals(sum.over(7) , avg);
 
         assertEquals (sum, Sequence.builder().of(1,2,3,4,5,6,7).map(Int::of).reduce(Int.ZERO, Int::plus));
-        assertEquals (sum, Sequence.builder().of(1,2,3,4,5,6,7).map(Int::of).reduce(Int::plus).orElse(null));
+        assertEquals (sum, Sequence.builder().of(1,2,3,4,5,6,7).map(Int::of).reduce(Int::plus).orNull());
     }
     
     @Test

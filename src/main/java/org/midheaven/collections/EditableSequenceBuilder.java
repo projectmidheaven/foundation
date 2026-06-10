@@ -60,7 +60,7 @@ public class EditableSequenceBuilder {
      * @param origin the origin value
      * @return the result of from
      */
-    public <T> EditableSequence<T> from(Iterable<T> origin){
+    public <T> EditableSequence<T> from(Iterable<? extends T> origin){
         if (!origin.iterator().hasNext() ) {
             return empty();
         }

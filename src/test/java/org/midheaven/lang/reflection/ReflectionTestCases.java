@@ -1,9 +1,11 @@
 package org.midheaven.lang.reflection;
 
 import org.junit.jupiter.api.Test;
+import org.midheaven.collections.Sequence;
 import org.midheaven.lang.Maybe;
 import org.midheaven.lang.model.TestPojo;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,7 +32,7 @@ public class ReflectionTestCases {
 
         assertEquals(List.class, type.rootClass());
         assertEquals(1, type.parameterTypes().count().toInt());
-        assertEquals(String.class, type.parameterTypes().getAt(0).map(TypeReference::rootClass).orElse(null));
+        assertEquals(String.class, type.parameterTypes().getAt(0).map(TypeReference::rootClass).orNull());
     }
 
     @Test
@@ -41,13 +43,13 @@ public class ReflectionTestCases {
         assertEquals(1, type.parameterTypes().count().toInt());
         assertEquals(
                 List.class,
-                type.parameterTypes().getAt(0).map(TypeReference::rootClass).orElse(null)
+                type.parameterTypes().getAt(0).map(TypeReference::rootClass).orNull()
         );
         assertEquals(
                 String.class,
                 type.parameterTypes().getAt(0)
                 .flatMap(it -> it.parameterTypes().getAt(0))
-                .map(TypeReference::rootClass).orElse(null)
+                .map(TypeReference::rootClass).orNull()
         );
     }
 
@@ -125,4 +127,43 @@ public class ReflectionTestCases {
         Maybe maybe = properties.get("Width").orElseThrow().getValue(pojo);
         assertNotNull(maybe);
     }
+    
+    @Test
+    public void readProxiedInterfaces() {
+        var type = Mirror.reflect(CharSequence.class).proxy(new InvocationHandler() {
+            @Override
+            public Object handleInvocation(Object proxy, Method method, Object[] args) throws Throwable {
+                return null;
+            }
+        }, Runnable.class);
+        
+        assertEquals(Sequence.builder().of(CharSequence.class, Runnable.class) , Mirror.reflect(type.getClass()).superInterfaces());
+        
+        var number = Mirror.reflect(Number.class).proxy(new InvocationHandler() {
+            @Override
+            public Object handleInvocation(Object proxy, Method method, Object[] args) throws Throwable {
+                return null;
+            }
+        }, Runnable.class);
+        
+        assertEquals(Sequence.builder().of(Runnable.class) , Mirror.reflect(number.getClass()).superInterfaces());
+        assertEquals(Number.class , Mirror.reflect(number.getClass()).superClasse());
+    }
+    
+    @Test
+    public void readInterfaceProperties() {
+        
+        var properties = Mirror.reflect(TestInterface.class).properties();
+        
+        var property = properties.get("Identification");
+        assertNotNull(property);
+        assertTrue(property.isPresent());
+        assertEquals(String.class, property.get().valueType());
+    }
+}
+
+
+interface TestInterface {
+    
+    String getIdentification();
 }

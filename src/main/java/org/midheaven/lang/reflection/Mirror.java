@@ -1,7 +1,10 @@
 package org.midheaven.lang.reflection;
 
 
+import org.midheaven.collections.Assortment;
+import org.midheaven.collections.Sequence;
 import org.midheaven.lang.Maybe;
+import org.midheaven.lang.NotNullable;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -19,8 +22,8 @@ import java.util.Arrays;
 public class Mirror<T> {
 
     private static final ProxyEngine engine = new CompositeProxyEngine()
-            .add(new ByteBuddyProxyEngine())
             .add(new NativeMirrorEngine())
+            .add(new ByteBuddyProxyEngine())
             ;
 
     /**
@@ -96,11 +99,19 @@ public class Mirror<T> {
         this.type = type;
     }
 
+    public @NotNullable Assortment<Class<?>> superInterfaces() {
+        return Sequence.builder().of(type.getInterfaces());
+    }
+    
+    public @NotNullable Class<?> superClasse() {
+        return type.getSuperclass();
+    }
+    
     /**
      * Performs parameterizedType.
      * @return the result of parameterizedType
      */
-    public Maybe<ParameterizedType> parameterizedType(){
+    public @NotNullable Maybe<ParameterizedType> parameterizedType(){
         return extractParameterizedType(this.type);
     }
 
@@ -109,7 +120,7 @@ public class Mirror<T> {
      * @param type the type value
      * @return the result of extractParameterizedType
      */
-    private Maybe<ParameterizedType> extractParameterizedType(Class<?> type){
+    private @NotNullable Maybe<ParameterizedType> extractParameterizedType(Class<?> type){
         if (type.getGenericSuperclass() instanceof ParameterizedType parameterizedType){
             return Maybe.some(parameterizedType);
         } else if (type.getSuperclass() == null || type.getSuperclass().equals(Object.class)){

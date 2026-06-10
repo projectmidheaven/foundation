@@ -8,11 +8,11 @@ import java.util.function.Function;
 class AssortmentSupport {
 
     static <T, C extends Collection<T>, A extends Assortment<T>> A from(
-            Iterable<T> origin,
-            Function<Collection<T> , C> factory,
+            Iterable<? extends T> origin,
+            Function<Collection<? extends T> , C> factory,
             Function<C, A> wrapper
     ) {
-        if (origin instanceof Collection<T> collection) {
+        if (origin instanceof Collection<? extends T> collection) {
             return wrapper.apply(factory.apply(collection)); // copy
         } else {
             var set = factory.apply(Collections.emptySet());

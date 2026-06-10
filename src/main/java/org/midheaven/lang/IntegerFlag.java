@@ -4,7 +4,7 @@ package org.midheaven.lang;
  * Represents Integer Flag.
  * @param <E> the corresponding FlagElement
  */
-public class IntegerFlag<E extends FlagElement<E>> implements Flag<E> {
+public class IntegerFlag<E extends FlagElement<E>> extends AbstractBinaryFlag<E, IntegerFlag<E>> {
 
     /**
      * Performs none.
@@ -32,13 +32,16 @@ public class IntegerFlag<E extends FlagElement<E>> implements Flag<E> {
     static <F extends FlagElement<F>> IntegerFlag<F> fromInt(int value){
         return new IntegerFlag<>(value);
     }
-
-    private final int bits;
-
+    
     IntegerFlag(int value) {
-        this.bits = value;
+        super(value);
     }
-
+    
+    @Override
+    protected IntegerFlag<E> newInstance(int value) {
+        return new IntegerFlag<>(value);
+    }
+    
     /**
      * Returns to Int.
      * @return the result of toInt
@@ -46,44 +49,6 @@ public class IntegerFlag<E extends FlagElement<E>> implements Flag<E> {
     int toInt(){
         return bits;
     }
-
-    /**
-     * Checks whether is Set.
-     * @param candidate the candidate value
-     * @return the result of isSet
-     */
-    public boolean isSet(FlagElement<E> candidate){
-        return (this.bits & 1 << candidate.flagPosition()) > 0;
-    }
-
-    /**
-     * Performs set.
-     * @param element the element value
-     * @return the result of set
-     */
-    public IntegerFlag<E> set(FlagElement<E> element){
-        if (element.flagPosition() < 0){
-            throw new IllegalArgumentException("FlagElement must have non negative position");
-        }
-        return new IntegerFlag<>( this.bits | 1 << element.flagPosition());
-    }
-
-    /**
-     * Performs clear.
-     * @param element the element value
-     * @return the result of clear
-     */
-    public IntegerFlag<E> clear(FlagElement<E> element){
-        return new IntegerFlag<>(bits & ~(1 << element.flagPosition()));
-    }
-
-    /**
-     * Performs flip.
-     * @param element the element value
-     * @return the result of flip
-     */
-    public IntegerFlag<E> flip(FlagElement<E> element){
-        return new IntegerFlag<>(bits ^ (1 << element.flagPosition()));
-    }
-
+    
+    
 }

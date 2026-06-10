@@ -8,13 +8,13 @@ import org.midheaven.math.Int;
 public interface Countable {
 
 	/**
-	 * Checks whether is Empty.
-	 * @return the result of isEmpty
+	 * @return  the count of elements
 	 */
 	@NotNullable Int count();
 	/**
-	 * Checks whether is Empty.
-	 * @return the result of isEmpty
+	 * Checks if there are no elements.
+	 * This is the same as comparing the count with zero, but faster, since there is no need to count the elements
+	 * @return {@code true} if there are no elements, {@code false} otherwise
 	 */
 	boolean isEmpty();
 }

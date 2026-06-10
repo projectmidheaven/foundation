@@ -52,7 +52,7 @@ class ResizableSequenceListWrapper<T>  extends EditableListSequence<T> implement
 
 	@Override
 	public Maybe<T> removeAt(int index) {
-		return Maybe.of(original.remove(index));
+		return Maybe.of((T)original.remove(index));
 	}
 
 	@Override

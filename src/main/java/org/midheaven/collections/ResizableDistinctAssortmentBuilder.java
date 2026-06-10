@@ -36,7 +36,7 @@ public class ResizableDistinctAssortmentBuilder {
      * @param origin the origin value
      * @return the result of from
      */
-    public <T> ResizableDistinctAssortment<T> from(Iterable<T> origin) {
+    public <T> ResizableDistinctAssortment<T> from(Iterable<? extends T> origin) {
         if (!origin.iterator().hasNext() ) {
             return empty();
         }

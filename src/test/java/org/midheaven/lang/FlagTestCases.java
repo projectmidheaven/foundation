@@ -27,6 +27,24 @@ public class FlagTestCases {
         assertTrue(IntegerFlag.with(TestFlags.C).isSet(TestFlags.C));
         assertFalse(IntegerFlag.with(TestFlags.C).isSet(TestFlags.A));
     }
+    
+    @Test
+    public void clearBitCorrectly(){
+        var flag = IntegerFlag.none(TestFlags.class);
+        
+        for (var v:TestFlags.values()){
+            flag = flag.set(v);
+        }
+        
+        for (var v:TestFlags.values()){
+            assertTrue(flag.isSet(v));
+        }
+        
+        for (var v:TestFlags.values()){
+            flag = flag.clear(v);
+            assertFalse(flag.isSet(v));
+        }
+    }
 }
 
 enum TestFlags implements FlagElement<TestFlags> {

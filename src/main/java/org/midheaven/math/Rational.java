@@ -84,9 +84,10 @@ public sealed interface Rational extends Ordered<Rational>, LongOrdered, Signed<
         return DynamicRational.of(Objects.requireNonNull(Int.of(numerator)), Int.ONE);
     }
     
-    static @NotNullable Rational of(@NotNullable BigDecimal decimal){
-        Check.argumentIsNotNull(decimal);
-        if (decimal.signum() == 0){
+    static @Nullable Rational of(@Nullable BigDecimal decimal){
+        if (decimal == null){
+            return null;
+        } else if (decimal.signum() == 0){
             return ZERO;
         } else if (BigDecimal.ONE.equals(decimal)){
             return ONE;

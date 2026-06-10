@@ -72,7 +72,7 @@ class PropertySelector<T> implements InvocationHandler{
             Sequence.builder().of(type.getDeclaredMethods())
                     .filter(m -> !m.getName().startsWith("set"))
                     .filter(m -> Modifier.isPublic(m.getModifiers()) && !Modifier.isStatic(m.getModifiers()))
-                    .map(m -> PropertyMirrorSupport.fromAccessor(m , type).orElse(null))
+                    .map(m -> PropertyMirrorSupport.fromAccessor(m , type).orNull())
                     .filter(Objects::nonNull)
                     .associate(Property::name)
                     .forEach(entry -> propertyAssociation.putValue(entry.key().toLowerCase(), entry.value()));

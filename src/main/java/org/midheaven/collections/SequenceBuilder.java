@@ -128,14 +128,14 @@ public class SequenceBuilder {
 	 * @return
 	 * @param <T>
 	 */
-	public <T> Sequence<T> from(Iterable<T> origin){
+	public <T> Sequence<T> from(Iterable<? extends T> origin){
 		if (origin == null || !origin.iterator().hasNext() ) {
 			return empty();
-		} else if (origin instanceof ReadOnlyListSequence<T> immutableSequenceListWrapper){
+		} else if (origin instanceof ReadOnlyListSequence<? extends T> immutableSequenceListWrapper){
 			return new ReadOnlyListSequence<>(immutableSequenceListWrapper.original);
-		} else if (origin instanceof ArrayWrapper<T> array){
+		} else if (origin instanceof ArrayWrapper<? extends T> array){
 			return new ReadOnlyArrayList<>(array.array);
-		} else if (origin instanceof Sequence<T> sequence && sequence.isEmpty()){
+		} else if (origin instanceof Sequence<? extends T> sequence && sequence.isEmpty()){
 			return empty();
 		}
 

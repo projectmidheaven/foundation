@@ -1,5 +1,9 @@
 package org.midheaven.math;
 
+import org.midheaven.lang.Maybe;
+
+import java.util.Objects;
+
 /**
  * Builder for End Interval instances.
  * @param <T> type of the elements in the {@link Interval}
@@ -25,13 +29,25 @@ public class EndIntervalBuilder<T, U> {
 
     /**
      * Performs to.
-     * @param maximum the maximum value
+     * @param value the maximum value
      * @return the result of to
      */
-    public EndInclusionBuilder<T, U> to(U maximum){
-        return new EndInclusionBuilder<>(this, maximum);
+    public EndInclusionBuilder<T, U> to(U value){
+        Objects.requireNonNull(value);
+        return new EndInclusionBuilder<>(this, value);
     }
-
+    
+    /**
+     * Creates an instance from the provided source.
+     * @param value the value
+     * @return the result of from
+     */
+    public EndInclusionBuilder<T, U> to(Maybe<U> value){
+        Objects.requireNonNull(value);
+        return new EndInclusionBuilder<>(this, value.orNull());
+    }
+    
+    
     /**
      * Returns to Infinity.
      * @return the result of toInfinity

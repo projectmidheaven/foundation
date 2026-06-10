@@ -5,9 +5,9 @@ import java.util.Iterator;
 
 class ImmutableIterableWrapper<T> implements Enumerable<T>{
 
-    private final Iterable<T> original;
+    private final Iterable original;
 
-    ImmutableIterableWrapper(Iterable<T> original){
+    ImmutableIterableWrapper(Iterable<? extends T> original){
         this.original = original;
     }
 

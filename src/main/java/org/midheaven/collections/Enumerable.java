@@ -1,11 +1,17 @@
 package org.midheaven.collections;
 
+import org.midheaven.lang.Check;
+import org.midheaven.lang.Countable;
 import org.midheaven.lang.Maybe;
+import org.midheaven.lang.NotNullable;
+import org.midheaven.lang.Nullable;
 import org.midheaven.math.Arithmetic;
 import org.midheaven.math.ArithmeticalEnumerable;
 import org.midheaven.math.Int;
 
+import java.util.AbstractCollection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -24,13 +30,13 @@ import java.util.stream.Collector;
  * An {@code Iterable} with fluent stream like transformation methods
  * @param <T> type of element in the Enumerable
  */
-public interface Enumerable<T> extends Iterable<T> {
+public interface Enumerable<T> extends Iterable<T> , Countable {
 
     /**
      * Returns an empty instance.
      * @return the result of empty
      */
-    static <X> Enumerable<X> empty() {
+    static <X> @NotNullable Enumerable<X> empty() {
         return new EmptyEnumerable<>();
     }
 
@@ -39,7 +45,8 @@ public interface Enumerable<T> extends Iterable<T> {
      * @param supplier the supplier value
      * @return the result of generate
      */
-    static <X> Enumerable<X> generate(Supplier<X> supplier) {
+    static <X> @NotNullable  Enumerable<X> generate(@NotNullable Supplier<X> supplier) {
+        Check.argumentIsNotNull(supplier, "supplier");
         return new GeneratorEnumerable<>(new GenerationPipe<>(supplier));
     }
 
@@ -49,16 +56,21 @@ public interface Enumerable<T> extends Iterable<T> {
      * @param successor the successor value
      * @return the result of iterate
      */
-    static <X> Enumerable<X> iterate(X seed , Function<X, X> successor) {
+    static <X>  @NotNullable  Enumerable<X> iterate(@Nullable X seed ,  @NotNullable Function<X, X> successor) {
+        Check.argumentIsNotNull(successor, "successor");
         return new GeneratorEnumerable<>(new IteratePipe<>(seed, successor));
     }
 
     /**
-     * Creates an instance from the provided source.
+     * Creates an instance from the provided {@link Iterable}.
+     * If the {@link Iterable} is null, and empty {@link Enumerable} will be returned.
      * @param iterable the iterable value
      * @return the result of from
      */
-    static <X> Enumerable<X> from(Iterable<X> iterable) {
+    static <X> @NotNullable Enumerable<X> from(@Nullable Iterable<? extends X> iterable) {
+        if(iterable == null) {
+            return empty();
+        }
         return new ImmutableIterableWrapper<>(iterable);
     }
 
@@ -67,7 +79,7 @@ public interface Enumerable<T> extends Iterable<T> {
      * @param value the value value
      * @return the result of single
      */
-    static <X> Enumerable<X> single(X value) {
+    static <X>  @NotNullable Enumerable<X> single(@Nullable X value) {
         return () -> Enumerator.single(value);
     }
 
@@ -82,7 +94,8 @@ public interface Enumerable<T> extends Iterable<T> {
      * @param optional the optional value
      * @return the result of from
      */
-    static <X> Enumerable<X> from(Optional<X> optional) {
+    static <X> @NotNullable Enumerable<X> from(@NotNullable Optional<X> optional) {
+        Check.argumentIsNotNull(optional, "optional");
         return optional.map(Enumerable::single).orElseGet(Enumerable::empty);
     }
 
@@ -233,7 +246,33 @@ public interface Enumerable<T> extends Iterable<T> {
             ResizableSetAssortment::new
         );
     }
-
+    
+    /**
+     * Creates a {@link Collection} containing the same elements present in this {@code Enumerable}.
+     * This operation is only possible if the {@code Enumerable} is not infinite and its length is less than
+     * {@code Integer.MAX_VALUE}.
+     *
+     * @return a {@link Collection} containing all elements in {@code this}
+     * @throws InfiniteEnumerableException if the {@link Enumerable} is infinite
+     */
+    default Collection<T> toCollection() throws InfiniteEnumerableException{
+        return new AbstractCollection<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return Enumerable.this.iterator();
+            }
+            
+            @Override
+            public int size() {
+                return Enumerable.this.count().toInt();
+            }
+            
+            public boolean isEmpty() {
+                return Enumerable.this.isEmpty();
+            }
+        };
+    }
+    
     /**
      * Creates an array on {@link Object} and copies all elements in this to that array.
      * This operation is only possible if the {@code Enumerable} is not infinite and its length is less than
@@ -277,11 +316,14 @@ public interface Enumerable<T> extends Iterable<T> {
     }
     
     /**
-     * Performs anyMatch.
-     * @param predicate the predicate value
-     * @return the result of anyMatch
+     * Returns {@true} if any of the elements matches the {@link Predicate}.
+     * Returns {@false} otherwise, or if the {@link Enumerable} is empty.
+     *
+     * @param predicate the predicate to match
+     * @return {@true} if any of the elements matches the {@link Predicate}
+     * @throws InfiniteEnumerableException if the {@link Enumerable} is infinite
      */
-    default boolean anyMatch(Predicate<T> predicate){
+    default boolean anyMatch(Predicate<T> predicate) throws InfiniteEnumerableException {
         var enumerator = enumerator();
         var length = EnumerableSupport.resolveNonInfiniteLength(enumerator, "Infinite enumerable cannot be match for all elements");
         
@@ -297,11 +339,36 @@ public interface Enumerable<T> extends Iterable<T> {
 
         return false;
     }
-
+    
     /**
-     * Performs allMatch.
-     * @param predicate the predicate value
-     * @return the result of allMatch
+     * Returns {@true} if no element matches the {@link Predicate} or the {@link Enumerable} is empty;{@false} otherwise.
+     *
+     * @param predicate the predicate to match
+     * @return {@true} if no element matches the {@link Predicate} or the {@link Enumerable} is empty
+     * @throws InfiniteEnumerableException if the {@link Enumerable} is infinite
+     */
+    default boolean noneMatch(Predicate<T> predicate) throws InfiniteEnumerableException {
+        var enumerator = enumerator();
+        var length = EnumerableSupport.resolveNonInfiniteLength(enumerator, "Infinite enumerable cannot be match for all elements");
+        
+        if (length instanceof Length.Finite finite && finite.count().isZero()){
+            return true;
+        }
+        
+        while(enumerator.moveNext()){
+            if (predicate.test(enumerator.current())){
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Returns {@true} if all elements match the {@link Predicate}, or if the {@link Enumerable} is empty; {@false} otherwise
+     *
+     * @param predicate the predicate to match
+     * @return {@true} if all elements matches the {@link Predicate} or the {@link Enumerable} is empty
      * @throws InfiniteEnumerableException if the {@link Enumerable} is infinite
      */
     default boolean allMatch(Predicate<T> predicate) throws InfiniteEnumerableException{
