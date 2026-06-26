@@ -11,6 +11,7 @@ import org.midheaven.math.Int;
 
 import java.util.AbstractCollection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -31,7 +32,25 @@ import java.util.stream.Collector;
  * @param <T> type of element in the Enumerable
  */
 public interface Enumerable<T> extends Iterable<T> , Countable {
-
+    
+    /**
+     * Creates an instance from the provided values.
+     * @param first the first value
+     * @param second the second value
+     * @param others the other values
+     * @return the result of from
+     */
+    @SafeVarargs
+    static <X> @NotNullable Enumerable<X> of(@Nullable X first, @Nullable X second, @Nullable X ... others) {
+        var enumerable = Enumerable.single(first).concat(Enumerable.single(second));
+        
+        if (others.length > 0){
+            enumerable = enumerable.concat(Enumerable.from(others));
+        }
+        
+        return enumerable;
+    }
+    
     /**
      * Returns an empty instance.
      * @return the result of empty
@@ -60,7 +79,20 @@ public interface Enumerable<T> extends Iterable<T> , Countable {
         Check.argumentIsNotNull(successor, "successor");
         return new GeneratorEnumerable<>(new IteratePipe<>(seed, successor));
     }
-
+    
+    /**
+     * Creates an instance from the provided array.
+     * If the array is null, and empty {@link Enumerable} will be returned.
+     * @param array the array value
+     * @return the result of from
+     */
+    static <X> @NotNullable Enumerable<X> from(@Nullable X[] array) {
+        if(array == null || array.length == 0) {
+            return empty();
+        }
+        return new ImmutableIterableWrapper<>(Arrays.asList(array));
+    }
+    
     /**
      * Creates an instance from the provided {@link Iterable}.
      * If the {@link Iterable} is null, and empty {@link Enumerable} will be returned.
@@ -76,7 +108,7 @@ public interface Enumerable<T> extends Iterable<T> , Countable {
 
     /**
      * Performs single.
-     * @param value the value value
+     * @param value the value
      * @return the result of single
      */
     static <X>  @NotNullable Enumerable<X> single(@Nullable X value) {
